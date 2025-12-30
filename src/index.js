@@ -1,42 +1,84 @@
 import EventSource from 'eventsource';
-import { initializeDatabase, insertVehiclePositions, pool } from './db.js';
+import { writeParquetToR2 } from './storage.js';
+import { findSegment } from './segments.js';
 
 const SSE_URL = process.env.SSE_URL || 'https://nolatransit.fly.dev/sse';
-const BATCH_SIZE = parseInt(process.env.BATCH_SIZE) || 1;
+const UPLOAD_INTERVAL = parseInt(process.env.UPLOAD_INTERVAL) || 3600000; // 1 hour default
 const RECONNECT_DELAY = parseInt(process.env.RECONNECT_DELAY) || 5000;
 
-let messageBuffer = [];
+let buffer = [];
 let stats = {
   messagesReceived: 0,
-  vehiclesLogged: 0,
+  vehiclesBuffered: 0,
+  uploadsCompleted: 0,
   errors: 0,
   startTime: new Date(),
 };
 
 function logStats() {
   const uptime = Math.round((Date.now() - stats.startTime.getTime()) / 1000);
-  console.log(`[Stats] Uptime: ${uptime}s | Messages: ${stats.messagesReceived} | Vehicles logged: ${stats.vehiclesLogged} | Errors: ${stats.errors}`);
+  console.log(`[Stats] Uptime: ${uptime}s | Messages: ${stats.messagesReceived} | Buffered: ${buffer.length} | Uploads: ${stats.uploadsCompleted} | Errors: ${stats.errors}`);
 }
 
-async function processMessage(data) {
+function processVehicle(v) {
+  // Skip vehicles with invalid coordinates
+  if (v.lat === '0' && v.lon === '0') return null;
+
+  const lat = parseFloat(v.lat);
+  const lon = parseFloat(v.lon);
+  const segment = findSegment(v.rt, lat, lon);
+
+  return {
+    vid: v.vid,
+    timestamp: v.tmstmp,
+    lat,
+    lon,
+    heading: parseInt(v.hdg) || 0,
+    route: v.rt,
+    trip_id: v.tatripid,
+    destination: v.des || null,
+    speed: parseInt(v.spd) || 0,
+    is_delayed: v.dly === true,
+    is_off_route: v.or === true,
+    ...segment
+  };
+}
+
+function processMessage(data) {
   try {
     const vehicles = JSON.parse(data);
     stats.messagesReceived++;
 
-    if (BATCH_SIZE <= 1) {
-      await insertVehiclePositions(vehicles);
-      stats.vehiclesLogged += vehicles.length;
-    } else {
-      messageBuffer.push(...vehicles);
-      if (messageBuffer.length >= BATCH_SIZE) {
-        await insertVehiclePositions(messageBuffer);
-        stats.vehiclesLogged += messageBuffer.length;
-        messageBuffer = [];
+    for (const v of vehicles) {
+      const record = processVehicle(v);
+      if (record) {
+        buffer.push(record);
       }
     }
   } catch (err) {
     stats.errors++;
     console.error('Error processing message:', err.message);
+  }
+}
+
+async function uploadBuffer() {
+  if (buffer.length === 0) {
+    console.log('Buffer empty, skipping upload');
+    return;
+  }
+
+  const toUpload = buffer;
+  buffer = []; // Clear buffer immediately to avoid data loss
+
+  try {
+    await writeParquetToR2(toUpload);
+    stats.uploadsCompleted++;
+    stats.vehiclesBuffered += toUpload.length;
+  } catch (err) {
+    stats.errors++;
+    console.error('Upload failed:', err.message);
+    // Put records back in buffer to retry next time
+    buffer = [...toUpload, ...buffer];
   }
 }
 
@@ -49,8 +91,8 @@ function connectSSE() {
     console.log('SSE connection established');
   };
 
-  es.onmessage = async (event) => {
-    await processMessage(event.data);
+  es.onmessage = (event) => {
+    processMessage(event.data);
   };
 
   es.onerror = (err) => {
@@ -70,35 +112,36 @@ function connectSSE() {
 async function shutdown(signal) {
   console.log(`\nReceived ${signal}. Shutting down gracefully...`);
 
-  // Flush any remaining buffered messages
-  if (messageBuffer.length > 0) {
-    console.log(`Flushing ${messageBuffer.length} buffered messages...`);
+  // Upload any remaining buffered data
+  if (buffer.length > 0) {
+    console.log(`Uploading ${buffer.length} buffered records...`);
     try {
-      await insertVehiclePositions(messageBuffer);
+      await uploadBuffer();
     } catch (err) {
-      console.error('Error flushing buffer:', err.message);
+      console.error('Error uploading buffer on shutdown:', err.message);
     }
   }
 
   logStats();
-  await pool.end();
-  console.log('Database connection closed');
   process.exit(0);
 }
 
 async function main() {
-  console.log('NOLA Transit Scraper starting...');
+  console.log('NOLA Transit Scraper (R2 version) starting...');
   console.log(`SSE URL: ${SSE_URL}`);
-  console.log(`Batch size: ${BATCH_SIZE}`);
+  console.log(`Upload interval: ${UPLOAD_INTERVAL / 1000}s`);
+  console.log(`R2 Bucket: ${process.env.R2_BUCKET || 'nola-transit'}`);
 
-  try {
-    await initializeDatabase();
-  } catch (err) {
-    console.error('Failed to initialize database:', err.message);
+  // Validate R2 config
+  if (!process.env.R2_ACCOUNT_ID || !process.env.R2_ACCESS_KEY_ID || !process.env.R2_SECRET_ACCESS_KEY) {
+    console.error('Missing R2 credentials. Set R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY');
     process.exit(1);
   }
 
   connectSSE();
+
+  // Upload buffer periodically
+  setInterval(uploadBuffer, UPLOAD_INTERVAL);
 
   // Log stats every 60 seconds
   setInterval(logStats, 60000);
