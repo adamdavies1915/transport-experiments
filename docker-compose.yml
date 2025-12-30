@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  scraper:
+    build: .
+    restart: unless-stopped
+    environment:
+      - DATABASE_URL=${DATABASE_URL:-postgresql://transit:transitpass@postgres:5432/nola_transit}
+      - SSE_URL=${SSE_URL:-https://nolatransit.fly.dev/sse}
+      - BATCH_SIZE=${BATCH_SIZE:-1}
+      - RECONNECT_DELAY=${RECONNECT_DELAY:-5000}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-transit}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-transitpass}
+      - POSTGRES_DB=${POSTGRES_DB:-nola_transit}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-transit} -d ${POSTGRES_DB:-nola_transit}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:

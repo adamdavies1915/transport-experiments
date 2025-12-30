@@ -1,0 +1,19 @@
+{
+  "name": "nola-transit-scraper",
+  "version": "1.0.0",
+  "description": "Scrapes NOLA transit real-time data via SSE and logs to PostgreSQL",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "analyze": "node src/analyze.js"
+  },
+  "dependencies": {
+    "eventsource": "^2.0.2",
+    "pg": "^8.11.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
