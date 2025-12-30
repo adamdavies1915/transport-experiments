@@ -167,8 +167,7 @@ app.get('/api/routes', async (req, res) => {
       WHERE route != 'U'
       GROUP BY route
       HAVING COUNT(*) > 100
-      ORDER BY readings DESC
-      LIMIT 15
+      ORDER BY on_time_pct DESC
     `);
     setCache('routes', result);
     res.json(result);
