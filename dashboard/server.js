@@ -69,8 +69,6 @@ function run(sql) {
   });
 }
 
-let dataLoaded = false;
-
 async function initDuckDB() {
   await run(`INSTALL httpfs`);
   await run(`LOAD httpfs`);
@@ -79,44 +77,31 @@ async function initDuckDB() {
   await run(`SET s3_access_key_id='${R2_ACCESS_KEY_ID}'`);
   await run(`SET s3_secret_access_key='${R2_SECRET_ACCESS_KEY}'`);
   await run(`SET s3_url_style='path'`);
-  console.log('DuckDB initialized with R2 connection');
 
-  // Pre-load all data into memory table (slow once, fast queries after)
-  console.log('Loading transit data into memory (this may take a few minutes)...');
-  const startTime = Date.now();
-  await run(`CREATE TABLE transit AS SELECT * FROM transit`);
-  const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
-  const count = await query('SELECT COUNT(*) as cnt FROM transit');
-  console.log(`Loaded ${count[0].cnt.toLocaleString()} records in ${elapsed}s`);
-  dataLoaded = true;
+  // Create a view that queries both daily consolidated and raw files
+  // DuckDB streams data from R2 - no RAM loading needed
+  await run(`
+    CREATE VIEW transit AS
+    SELECT * FROM read_parquet('s3://${R2_BUCKET}/**/*.parquet')
+  `);
+
+  console.log('DuckDB initialized - queries stream directly from R2 (low RAM usage)');
 }
 
-// Reload data every hour
-async function reloadData() {
-  if (!dataLoaded) return;
-  console.log('Reloading transit data...');
-  const startTime = Date.now();
-  await run('DROP TABLE IF EXISTS transit');
-  await run(`CREATE TABLE transit AS SELECT * FROM transit`);
-  cache.clear(); // Clear cache after reload
-  const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
-  console.log(`Data reloaded in ${elapsed}s`);
-}
+// Clear cache hourly to pick up new data
+setInterval(() => {
+  cache.clear();
+  console.log('Cache cleared');
+}, 60 * 60 * 1000);
 
-setInterval(reloadData, 60 * 60 * 1000); // Reload hourly
-
-// Health check - returns 503 while loading data
+// Health check
 app.get('/api/health', (req, res) => {
-  if (!dataLoaded) {
-    return res.status(503).json({ status: 'loading', message: 'Loading transit data...' });
-  }
   res.json({ status: 'ready' });
 });
 
 // API Routes
 app.get('/api/summary', async (req, res) => {
-  if (!dataLoaded) return res.status(503).json({ error: 'Data still loading...' });
-  try {
+    try {
     const cached = getCached('summary');
     if (cached) return res.json(cached);
 
@@ -237,8 +222,7 @@ app.get('/api/hourly', async (req, res) => {
 
 // Daily aggregates - overall system performance over time
 app.get('/api/daily', async (req, res) => {
-  if (!dataLoaded) return res.status(503).json({ error: 'Data still loading...' });
-  try {
+    try {
     const cached = getCached('daily');
     if (cached) return res.json(cached);
 
@@ -263,8 +247,7 @@ app.get('/api/daily', async (req, res) => {
 
 // Daily breakdown by route
 app.get('/api/daily-routes', async (req, res) => {
-  if (!dataLoaded) return res.status(503).json({ error: 'Data still loading...' });
-  try {
+    try {
     const route = req.query.route;
     const cacheKey = `daily-routes-${route || 'all'}`;
     const cached = getCached(cacheKey);
@@ -293,8 +276,7 @@ app.get('/api/daily-routes', async (req, res) => {
 
 // Daily breakdown by segment type (ROW vs mixed traffic)
 app.get('/api/daily-segments', async (req, res) => {
-  if (!dataLoaded) return res.status(503).json({ error: 'Data still loading...' });
-  try {
+    try {
     const cached = getCached('daily-segments');
     if (cached) return res.json(cached);
 
