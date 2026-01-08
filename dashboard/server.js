@@ -94,15 +94,20 @@ async function initDuckDB() {
     await run(`CREATE TABLE daily_data (vid VARCHAR, timestamp TIMESTAMP, lat DOUBLE, lon DOUBLE, route VARCHAR, speed DOUBLE, heading INTEGER, is_delayed BOOLEAN, segment_id INTEGER, segment_name VARCHAR, segment_type VARCHAR)`);
   }
 
-  // Create view combining daily (in RAM) + hourly files (streamed)
-  await run(`
-    CREATE VIEW transit AS
-    SELECT * FROM daily_data
-    UNION ALL
-    SELECT * FROM read_parquet('s3://${R2_BUCKET}/*/transit-*.parquet')
-  `);
-
-  console.log('DuckDB ready - daily data in RAM, hourly streamed from R2');
+  // Create view combining daily (in RAM) + hourly files (streamed if they exist)
+  try {
+    await run(`
+      CREATE VIEW transit AS
+      SELECT * FROM daily_data
+      UNION ALL
+      SELECT * FROM read_parquet('s3://${R2_BUCKET}/*/*/transit-*.parquet')
+    `);
+    console.log('DuckDB ready - daily data in RAM, hourly streamed from R2');
+  } catch (err) {
+    // No hourly files yet, just use daily data
+    console.log('No hourly files found, using daily data only');
+    await run(`CREATE VIEW transit AS SELECT * FROM daily_data`);
+  }
   dataReady = true;
 }
 
@@ -114,12 +119,16 @@ async function reloadData() {
     await run('DROP VIEW IF EXISTS transit');
     await run('DROP TABLE IF EXISTS daily_data');
     await run(`CREATE TABLE daily_data AS SELECT * FROM read_parquet('s3://${R2_BUCKET}/daily/*.parquet')`);
-    await run(`
-      CREATE VIEW transit AS
-      SELECT * FROM daily_data
-      UNION ALL
-      SELECT * FROM read_parquet('s3://${R2_BUCKET}/*/transit-*.parquet')
-    `);
+    try {
+      await run(`
+        CREATE VIEW transit AS
+        SELECT * FROM daily_data
+        UNION ALL
+        SELECT * FROM read_parquet('s3://${R2_BUCKET}/*/*/transit-*.parquet')
+      `);
+    } catch {
+      await run(`CREATE VIEW transit AS SELECT * FROM daily_data`);
+    }
     cache.clear();
     console.log('Data reloaded');
   } catch (err) {
