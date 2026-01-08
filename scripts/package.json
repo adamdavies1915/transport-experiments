@@ -2,11 +2,13 @@
   "name": "transit-scripts",
   "type": "module",
   "scripts": {
-    "consolidate": "node consolidate.js"
+    "consolidate": "node consolidate.js",
+    "start": "node scheduled-consolidate.js"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.600.0",
     "dotenv": "^17.2.3",
+    "node-cron": "^3.0.3",
     "parquetjs": "^0.11.2"
   }
 }
