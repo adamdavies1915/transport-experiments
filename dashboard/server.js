@@ -69,6 +69,8 @@ function run(sql) {
   });
 }
 
+let dataReady = false;
+
 async function initDuckDB() {
   await run(`INSTALL httpfs`);
   await run(`LOAD httpfs`);
@@ -78,17 +80,56 @@ async function initDuckDB() {
   await run(`SET s3_secret_access_key='${R2_SECRET_ACCESS_KEY}'`);
   await run(`SET s3_url_style='path'`);
 
-  // Create a view that queries both daily consolidated and raw files
-  // DuckDB streams data from R2 - no RAM loading needed
+  // Load consolidated daily files into RAM (fast queries)
+  console.log('Loading consolidated daily data into memory...');
+  const startTime = Date.now();
+
+  try {
+    await run(`CREATE TABLE daily_data AS SELECT * FROM read_parquet('s3://${R2_BUCKET}/daily/*.parquet')`);
+    const count = await query('SELECT COUNT(*) as cnt FROM daily_data');
+    const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+    console.log(`Loaded ${count[0].cnt.toLocaleString()} daily records in ${elapsed}s`);
+  } catch (err) {
+    console.log('No daily files yet, creating empty table');
+    await run(`CREATE TABLE daily_data (vid VARCHAR, timestamp TIMESTAMP, lat DOUBLE, lon DOUBLE, route VARCHAR, speed DOUBLE, heading INTEGER, is_delayed BOOLEAN, segment_id INTEGER, segment_name VARCHAR, segment_type VARCHAR)`);
+  }
+
+  // Create view combining daily (in RAM) + hourly files (streamed)
   await run(`
     CREATE VIEW transit AS
-    SELECT * FROM read_parquet('s3://${R2_BUCKET}/**/*.parquet')
+    SELECT * FROM daily_data
+    UNION ALL
+    SELECT * FROM read_parquet('s3://${R2_BUCKET}/*/transit-*.parquet')
   `);
 
-  console.log('DuckDB initialized - queries stream directly from R2 (low RAM usage)');
+  console.log('DuckDB ready - daily data in RAM, hourly streamed from R2');
+  dataReady = true;
 }
 
-// Clear cache hourly to pick up new data
+// Reload data every 6 hours to pick up new consolidated files
+async function reloadData() {
+  if (!dataReady) return;
+  console.log('Reloading data...');
+  try {
+    await run('DROP VIEW IF EXISTS transit');
+    await run('DROP TABLE IF EXISTS daily_data');
+    await run(`CREATE TABLE daily_data AS SELECT * FROM read_parquet('s3://${R2_BUCKET}/daily/*.parquet')`);
+    await run(`
+      CREATE VIEW transit AS
+      SELECT * FROM daily_data
+      UNION ALL
+      SELECT * FROM read_parquet('s3://${R2_BUCKET}/*/transit-*.parquet')
+    `);
+    cache.clear();
+    console.log('Data reloaded');
+  } catch (err) {
+    console.error('Reload failed:', err.message);
+  }
+}
+
+setInterval(reloadData, 6 * 60 * 60 * 1000); // Every 6 hours
+
+// Clear cache hourly to pick up new hourly files
 setInterval(() => {
   cache.clear();
   console.log('Cache cleared');
@@ -96,6 +137,9 @@ setInterval(() => {
 
 // Health check
 app.get('/api/health', (req, res) => {
+  if (!dataReady) {
+    return res.status(503).json({ status: 'loading', message: 'Loading data...' });
+  }
   res.json({ status: 'ready' });
 });
 
