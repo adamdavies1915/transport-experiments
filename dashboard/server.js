@@ -14,9 +14,9 @@ app.use(express.json());
 // Serve static files in production
 app.use(express.static(join(__dirname, 'dist')));
 
-// Simple in-memory cache (5 minute TTL)
+// Simple in-memory cache (1 hour TTL - data only updates hourly anyway)
 const cache = new Map();
-const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+const CACHE_TTL = 60 * 60 * 1000; // 1 hour
 
 function getCached(key) {
   const item = cache.get(key);
@@ -69,6 +69,8 @@ function run(sql) {
   });
 }
 
+let dataLoaded = false;
+
 async function initDuckDB() {
   await run(`INSTALL httpfs`);
   await run(`LOAD httpfs`);
@@ -78,10 +80,42 @@ async function initDuckDB() {
   await run(`SET s3_secret_access_key='${R2_SECRET_ACCESS_KEY}'`);
   await run(`SET s3_url_style='path'`);
   console.log('DuckDB initialized with R2 connection');
+
+  // Pre-load all data into memory table (slow once, fast queries after)
+  console.log('Loading transit data into memory (this may take a few minutes)...');
+  const startTime = Date.now();
+  await run(`CREATE TABLE transit AS SELECT * FROM transit`);
+  const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+  const count = await query('SELECT COUNT(*) as cnt FROM transit');
+  console.log(`Loaded ${count[0].cnt.toLocaleString()} records in ${elapsed}s`);
+  dataLoaded = true;
 }
+
+// Reload data every hour
+async function reloadData() {
+  if (!dataLoaded) return;
+  console.log('Reloading transit data...');
+  const startTime = Date.now();
+  await run('DROP TABLE IF EXISTS transit');
+  await run(`CREATE TABLE transit AS SELECT * FROM transit`);
+  cache.clear(); // Clear cache after reload
+  const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+  console.log(`Data reloaded in ${elapsed}s`);
+}
+
+setInterval(reloadData, 60 * 60 * 1000); // Reload hourly
+
+// Health check - returns 503 while loading data
+app.get('/api/health', (req, res) => {
+  if (!dataLoaded) {
+    return res.status(503).json({ status: 'loading', message: 'Loading transit data...' });
+  }
+  res.json({ status: 'ready' });
+});
 
 // API Routes
 app.get('/api/summary', async (req, res) => {
+  if (!dataLoaded) return res.status(503).json({ error: 'Data still loading...' });
   try {
     const cached = getCached('summary');
     if (cached) return res.json(cached);
@@ -93,7 +127,7 @@ app.get('/api/summary', async (req, res) => {
         COUNT(DISTINCT vid) as total_vehicles,
         MIN(timestamp) as first_record,
         MAX(timestamp) as last_record
-      FROM read_parquet('${DATA_PATH}')
+      FROM transit
     `);
     setCache('summary', result[0]);
     res.json(result[0]);
@@ -114,7 +148,7 @@ app.get('/api/segment-types', async (req, res) => {
         SUM(CASE WHEN is_delayed THEN 1 ELSE 0 END) as delayed,
         ROUND(100.0 * SUM(CASE WHEN is_delayed THEN 1 ELSE 0 END) / COUNT(*), 2) as delay_pct,
         ROUND(AVG(speed), 1) as avg_speed
-      FROM read_parquet('${DATA_PATH}')
+      FROM transit
       WHERE route = '12' AND segment_type IS NOT NULL
       GROUP BY segment_type
       ORDER BY segment_type
@@ -138,7 +172,7 @@ app.get('/api/segments', async (req, res) => {
         COUNT(*) as readings,
         ROUND(100.0 * SUM(CASE WHEN is_delayed THEN 1 ELSE 0 END) / COUNT(*), 2) as delay_pct,
         ROUND(AVG(speed), 1) as avg_speed
-      FROM read_parquet('${DATA_PATH}')
+      FROM transit
       WHERE route = '12' AND segment_name IS NOT NULL
       GROUP BY segment_name, segment_type
       ORDER BY avg_speed DESC
@@ -163,7 +197,7 @@ app.get('/api/routes', async (req, res) => {
         ROUND(100.0 * SUM(CASE WHEN is_delayed THEN 1 ELSE 0 END) / COUNT(*), 2) as delay_pct,
         ROUND(100.0 - (100.0 * SUM(CASE WHEN is_delayed THEN 1 ELSE 0 END) / COUNT(*)), 2) as on_time_pct,
         ROUND(AVG(speed), 1) as avg_speed
-      FROM read_parquet('${DATA_PATH}')
+      FROM transit
       WHERE route != 'U'
       GROUP BY route
       HAVING COUNT(*) > 100
@@ -187,7 +221,7 @@ app.get('/api/hourly', async (req, res) => {
         segment_type,
         ROUND(100.0 * SUM(CASE WHEN is_delayed THEN 1 ELSE 0 END) / COUNT(*), 2) as delay_pct,
         ROUND(AVG(speed), 1) as avg_speed
-      FROM read_parquet('${DATA_PATH}')
+      FROM transit
       WHERE route = '12' AND segment_type IS NOT NULL
       GROUP BY EXTRACT(HOUR FROM timestamp), segment_type
       ORDER BY hour
