@@ -1,7 +1,7 @@
 import { useTransitData } from './hooks/useTransitData';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
-  ResponsiveContainer, Cell
+  ResponsiveContainer, Cell, LineChart, Line
 } from 'recharts';
 
 const COLORS = {
@@ -92,8 +92,11 @@ function App() {
           />
           <StatCard
             title="Data Range"
-            value={`${Math.round((new Date(data.summary.last_record) - new Date(data.summary.first_record)) / 3600000)}h`}
-            subtitle="of collection"
+            value={(() => {
+              const hours = Math.round((new Date(data.summary.last_record) - new Date(data.summary.first_record)) / 3600000);
+              return hours >= 48 ? `${Math.round(hours / 24)} days` : `${hours}h`;
+            })()}
+            subtitle={`${new Date(data.summary.first_record).toLocaleDateString()} - ${new Date(data.summary.last_record).toLocaleDateString()}`}
             color="purple"
           />
         </div>
@@ -168,6 +171,66 @@ function App() {
               </span>
             </div>
           </div>
+        </div>
+
+        {/* Timeline Charts */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          {/* Daily On-Time Performance */}
+          <div className="bg-slate-800 rounded-lg p-6">
+            <h2 className="text-xl font-semibold mb-4">📅 Daily On-Time Performance</h2>
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={data.daily}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#475569" />
+                <XAxis
+                  dataKey="date"
+                  stroke="#94a3b8"
+                  tick={{ fontSize: 10 }}
+                  tickFormatter={(d) => new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                />
+                <YAxis stroke="#94a3b8" domain={[80, 100]} />
+                <Tooltip
+                  contentStyle={{ backgroundColor: '#1e293b', border: 'none' }}
+                  labelFormatter={(d) => new Date(d).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+                  formatter={(value) => [`${value}%`, 'On-Time']}
+                />
+                <Line type="monotone" dataKey="on_time_pct" stroke={COLORS.primary} strokeWidth={2} dot={false} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* Daily ROW vs Mixed Speed */}
+          {data.dailySegments && data.dailySegments.length > 0 && (
+            <div className="bg-slate-800 rounded-lg p-6">
+              <h2 className="text-xl font-semibold mb-4">📅 Streetcar Speed: ROW vs Mixed Over Time</h2>
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={
+                  // Pivot data by date
+                  [...new Set(data.dailySegments.map(d => d.date))].map(date => {
+                    const row = data.dailySegments.find(d => d.date === date && d.segment_type === 'dedicated_row') || {};
+                    const mixed = data.dailySegments.find(d => d.date === date && d.segment_type === 'mixed_traffic') || {};
+                    return { date, dedicated_speed: row.avg_speed, mixed_speed: mixed.avg_speed };
+                  })
+                }>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#475569" />
+                  <XAxis
+                    dataKey="date"
+                    stroke="#94a3b8"
+                    tick={{ fontSize: 10 }}
+                    tickFormatter={(d) => new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                  />
+                  <YAxis stroke="#94a3b8" />
+                  <Tooltip
+                    contentStyle={{ backgroundColor: '#1e293b', border: 'none' }}
+                    labelFormatter={(d) => new Date(d).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+                    formatter={(value, name) => [`${value} mph`, name === 'dedicated_speed' ? 'Dedicated ROW' : 'Mixed Traffic']}
+                  />
+                  <Legend formatter={(value) => value === 'dedicated_speed' ? 'Dedicated ROW' : 'Mixed Traffic'} />
+                  <Line type="monotone" dataKey="dedicated_speed" stroke={COLORS.dedicated} strokeWidth={2} dot={false} />
+                  <Line type="monotone" dataKey="mixed_speed" stroke={COLORS.mixed} strokeWidth={2} dot={false} />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          )}
         </div>
 
         {/* Route Performance Table */}

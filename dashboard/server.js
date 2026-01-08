@@ -233,6 +233,90 @@ app.get('/api/hourly', async (req, res) => {
   }
 });
 
+// Time-series endpoints for year-long analysis
+
+// Daily aggregates - overall system performance over time
+app.get('/api/daily', async (req, res) => {
+  if (!dataLoaded) return res.status(503).json({ error: 'Data still loading...' });
+  try {
+    const cached = getCached('daily');
+    if (cached) return res.json(cached);
+
+    const result = await query(`
+      SELECT
+        DATE_TRUNC('day', timestamp) as date,
+        COUNT(*) as readings,
+        COUNT(DISTINCT vid) as vehicles,
+        SUM(CASE WHEN is_delayed THEN 1 ELSE 0 END) as delayed,
+        ROUND(100.0 - (100.0 * SUM(CASE WHEN is_delayed THEN 1 ELSE 0 END) / COUNT(*)), 2) as on_time_pct,
+        ROUND(AVG(speed), 2) as avg_speed
+      FROM transit
+      GROUP BY DATE_TRUNC('day', timestamp)
+      ORDER BY date
+    `);
+    setCache('daily', result);
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Daily breakdown by route
+app.get('/api/daily-routes', async (req, res) => {
+  if (!dataLoaded) return res.status(503).json({ error: 'Data still loading...' });
+  try {
+    const route = req.query.route;
+    const cacheKey = `daily-routes-${route || 'all'}`;
+    const cached = getCached(cacheKey);
+    if (cached) return res.json(cached);
+
+    const whereClause = route ? `WHERE route = '${route}'` : "WHERE route != 'U'";
+    const result = await query(`
+      SELECT
+        DATE_TRUNC('day', timestamp) as date,
+        route,
+        COUNT(*) as readings,
+        ROUND(100.0 - (100.0 * SUM(CASE WHEN is_delayed THEN 1 ELSE 0 END) / COUNT(*)), 2) as on_time_pct,
+        ROUND(AVG(speed), 2) as avg_speed
+      FROM transit
+      ${whereClause}
+      GROUP BY DATE_TRUNC('day', timestamp), route
+      HAVING COUNT(*) > 50
+      ORDER BY date, route
+    `);
+    setCache(cacheKey, result);
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Daily breakdown by segment type (ROW vs mixed traffic)
+app.get('/api/daily-segments', async (req, res) => {
+  if (!dataLoaded) return res.status(503).json({ error: 'Data still loading...' });
+  try {
+    const cached = getCached('daily-segments');
+    if (cached) return res.json(cached);
+
+    const result = await query(`
+      SELECT
+        DATE_TRUNC('day', timestamp) as date,
+        segment_type,
+        COUNT(*) as readings,
+        ROUND(100.0 - (100.0 * SUM(CASE WHEN is_delayed THEN 1 ELSE 0 END) / COUNT(*)), 2) as on_time_pct,
+        ROUND(AVG(speed), 2) as avg_speed
+      FROM transit
+      WHERE route = '12' AND segment_type IS NOT NULL
+      GROUP BY DATE_TRUNC('day', timestamp), segment_type
+      ORDER BY date, segment_type
+    `);
+    setCache('daily-segments', result);
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // SPA fallback (Express 5 syntax)
 app.get('/{*path}', (req, res) => {
   res.sendFile(join(__dirname, 'dist', 'index.html'));

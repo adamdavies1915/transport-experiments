@@ -10,12 +10,14 @@ export function useTransitData() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const [summary, segmentTypes, segments, routes, hourly] = await Promise.all([
+        const [summary, segmentTypes, segments, routes, hourly, daily, dailySegments] = await Promise.all([
           fetch(`${API_BASE}/summary`).then(r => r.json()),
           fetch(`${API_BASE}/segment-types`).then(r => r.json()),
           fetch(`${API_BASE}/segments`).then(r => r.json()),
           fetch(`${API_BASE}/routes`).then(r => r.json()),
-          fetch(`${API_BASE}/hourly`).then(r => r.json())
+          fetch(`${API_BASE}/hourly`).then(r => r.json()),
+          fetch(`${API_BASE}/daily`).then(r => r.json()),
+          fetch(`${API_BASE}/daily-segments`).then(r => r.json())
         ]);
 
         if (summary.error) throw new Error(summary.error);
@@ -25,7 +27,9 @@ export function useTransitData() {
           segmentType: segmentTypes,
           segments,
           routes,
-          hourly
+          hourly,
+          daily,
+          dailySegments
         });
         setLoading(false);
       } catch (err) {
