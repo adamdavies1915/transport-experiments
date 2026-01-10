@@ -5,9 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host",
-    "dev:server": "node server.js",
+    "dev:server": "node server-motherduck.js",
     "build": "vite build",
-    "start": "node server.js",
+    "start": "node server-motherduck.js",
     "lint": "eslint .",
     "preview": "vite preview"
   },

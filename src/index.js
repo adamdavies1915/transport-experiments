@@ -1,9 +1,9 @@
 import EventSource from 'eventsource';
-import { writeParquetToR2 } from './storage.js';
+import { initMotherDuck, insertRecords, closeMotherDuck } from './motherduck.js';
 import { findSegment } from './segments.js';
 
 const SSE_URL = process.env.SSE_URL || 'https://nolatransit.fly.dev/sse';
-const UPLOAD_INTERVAL = parseInt(process.env.UPLOAD_INTERVAL) || 3600000; // 1 hour default
+const UPLOAD_INTERVAL = parseInt(process.env.UPLOAD_INTERVAL) || 60000; // 1 minute (MotherDuck handles batching)
 const RECONNECT_DELAY = parseInt(process.env.RECONNECT_DELAY) || 5000;
 
 let buffer = [];
@@ -63,22 +63,22 @@ function processMessage(data) {
 
 async function uploadBuffer() {
   if (buffer.length === 0) {
-    console.log('Buffer empty, skipping upload');
+    console.log('Buffer empty, skipping insert');
     return;
   }
 
-  const toUpload = buffer;
+  const toInsert = buffer;
   buffer = []; // Clear buffer immediately to avoid data loss
 
   try {
-    await writeParquetToR2(toUpload);
+    await insertRecords(toInsert);
     stats.uploadsCompleted++;
-    stats.vehiclesBuffered += toUpload.length;
+    stats.vehiclesBuffered += toInsert.length;
   } catch (err) {
     stats.errors++;
-    console.error('Upload failed:', err.message);
+    console.error('Insert failed:', err.message);
     // Put records back in buffer to retry next time
-    buffer = [...toUpload, ...buffer];
+    buffer = [...toInsert, ...buffer];
   }
 }
 
@@ -112,35 +112,43 @@ function connectSSE() {
 async function shutdown(signal) {
   console.log(`\nReceived ${signal}. Shutting down gracefully...`);
 
-  // Upload any remaining buffered data
+  // Insert any remaining buffered data
   if (buffer.length > 0) {
-    console.log(`Uploading ${buffer.length} buffered records...`);
+    console.log(`Inserting ${buffer.length} buffered records...`);
     try {
       await uploadBuffer();
     } catch (err) {
-      console.error('Error uploading buffer on shutdown:', err.message);
+      console.error('Error inserting buffer on shutdown:', err.message);
     }
   }
 
+  await closeMotherDuck();
   logStats();
   process.exit(0);
 }
 
 async function main() {
-  console.log('NOLA Transit Scraper (R2 version) starting...');
+  console.log('NOLA Transit Scraper (MotherDuck version) starting...');
   console.log(`SSE URL: ${SSE_URL}`);
-  console.log(`Upload interval: ${UPLOAD_INTERVAL / 1000}s`);
-  console.log(`R2 Bucket: ${process.env.R2_BUCKET || 'nola-transit'}`);
+  console.log(`Insert interval: ${UPLOAD_INTERVAL / 1000}s`);
 
-  // Validate R2 config
-  if (!process.env.R2_ACCOUNT_ID || !process.env.R2_ACCESS_KEY_ID || !process.env.R2_SECRET_ACCESS_KEY) {
-    console.error('Missing R2 credentials. Set R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY');
+  // Validate MotherDuck config
+  if (!process.env.MOTHERDUCK_TOKEN) {
+    console.error('Missing MOTHERDUCK_TOKEN environment variable');
+    process.exit(1);
+  }
+
+  // Initialize MotherDuck
+  try {
+    await initMotherDuck();
+  } catch (err) {
+    console.error('Failed to initialize MotherDuck:', err.message);
     process.exit(1);
   }
 
   connectSSE();
 
-  // Upload buffer periodically
+  // Insert buffer periodically
   setInterval(uploadBuffer, UPLOAD_INTERVAL);
 
   // Log stats every 60 seconds
