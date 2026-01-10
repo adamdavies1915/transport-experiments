@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import EventSource from 'eventsource';
 import { initMotherDuck, insertRecords, closeMotherDuck } from './motherduck.js';
 import { findSegment } from './segments.js';
@@ -133,8 +134,8 @@ async function main() {
   console.log(`Insert interval: ${UPLOAD_INTERVAL / 1000}s`);
 
   // Validate MotherDuck config
-  if (!process.env.MOTHERDUCK_TOKEN) {
-    console.error('Missing MOTHERDUCK_TOKEN environment variable');
+  if (!process.env.MOTHER_DUCK_API_KEY) {
+    console.error('Missing MOTHER_DUCK_API_KEY environment variable');
     process.exit(1);
   }
 

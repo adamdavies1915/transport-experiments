@@ -32,8 +32,8 @@ function setCache(key, data) {
   cache.set(key, { data, expires: Date.now() + CACHE_TTL });
 }
 
-const MOTHERDUCK_TOKEN = process.env.MOTHERDUCK_TOKEN;
-const DATABASE_NAME = process.env.MOTHERDUCK_DATABASE || 'nola_transit';
+const MOTHER_DUCK_API_KEY = process.env.MOTHER_DUCK_API_KEY;
+const DATABASE_NAME = process.env.MOTHERDUCK_DATABASE || 'my_db'; // MotherDuck default database
 
 // Initialize DuckDB with MotherDuck
 const db = new duckdb.Database(':md:');
@@ -69,8 +69,15 @@ function run(sql) {
 let dataReady = false;
 
 async function initMotherDuck() {
-  await run(`SET motherduck_token='${MOTHERDUCK_TOKEN}'`);
-  await run(`USE ${DATABASE_NAME}`);
+  // Set the token as env var - DuckDB reads it automatically with :md: connection
+  process.env.motherduck_token = MOTHER_DUCK_API_KEY;
+
+  // Attach to MotherDuck database
+  try {
+    await run(`ATTACH 'md:${DATABASE_NAME}' AS ${DATABASE_NAME}`);
+  } catch (err) {
+    console.log('Database already attached');
+  }
 
   console.log('MotherDuck connected - ready to query');
   dataReady = true;
@@ -103,7 +110,7 @@ app.get('/api/summary', async (req, res) => {
         COUNT(DISTINCT vid) as total_vehicles,
         MIN(timestamp) as first_record,
         MAX(timestamp) as last_record
-      FROM transit_data
+      FROM ${DATABASE_NAME}.transit_data
     `);
     setCache('summary', result[0]);
     res.json(result[0]);
@@ -124,7 +131,7 @@ app.get('/api/segment-types', async (req, res) => {
         SUM(CASE WHEN is_delayed THEN 1 ELSE 0 END) as delayed,
         ROUND(100.0 * SUM(CASE WHEN is_delayed THEN 1 ELSE 0 END) / COUNT(*), 2) as delay_pct,
         ROUND(AVG(speed), 1) as avg_speed
-      FROM transit_data
+      FROM ${DATABASE_NAME}.transit_data
       WHERE route = '12' AND segment_type IS NOT NULL
       GROUP BY segment_type
       ORDER BY segment_type
@@ -148,7 +155,7 @@ app.get('/api/segments', async (req, res) => {
         COUNT(*) as readings,
         ROUND(100.0 * SUM(CASE WHEN is_delayed THEN 1 ELSE 0 END) / COUNT(*), 2) as delay_pct,
         ROUND(AVG(speed), 1) as avg_speed
-      FROM transit_data
+      FROM ${DATABASE_NAME}.transit_data
       WHERE route = '12' AND segment_name IS NOT NULL
       GROUP BY segment_name, segment_type
       ORDER BY avg_speed DESC
@@ -173,7 +180,7 @@ app.get('/api/routes', async (req, res) => {
         ROUND(100.0 * SUM(CASE WHEN is_delayed THEN 1 ELSE 0 END) / COUNT(*), 2) as delay_pct,
         ROUND(100.0 - (100.0 * SUM(CASE WHEN is_delayed THEN 1 ELSE 0 END) / COUNT(*)), 2) as on_time_pct,
         ROUND(AVG(speed), 1) as avg_speed
-      FROM transit_data
+      FROM ${DATABASE_NAME}.transit_data
       WHERE route != 'U'
       GROUP BY route
       HAVING COUNT(*) > 100
@@ -197,7 +204,7 @@ app.get('/api/hourly', async (req, res) => {
         segment_type,
         ROUND(100.0 * SUM(CASE WHEN is_delayed THEN 1 ELSE 0 END) / COUNT(*), 2) as delay_pct,
         ROUND(AVG(speed), 1) as avg_speed
-      FROM transit_data
+      FROM ${DATABASE_NAME}.transit_data
       WHERE route = '12' AND segment_type IS NOT NULL
       GROUP BY EXTRACT(HOUR FROM timestamp), segment_type
       ORDER BY hour
@@ -223,7 +230,7 @@ app.get('/api/daily', async (req, res) => {
         SUM(CASE WHEN is_delayed THEN 1 ELSE 0 END) as delayed,
         ROUND(100.0 - (100.0 * SUM(CASE WHEN is_delayed THEN 1 ELSE 0 END) / COUNT(*)), 2) as on_time_pct,
         ROUND(AVG(speed), 2) as avg_speed
-      FROM transit_data
+      FROM ${DATABASE_NAME}.transit_data
       GROUP BY DATE_TRUNC('day', timestamp)
       ORDER BY date
     `);
@@ -249,7 +256,7 @@ app.get('/api/daily-routes', async (req, res) => {
         COUNT(*) as readings,
         ROUND(100.0 - (100.0 * SUM(CASE WHEN is_delayed THEN 1 ELSE 0 END) / COUNT(*)), 2) as on_time_pct,
         ROUND(AVG(speed), 2) as avg_speed
-      FROM transit_data
+      FROM ${DATABASE_NAME}.transit_data
       ${whereClause}
       GROUP BY DATE_TRUNC('day', timestamp), route
       HAVING COUNT(*) > 50
@@ -274,7 +281,7 @@ app.get('/api/daily-segments', async (req, res) => {
         COUNT(*) as readings,
         ROUND(100.0 - (100.0 * SUM(CASE WHEN is_delayed THEN 1 ELSE 0 END) / COUNT(*)), 2) as on_time_pct,
         ROUND(AVG(speed), 2) as avg_speed
-      FROM transit_data
+      FROM ${DATABASE_NAME}.transit_data
       WHERE route = '12' AND segment_type IS NOT NULL
       GROUP BY DATE_TRUNC('day', timestamp), segment_type
       ORDER BY date, segment_type

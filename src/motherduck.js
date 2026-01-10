@@ -1,7 +1,7 @@
 import duckdb from 'duckdb';
 
-const MOTHERDUCK_TOKEN = process.env.MOTHERDUCK_TOKEN;
-const DATABASE_NAME = process.env.MOTHERDUCK_DATABASE || 'nola_transit';
+const MOTHER_DUCK_API_KEY = process.env.MOTHER_DUCK_API_KEY;
+const DATABASE_NAME = process.env.MOTHERDUCK_DATABASE || 'my_db'; // MotherDuck default database
 
 let db;
 let connection;
@@ -9,43 +9,40 @@ let connection;
 // Initialize MotherDuck connection
 export async function initMotherDuck() {
   return new Promise((resolve, reject) => {
+    // Set the token as env var - DuckDB reads it automatically with :md: connection
+    process.env.motherduck_token = MOTHER_DUCK_API_KEY;
+
     db = new duckdb.Database(':md:', (err) => {
       if (err) return reject(err);
 
-      db.run(`SET motherduck_token='${MOTHERDUCK_TOKEN}'`, (err) => {
-        if (err) return reject(err);
+      // Attach to MotherDuck database (creates if doesn't exist)
+      db.run(`ATTACH 'md:${DATABASE_NAME}' AS ${DATABASE_NAME}`, (err) => {
+        if (err) {
+          console.log('Database might already be attached, trying to use it directly...');
+        }
 
-        // Create database if it doesn't exist
-        db.run(`CREATE DATABASE IF NOT EXISTS ${DATABASE_NAME}`, (err) => {
+        // Create table if it doesn't exist
+        db.run(`
+          CREATE TABLE IF NOT EXISTS ${DATABASE_NAME}.transit_data (
+            vid VARCHAR,
+            timestamp TIMESTAMP,
+            lat DOUBLE,
+            lon DOUBLE,
+            heading INTEGER,
+            route VARCHAR,
+            trip_id VARCHAR,
+            destination VARCHAR,
+            speed INTEGER,
+            is_delayed BOOLEAN,
+            is_off_route BOOLEAN,
+            segment_id INTEGER,
+            segment_name VARCHAR,
+            segment_type VARCHAR
+          )
+        `, (err) => {
           if (err) return reject(err);
-
-          db.run(`USE ${DATABASE_NAME}`, (err) => {
-            if (err) return reject(err);
-
-            // Create table if it doesn't exist
-            db.run(`
-              CREATE TABLE IF NOT EXISTS transit_data (
-                vid VARCHAR,
-                timestamp TIMESTAMP,
-                lat DOUBLE,
-                lon DOUBLE,
-                heading INTEGER,
-                route VARCHAR,
-                trip_id VARCHAR,
-                destination VARCHAR,
-                speed INTEGER,
-                is_delayed BOOLEAN,
-                is_off_route BOOLEAN,
-                segment_id INTEGER,
-                segment_name VARCHAR,
-                segment_type VARCHAR
-              )
-            `, (err) => {
-              if (err) return reject(err);
-              console.log('MotherDuck initialized successfully');
-              resolve();
-            });
-          });
+          console.log('MotherDuck initialized successfully');
+          resolve();
         });
       });
     });
@@ -58,7 +55,7 @@ export async function insertRecords(records) {
 
   return new Promise((resolve, reject) => {
     const appender = db.prepare(`
-      INSERT INTO transit_data VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO ${DATABASE_NAME}.transit_data VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
 
     for (const record of records) {
