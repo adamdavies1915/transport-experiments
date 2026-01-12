@@ -1,0 +1,15 @@
+{
+  "name": "transit-consolidation",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "once": "node index.js --once"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "duckdb": "^1.4.3",
+    "node-cron": "^3.0.3",
+    "pg": "^8.11.3"
+  }
+}

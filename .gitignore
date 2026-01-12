@@ -4,3 +4,5 @@ node_modules/
 .DS_Store
 .claude/
 scripts/.env
+:md:
+test-motherduck.js

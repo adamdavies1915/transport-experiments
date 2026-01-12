@@ -49,35 +49,34 @@ export async function initMotherDuck() {
   });
 }
 
-// Batch insert records
+// Batch insert records using bulk INSERT
 export async function insertRecords(records) {
   if (!db) throw new Error('MotherDuck not initialized');
 
   return new Promise((resolve, reject) => {
-    const appender = db.prepare(`
-      INSERT INTO ${DATABASE_NAME}.transit_data VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `);
+    // Build bulk INSERT statement
+    const values = records.map(r =>
+      `(${[
+        `'${r.vid.replace(/'/g, "''")}'`,
+        `'${r.timestamp}'`,
+        r.lat,
+        r.lon,
+        r.heading,
+        `'${r.route.replace(/'/g, "''")}'`,
+        r.trip_id ? `'${r.trip_id.replace(/'/g, "''")}'` : 'NULL',
+        r.destination ? `'${r.destination.replace(/'/g, "''")}'` : 'NULL',
+        r.speed,
+        r.is_delayed,
+        r.is_off_route,
+        r.segment_id || 'NULL',
+        r.segment_name ? `'${r.segment_name.replace(/'/g, "''")}'` : 'NULL',
+        r.segment_type ? `'${r.segment_type.replace(/'/g, "''")}'` : 'NULL'
+      ].join(', ')})`
+    ).join(',\n');
 
-    for (const record of records) {
-      appender.run([
-        record.vid,
-        record.timestamp,
-        record.lat,
-        record.lon,
-        record.heading,
-        record.route,
-        record.trip_id,
-        record.destination,
-        record.speed,
-        record.is_delayed,
-        record.is_off_route,
-        record.segment_id,
-        record.segment_name,
-        record.segment_type
-      ]);
-    }
+    const sql = `INSERT INTO ${DATABASE_NAME}.transit_data VALUES\n${values}`;
 
-    appender.finalize((err) => {
+    db.run(sql, (err) => {
       if (err) return reject(err);
       console.log(`Inserted ${records.length} records into MotherDuck`);
       resolve();

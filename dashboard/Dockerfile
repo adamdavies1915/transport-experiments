@@ -20,13 +20,6 @@ FROM node:20-slim
 
 WORKDIR /app
 
-# Install build dependencies for native modules (DuckDB)
-RUN apt-get update && apt-get install -y \
-    python3 \
-    make \
-    g++ \
-    && rm -rf /var/lib/apt/lists/*
-
 # Copy package files
 COPY package*.json ./
 
@@ -36,8 +29,8 @@ RUN npm install --omit=dev
 # Copy built frontend from builder
 COPY --from=builder /app/dist ./dist
 
-# Copy server
-COPY server.js ./
+# Copy Postgres server
+COPY server-postgres.js ./
 
 # Expose port
 EXPOSE 3000
