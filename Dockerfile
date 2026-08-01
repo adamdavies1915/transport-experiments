@@ -3,6 +3,13 @@
 # the native binding fails to load. glibc bindings work out of the box.
 FROM node:20-slim
 
+# ca-certificates: the MotherDuck extension connects over gRPC/TLS and needs a
+# CA root bundle (slim ships none), else it fails with "Could not get default
+# pem root certs". GRPC_DEFAULT_SSL_ROOTS_FILE_PATH points gRPC at that bundle.
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+ENV GRPC_DEFAULT_SSL_ROOTS_FILE_PATH=/etc/ssl/certs/ca-certificates.crt
+
 WORKDIR /app
 
 # Copy package files and install dependencies
