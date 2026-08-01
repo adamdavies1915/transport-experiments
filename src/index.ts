@@ -1,14 +1,15 @@
 import 'dotenv/config';
 import EventSource from 'eventsource';
-import { initMotherDuck, insertRecords, closeMotherDuck } from './motherduck.js';
-import { findSegment } from './segments.js';
+import { initMotherDuck, insertRecords, closeMotherDuck } from './motherduck';
+import { findSegment } from './segments';
+import type { RawVehicle, TransitRecord } from './types';
 
 const SSE_URL = process.env.SSE_URL || 'https://nolatransit.fly.dev/sse';
-const UPLOAD_INTERVAL = parseInt(process.env.UPLOAD_INTERVAL) || 60000; // 1 minute (MotherDuck handles batching)
-const RECONNECT_DELAY = parseInt(process.env.RECONNECT_DELAY) || 5000;
+const UPLOAD_INTERVAL = parseInt(process.env.UPLOAD_INTERVAL ?? '') || 60000; // 1 minute (MotherDuck handles batching)
+const RECONNECT_DELAY = parseInt(process.env.RECONNECT_DELAY ?? '') || 5000;
 
-let buffer = [];
-let stats = {
+let buffer: TransitRecord[] = [];
+const stats = {
   messagesReceived: 0,
   vehiclesBuffered: 0,
   uploadsCompleted: 0,
@@ -16,12 +17,12 @@ let stats = {
   startTime: new Date(),
 };
 
-function logStats() {
+function logStats(): void {
   const uptime = Math.round((Date.now() - stats.startTime.getTime()) / 1000);
   console.log(`[Stats] Uptime: ${uptime}s | Messages: ${stats.messagesReceived} | Buffered: ${buffer.length} | Uploads: ${stats.uploadsCompleted} | Errors: ${stats.errors}`);
 }
 
-function processVehicle(v) {
+function processVehicle(v: RawVehicle): TransitRecord | null {
   // Skip vehicles with invalid coordinates
   if (v.lat === '0' && v.lon === '0') return null;
 
@@ -34,20 +35,20 @@ function processVehicle(v) {
     timestamp: v.tmstmp,
     lat,
     lon,
-    heading: parseInt(v.hdg) || 0,
+    heading: parseInt(v.hdg ?? '') || 0,
     route: v.rt,
-    trip_id: v.tatripid,
+    trip_id: v.tatripid ?? null,
     destination: v.des || null,
-    speed: parseInt(v.spd) || 0,
+    speed: parseInt(v.spd ?? '') || 0,
     is_delayed: v.dly === true,
     is_off_route: v.or === true,
     ...segment
   };
 }
 
-function processMessage(data) {
+function processMessage(data: string): void {
   try {
-    const vehicles = JSON.parse(data);
+    const vehicles = JSON.parse(data) as RawVehicle[];
     stats.messagesReceived++;
 
     for (const v of vehicles) {
@@ -58,11 +59,11 @@ function processMessage(data) {
     }
   } catch (err) {
     stats.errors++;
-    console.error('Error processing message:', err.message);
+    console.error('Error processing message:', (err as Error).message);
   }
 }
 
-async function uploadBuffer() {
+async function uploadBuffer(): Promise<void> {
   if (buffer.length === 0) {
     console.log('Buffer empty, skipping insert');
     return;
@@ -77,13 +78,13 @@ async function uploadBuffer() {
     stats.vehiclesBuffered += toInsert.length;
   } catch (err) {
     stats.errors++;
-    console.error('Insert failed:', err.message);
+    console.error('Insert failed:', (err as Error).message);
     // Put records back in buffer to retry next time
     buffer = [...toInsert, ...buffer];
   }
 }
 
-function connectSSE() {
+function connectSSE(): EventSource {
   console.log(`Connecting to SSE endpoint: ${SSE_URL}`);
 
   const es = new EventSource(SSE_URL);
@@ -92,13 +93,13 @@ function connectSSE() {
     console.log('SSE connection established');
   };
 
-  es.onmessage = (event) => {
+  es.onmessage = (event: MessageEvent<string>) => {
     processMessage(event.data);
   };
 
   es.onerror = (err) => {
     stats.errors++;
-    console.error('SSE connection error:', err.message || 'Unknown error');
+    console.error('SSE connection error:', (err as { message?: string }).message || 'Unknown error');
 
     if (es.readyState === EventSource.CLOSED) {
       console.log(`Reconnecting in ${RECONNECT_DELAY}ms...`);
@@ -110,7 +111,7 @@ function connectSSE() {
   return es;
 }
 
-async function shutdown(signal) {
+async function shutdown(signal: string): Promise<void> {
   console.log(`\nReceived ${signal}. Shutting down gracefully...`);
 
   // Insert any remaining buffered data
@@ -119,7 +120,7 @@ async function shutdown(signal) {
     try {
       await uploadBuffer();
     } catch (err) {
-      console.error('Error inserting buffer on shutdown:', err.message);
+      console.error('Error inserting buffer on shutdown:', (err as Error).message);
     }
   }
 
@@ -128,7 +129,7 @@ async function shutdown(signal) {
   process.exit(0);
 }
 
-async function main() {
+async function main(): Promise<void> {
   console.log('NOLA Transit Scraper (MotherDuck version) starting...');
   console.log(`SSE URL: ${SSE_URL}`);
   console.log(`Insert interval: ${UPLOAD_INTERVAL / 1000}s`);
@@ -143,7 +144,7 @@ async function main() {
   try {
     await initMotherDuck();
   } catch (err) {
-    console.error('Failed to initialize MotherDuck:', err.message);
+    console.error('Failed to initialize MotherDuck:', (err as Error).message);
     process.exit(1);
   }
 

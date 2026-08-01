@@ -11,9 +11,11 @@ COPY --chown=nodejs:nodejs package*.json ./
 RUN npm ci --omit=dev
 
 # Copy source code
+COPY --chown=nodejs:nodejs tsconfig.json ./
 COPY --chown=nodejs:nodejs src ./src
 
 # Switch to non-root user
 USER nodejs
 
-CMD ["node", "src/index.js"]
+# Run the TypeScript entrypoint directly via tsx (bundled in dependencies)
+CMD ["npm", "start"]

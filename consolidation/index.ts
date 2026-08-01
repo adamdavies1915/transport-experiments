@@ -7,8 +7,9 @@ const __dirname = dirname(__filename);
 
 // Load .env from parent directory
 dotenv.config({ path: join(__dirname, '..', '.env') });
+
 import cron from 'node-cron';
-import duckdb from 'duckdb';
+import { DuckDBInstance, type DuckDBConnection } from '@duckdb/node-api';
 import pg from 'pg';
 
 const { Pool } = pg;
@@ -20,7 +21,7 @@ const MOTHERDUCK_DB = process.env.MOTHERDUCK_DATABASE || 'my_db';
 // Postgres config
 const pgPool = new Pool({
   host: process.env.POSTGRES_HOST || 'localhost',
-  port: process.env.POSTGRES_PORT || 5432,
+  port: Number(process.env.POSTGRES_PORT) || 5432,
   database: process.env.POSTGRES_DB || 'transit',
   user: process.env.POSTGRES_USER || 'postgres',
   password: process.env.POSTGRES_PASSWORD,
@@ -28,54 +29,95 @@ const pgPool = new Pool({
 });
 
 // MotherDuck connection
-let mdDb;
+let mdInstance: DuckDBInstance | undefined;
+let mdConn: DuckDBConnection | undefined;
 
-function queryMotherDuck(sql) {
-  return new Promise((resolve, reject) => {
-    mdDb.all(sql, (err, rows) => {
-      if (err) reject(err);
-      else {
-        const converted = rows.map(row => {
-          const obj = {};
-          for (const [key, value] of Object.entries(row)) {
-            obj[key] = typeof value === 'bigint' ? Number(value) : value;
-          }
-          return obj;
-        });
-        resolve(converted);
-      }
-    });
+async function queryMotherDuck<T = Record<string, unknown>>(sql: string): Promise<T[]> {
+  if (!mdConn) throw new Error('MotherDuck not initialized');
+  const reader = await mdConn.runAndReadAll(sql);
+  return reader.getRowObjects().map(row => {
+    const obj: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(row)) {
+      obj[key] = typeof value === 'bigint' ? Number(value) : value;
+    }
+    return obj as T;
   });
 }
 
-function runMotherDuck(sql) {
-  return new Promise((resolve, reject) => {
-    mdDb.run(sql, (err) => {
-      if (err) reject(err);
-      else resolve();
-    });
-  });
+async function initMotherDuck(): Promise<void> {
+  if (!MOTHER_DUCK_API_KEY) {
+    throw new Error('Missing MOTHER_DUCK_API_KEY environment variable');
+  }
+
+  mdInstance = await DuckDBInstance.create(
+    `md:${MOTHERDUCK_DB}?motherduck_token=${MOTHER_DUCK_API_KEY}`
+  );
+  mdConn = await mdInstance.connect();
+  console.log('MotherDuck connected');
 }
 
-async function initMotherDuck() {
-  return new Promise((resolve, reject) => {
-    process.env.motherduck_token = MOTHER_DUCK_API_KEY;
-
-    mdDb = new duckdb.Database(':md:', (err) => {
-      if (err) return reject(err);
-
-      mdDb.run(`ATTACH 'md:${MOTHERDUCK_DB}' AS ${MOTHERDUCK_DB}`, (err) => {
-        if (err) {
-          console.log('Database might already be attached');
-        }
-        console.log('MotherDuck connected');
-        resolve();
-      });
-    });
-  });
+interface DateRangeRow {
+  min_date: string | null;
+  max_date: string | null;
+  total_records: number;
 }
 
-async function consolidate() {
+interface DailySummaryRow {
+  date: string;
+  total_records: number;
+  total_routes: number;
+  total_vehicles: number;
+  avg_speed: number;
+  delayed_count: number;
+  on_time_pct: number;
+}
+
+interface RoutePerfRow {
+  date: string;
+  route: string;
+  readings: number;
+  delayed: number;
+  delay_pct: number;
+  on_time_pct: number;
+  avg_speed: number;
+}
+
+interface SegmentPerfRow {
+  date: string;
+  segment_type: string;
+  readings: number;
+  delayed: number;
+  delay_pct: number;
+  on_time_pct: number;
+  avg_speed: number;
+}
+
+interface HourlyPerfRow {
+  hour: number;
+  segment_type: string;
+  readings: number;
+  delayed: number;
+  delay_pct: number;
+  avg_speed: number;
+}
+
+interface SegmentTypeSummaryRow {
+  segment_type: string;
+  readings: number;
+  delayed: number;
+  delay_pct: number;
+  avg_speed: number;
+}
+
+interface SegmentSummaryRow {
+  segment_name: string;
+  segment_type: string;
+  readings: number;
+  delay_pct: number;
+  avg_speed: number;
+}
+
+async function consolidate(): Promise<void> {
   console.log(`\n[${new Date().toISOString()}] Starting consolidation...`);
 
   try {
@@ -84,7 +126,7 @@ async function consolidate() {
     console.log('✓ Postgres connected');
 
     // Get date range of data
-    const dateRange = await queryMotherDuck(`
+    const dateRange = await queryMotherDuck<DateRangeRow>(`
       SELECT
         MIN(DATE_TRUNC('day', timestamp)) as min_date,
         MAX(DATE_TRUNC('day', timestamp)) as max_date,
@@ -102,7 +144,7 @@ async function consolidate() {
 
     // 1. Daily summary
     console.log('\n1. Computing daily summaries...');
-    const dailySummaries = await queryMotherDuck(`
+    const dailySummaries = await queryMotherDuck<DailySummaryRow>(`
       SELECT
         DATE_TRUNC('day', timestamp) as date,
         COUNT(*) as total_records,
@@ -133,7 +175,7 @@ async function consolidate() {
 
     // 2. Daily route performance
     console.log('\n2. Computing daily route performance...');
-    const routePerf = await queryMotherDuck(`
+    const routePerf = await queryMotherDuck<RoutePerfRow>(`
       SELECT
         DATE_TRUNC('day', timestamp) as date,
         route,
@@ -165,7 +207,7 @@ async function consolidate() {
 
     // 3. Daily segment performance (ROW vs mixed)
     console.log('\n3. Computing daily segment performance...');
-    const segmentPerf = await queryMotherDuck(`
+    const segmentPerf = await queryMotherDuck<SegmentPerfRow>(`
       SELECT
         DATE_TRUNC('day', timestamp) as date,
         segment_type,
@@ -196,7 +238,7 @@ async function consolidate() {
 
     // 4. Hourly segment performance (aggregate across all days)
     console.log('\n4. Computing hourly segment performance...');
-    const hourlyPerf = await queryMotherDuck(`
+    const hourlyPerf = await queryMotherDuck<HourlyPerfRow>(`
       SELECT
         EXTRACT(HOUR FROM timestamp) as hour,
         segment_type,
@@ -226,7 +268,7 @@ async function consolidate() {
 
     // 5. Overall segment type performance
     console.log('\n5. Computing segment type summaries...');
-    const segmentTypeSummary = await queryMotherDuck(`
+    const segmentTypeSummary = await queryMotherDuck<SegmentTypeSummaryRow>(`
       SELECT
         segment_type,
         COUNT(*) as readings,
@@ -241,7 +283,7 @@ async function consolidate() {
 
     // 6. Individual segment summaries
     console.log('\n6. Computing individual segment summaries...');
-    const segments = await queryMotherDuck(`
+    const segments = await queryMotherDuck<SegmentSummaryRow>(`
       SELECT
         segment_name,
         segment_type,
@@ -276,14 +318,14 @@ async function consolidate() {
   }
 }
 
-async function initPostgres() {
+async function initPostgres(): Promise<void> {
   const fs = await import('fs');
   const schema = fs.readFileSync(new URL('./schema.sql', import.meta.url), 'utf-8');
   await pgPool.query(schema);
   console.log('✓ Postgres schema initialized');
 }
 
-async function main() {
+async function main(): Promise<void> {
   console.log('Transit Data Consolidation Service');
   console.log('===================================');
 

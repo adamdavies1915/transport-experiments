@@ -1,7 +1,9 @@
 // St. Charles Streetcar (Route 12) segments
 // These define geographic zones for mixed traffic vs dedicated right-of-way analysis
 
-export const SEGMENTS = [
+import type { Segment, SegmentMatch } from './types';
+
+export const SEGMENTS: Segment[] = [
   {
     id: 1,
     route: '12',
@@ -67,7 +69,7 @@ export const SEGMENTS = [
   }
 ];
 
-export function findSegment(route, lat, lon) {
+export function findSegment(route: string, lat: number, lon: number): SegmentMatch {
   for (const seg of SEGMENTS) {
     if (seg.route !== route) continue;
     if (lat >= seg.min_lat && lat <= seg.max_lat &&

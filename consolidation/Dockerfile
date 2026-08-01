@@ -9,7 +9,8 @@ COPY package.json ./
 RUN npm install --production
 
 # Copy source files
-COPY index.js ./
+COPY index.ts ./
+COPY tsconfig.json ./
 COPY schema.sql ./
 
 # Run the consolidation service

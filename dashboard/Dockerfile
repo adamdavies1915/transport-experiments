@@ -29,8 +29,9 @@ RUN npm install --omit=dev
 # Copy built frontend from builder
 COPY --from=builder /app/dist ./dist
 
-# Copy Postgres server
-COPY server-postgres.js ./
+# Copy Postgres server (run via tsx, bundled in dependencies)
+COPY server-postgres.ts ./
+COPY tsconfig.node.json ./
 
 # Expose port
 EXPOSE 3000

@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import express from 'express';
+import express, { type Request, type Response } from 'express';
 import cors from 'cors';
 import pg from 'pg';
 import { fileURLToPath } from 'url';
@@ -18,7 +18,7 @@ app.use(express.static(join(__dirname, 'dist')));
 // Postgres config
 const pgPool = new Pool({
   host: process.env.POSTGRES_HOST || 'localhost',
-  port: process.env.POSTGRES_PORT || 5432,
+  port: Number(process.env.POSTGRES_PORT) || 5432,
   database: process.env.POSTGRES_DB || 'transit',
   user: process.env.POSTGRES_USER || 'postgres',
   password: process.env.POSTGRES_PASSWORD,
@@ -27,7 +27,7 @@ const pgPool = new Pool({
 
 let dataReady = false;
 
-async function initPostgres() {
+async function initPostgres(): Promise<void> {
   try {
     await pgPool.query('SELECT NOW()');
     console.log('✓ Postgres connected');
@@ -38,8 +38,12 @@ async function initPostgres() {
   }
 }
 
+function errorMessage(err: unknown): string {
+  return err instanceof Error ? err.message : String(err);
+}
+
 // Health check
-app.get('/api/health', (req, res) => {
+app.get('/api/health', (_req: Request, res: Response) => {
   if (!dataReady) {
     return res.status(503).json({ status: 'loading', message: 'Connecting to Postgres...' });
   }
@@ -47,7 +51,7 @@ app.get('/api/health', (req, res) => {
 });
 
 // API Routes - query pre-computed Postgres tables
-app.get('/api/summary', async (req, res) => {
+app.get('/api/summary', async (_req: Request, res: Response) => {
   try {
     const result = await pgPool.query(`
       SELECT
@@ -60,11 +64,11 @@ app.get('/api/summary', async (req, res) => {
     `);
     res.json(result.rows[0]);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: errorMessage(err) });
   }
 });
 
-app.get('/api/segment-types', async (req, res) => {
+app.get('/api/segment-types', async (_req: Request, res: Response) => {
   try {
     const result = await pgPool.query(`
       SELECT
@@ -79,11 +83,11 @@ app.get('/api/segment-types', async (req, res) => {
     `);
     res.json(result.rows);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: errorMessage(err) });
   }
 });
 
-app.get('/api/segments', async (req, res) => {
+app.get('/api/segments', async (_req: Request, res: Response) => {
   try {
     const result = await pgPool.query(`
       SELECT
@@ -97,11 +101,11 @@ app.get('/api/segments', async (req, res) => {
     `);
     res.json(result.rows);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: errorMessage(err) });
   }
 });
 
-app.get('/api/routes', async (req, res) => {
+app.get('/api/routes', async (_req: Request, res: Response) => {
   try {
     const result = await pgPool.query(`
       SELECT
@@ -118,11 +122,11 @@ app.get('/api/routes', async (req, res) => {
     `);
     res.json(result.rows);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: errorMessage(err) });
   }
 });
 
-app.get('/api/hourly', async (req, res) => {
+app.get('/api/hourly', async (_req: Request, res: Response) => {
   try {
     const result = await pgPool.query(`
       SELECT
@@ -135,12 +139,12 @@ app.get('/api/hourly', async (req, res) => {
     `);
     res.json(result.rows);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: errorMessage(err) });
   }
 });
 
 // Time-series endpoints for year-long analysis
-app.get('/api/daily', async (req, res) => {
+app.get('/api/daily', async (_req: Request, res: Response) => {
   try {
     const result = await pgPool.query(`
       SELECT
@@ -155,13 +159,13 @@ app.get('/api/daily', async (req, res) => {
     `);
     res.json(result.rows);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: errorMessage(err) });
   }
 });
 
-app.get('/api/daily-routes', async (req, res) => {
+app.get('/api/daily-routes', async (req: Request, res: Response) => {
   try {
-    const route = req.query.route;
+    const route = req.query.route as string | undefined;
     const whereClause = route ? `WHERE route = $1` : `WHERE route != 'U'`;
     const params = route ? [route] : [];
 
@@ -178,11 +182,11 @@ app.get('/api/daily-routes', async (req, res) => {
     `, params);
     res.json(result.rows);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: errorMessage(err) });
   }
 });
 
-app.get('/api/daily-segments', async (req, res) => {
+app.get('/api/daily-segments', async (_req: Request, res: Response) => {
   try {
     const result = await pgPool.query(`
       SELECT
@@ -196,12 +200,12 @@ app.get('/api/daily-segments', async (req, res) => {
     `);
     res.json(result.rows);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: errorMessage(err) });
   }
 });
 
 // SPA fallback (Express 5 syntax)
-app.get('/{*path}', (req, res) => {
+app.get('/{*path}', (_req: Request, res: Response) => {
   res.sendFile(join(__dirname, 'dist', 'index.html'));
 });
 

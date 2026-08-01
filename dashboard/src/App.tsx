@@ -3,6 +3,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
   ResponsiveContainer, Cell, LineChart, Line
 } from 'recharts';
+import type { ReactNode } from 'react';
 
 const COLORS = {
   dedicated: '#22c55e',
@@ -11,8 +12,17 @@ const COLORS = {
   secondary: '#8b5cf6'
 };
 
-function StatCard({ title, value, subtitle, color = 'blue' }) {
-  const colorClasses = {
+type StatColor = 'blue' | 'green' | 'red' | 'purple';
+
+interface StatCardProps {
+  title: string;
+  value: ReactNode;
+  subtitle?: ReactNode;
+  color?: StatColor;
+}
+
+function StatCard({ title, value, subtitle, color = 'blue' }: StatCardProps) {
+  const colorClasses: Record<StatColor, string> = {
     blue: 'border-blue-500 bg-blue-500/10',
     green: 'border-green-500 bg-green-500/10',
     red: 'border-red-500 bg-red-500/10',
@@ -55,9 +65,9 @@ function App() {
 
   if (!data) return null;
 
-  const dedicatedData = data.segmentType.find(s => s.segment_type === 'dedicated_row') || {};
-  const mixedData = data.segmentType.find(s => s.segment_type === 'mixed_traffic') || {};
-  const speedDiff = ((dedicatedData.avg_speed || 0) / (mixedData.avg_speed || 1)).toFixed(1);
+  const dedicatedData = data.segmentType.find(s => s.segment_type === 'dedicated_row');
+  const mixedData = data.segmentType.find(s => s.segment_type === 'mixed_traffic');
+  const speedDiff = ((dedicatedData?.avg_speed || 0) / (mixedData?.avg_speed || 1)).toFixed(1);
 
   return (
     <div className="min-h-screen p-6">
@@ -80,20 +90,20 @@ function App() {
           />
           <StatCard
             title="Dedicated ROW Speed"
-            value={`${dedicatedData.avg_speed || 0} mph`}
+            value={`${dedicatedData?.avg_speed || 0} mph`}
             subtitle={`${speedDiff}x faster than mixed`}
             color="green"
           />
           <StatCard
             title="Mixed Traffic Speed"
-            value={`${mixedData.avg_speed || 0} mph`}
-            subtitle={`${mixedData.delay_pct || 0}% delayed`}
+            value={`${mixedData?.avg_speed || 0} mph`}
+            subtitle={`${mixedData?.delay_pct || 0}% delayed`}
             color="red"
           />
           <StatCard
             title="Data Range"
             value={(() => {
-              const hours = Math.round((new Date(data.summary.last_record) - new Date(data.summary.first_record)) / 3600000);
+              const hours = Math.round((new Date(data.summary.last_record).getTime() - new Date(data.summary.first_record).getTime()) / 3600000);
               return hours >= 48 ? `${Math.round(hours / 24)} days` : `${hours}h`;
             })()}
             subtitle={`${new Date(data.summary.first_record).toLocaleDateString()} - ${new Date(data.summary.last_record).toLocaleDateString()}`}
@@ -206,9 +216,9 @@ function App() {
                 <LineChart data={
                   // Pivot data by date
                   [...new Set(data.dailySegments.map(d => d.date))].map(date => {
-                    const row = data.dailySegments.find(d => d.date === date && d.segment_type === 'dedicated_row') || {};
-                    const mixed = data.dailySegments.find(d => d.date === date && d.segment_type === 'mixed_traffic') || {};
-                    return { date, dedicated_speed: row.avg_speed, mixed_speed: mixed.avg_speed };
+                    const row = data.dailySegments.find(d => d.date === date && d.segment_type === 'dedicated_row');
+                    const mixed = data.dailySegments.find(d => d.date === date && d.segment_type === 'mixed_traffic');
+                    return { date, dedicated_speed: row?.avg_speed, mixed_speed: mixed?.avg_speed };
                   })
                 }>
                   <CartesianGrid strokeDasharray="3 3" stroke="#475569" />
