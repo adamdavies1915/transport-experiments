@@ -1,21 +1,20 @@
-FROM node:20-alpine
+# glibc base (node:20-slim, not alpine): the @duckdb/node-bindings musl
+# packages omit a libc field, so npm can't reliably pick them on Alpine and
+# the native binding fails to load. glibc bindings work out of the box.
+FROM node:20-slim
 
 WORKDIR /app
 
-# Create non-root user first
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nodejs -u 1001
-
 # Copy package files and install dependencies
-COPY --chown=nodejs:nodejs package*.json ./
+COPY --chown=node:node package*.json ./
 RUN npm ci --omit=dev
 
 # Copy source code
-COPY --chown=nodejs:nodejs tsconfig.json ./
-COPY --chown=nodejs:nodejs src ./src
+COPY --chown=node:node tsconfig.json ./
+COPY --chown=node:node src ./src
 
-# Switch to non-root user
-USER nodejs
+# Run as the built-in non-root node user
+USER node
 
 # Run the TypeScript entrypoint directly via tsx (bundled in dependencies)
 CMD ["npm", "start"]
