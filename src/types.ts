@@ -34,6 +34,12 @@ export interface RawVehicle {
   spd?: string;
   dly?: boolean;
   or?: boolean;
+  // Previously-dropped fields we now persist.
+  pdist?: string; // linear distance along the route pattern
+  pid?: string;   // pattern id
+  rid?: string;   // route id
+  tablockid?: string;
+  srvtmstmp?: string; // service timestamp
 }
 
 // A processed record ready to be inserted into MotherDuck.
@@ -49,4 +55,10 @@ export interface TransitRecord extends SegmentMatch {
   speed: number;
   is_delayed: boolean;
   is_off_route: boolean;
+  // Previously-dropped fields we now persist (all nullable).
+  pdist: number | null;
+  pid: number | null;
+  rid: string | null;
+  tablockid: string | null;
+  srvtmstmp: string | null;
 }

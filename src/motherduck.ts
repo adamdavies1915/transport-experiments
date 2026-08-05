@@ -20,7 +20,9 @@ export async function initMotherDuck(): Promise<void> {
   );
   connection = await instance.connect();
 
-  // Create table if it doesn't exist
+  // Create table if it doesn't exist. Column order here matches INSERT_COLUMNS
+  // and the order ALTER TABLE appends new columns, so fresh and migrated
+  // tables end up identical.
   await connection.run(`
     CREATE TABLE IF NOT EXISTS ${DATABASE_NAME}.transit_data (
       vid VARCHAR,
@@ -36,12 +38,41 @@ export async function initMotherDuck(): Promise<void> {
       is_off_route BOOLEAN,
       segment_id INTEGER,
       segment_name VARCHAR,
-      segment_type VARCHAR
+      segment_type VARCHAR,
+      pdist INTEGER,
+      pid INTEGER,
+      rid VARCHAR,
+      tablockid VARCHAR,
+      srvtmstmp VARCHAR
     )
   `);
 
+  // Idempotently migrate an already-existing table to add the new nullable
+  // columns. Safe to run on every startup (no-op once present).
+  const newColumns: Array<[string, string]> = [
+    ['pdist', 'INTEGER'],
+    ['pid', 'INTEGER'],
+    ['rid', 'VARCHAR'],
+    ['tablockid', 'VARCHAR'],
+    ['srvtmstmp', 'VARCHAR'],
+  ];
+  for (const [name, type] of newColumns) {
+    await connection.run(
+      `ALTER TABLE ${DATABASE_NAME}.transit_data ADD COLUMN IF NOT EXISTS ${name} ${type}`
+    );
+  }
+
   console.log('MotherDuck initialized successfully');
 }
+
+// Explicit insert column list — keeps inserts correct regardless of the
+// physical column order the live table happens to have.
+const INSERT_COLUMNS = [
+  'vid', 'timestamp', 'lat', 'lon', 'heading', 'route', 'trip_id',
+  'destination', 'speed', 'is_delayed', 'is_off_route',
+  'segment_id', 'segment_name', 'segment_type',
+  'pdist', 'pid', 'rid', 'tablockid', 'srvtmstmp',
+] as const;
 
 // Escape a string value for inline SQL, or return NULL for nullish input.
 function sqlString(value: string | null | undefined): string {
@@ -52,7 +83,7 @@ function sqlString(value: string | null | undefined): string {
 export async function insertRecords(records: TransitRecord[]): Promise<void> {
   if (!connection) throw new Error('MotherDuck not initialized');
 
-  // Build bulk INSERT statement
+  // Build bulk INSERT statement. Value order MUST match INSERT_COLUMNS.
   const values = records.map(r =>
     `(${[
       sqlString(r.vid),
@@ -68,14 +99,26 @@ export async function insertRecords(records: TransitRecord[]): Promise<void> {
       r.is_off_route,
       r.segment_id ?? 'NULL',
       sqlString(r.segment_name),
-      sqlString(r.segment_type)
+      sqlString(r.segment_type),
+      r.pdist ?? 'NULL',
+      r.pid ?? 'NULL',
+      sqlString(r.rid),
+      sqlString(r.tablockid),
+      sqlString(r.srvtmstmp)
     ].join(', ')})`
   ).join(',\n');
 
-  const sql = `INSERT INTO ${DATABASE_NAME}.transit_data VALUES\n${values}`;
+  const sql = `INSERT INTO ${DATABASE_NAME}.transit_data (${INSERT_COLUMNS.join(', ')}) VALUES\n${values}`;
 
   await connection.run(sql);
   console.log(`Inserted ${records.length} records into MotherDuck`);
+}
+
+// Read-only query helper for analysis scripts. Returns JS-typed row objects.
+export async function runQuery(sql: string): Promise<Record<string, unknown>[]> {
+  if (!connection) throw new Error('MotherDuck not initialized');
+  const reader = await connection.runAndReadAll(sql);
+  return reader.getRowObjectsJS();
 }
 
 export async function closeMotherDuck(): Promise<void> {
