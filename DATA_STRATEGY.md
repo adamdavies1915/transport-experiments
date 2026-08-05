@@ -12,8 +12,7 @@ Last updated: 2026-07-19
 ```
 nolatransit.fly.dev/sse  →  scraper (SSE, RAM buffer, periodic flush)
    →  MotherDuck  my_db.transit_data  (raw vehicle pings)
-   →  consolidation cron (6am/6pm): DuckDB aggregates  →  Postgres tables
-   →  React dashboard
+   →  React dashboard (queries MotherDuck directly, aggregates cached in memory)
 ```
 
 The design is sound. The gaps below are about **data quality and the delay metric**, not the plumbing.
@@ -96,7 +95,7 @@ strongest delay signal in it is the `dly` boolean. Predicted-vs-scheduled times 
 Every vehicle in the live sample reported `"rt":"U"`, `"tatripid":"N/A"`, `"pid":-1`,
 `"dly":false`. Route "U" = **unassigned / not in scheduled service** (vehicles broadcast GPS as
 soon as cameras power on, before/after runs). Trip assignment only populates during active
-service. This matters: the consolidation queries filter `WHERE route = '12'` and
+service. This matters: the dashboard's segment queries filter `WHERE route = '12'` and
 `segment_type IS NOT NULL`, so **every unassigned ping is silently dropped**. Re-sample at peak
 service (7–9am) to confirm the join keys populate then, and audit how much data is "U".
 

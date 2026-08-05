@@ -2,41 +2,39 @@
 
 ## Architecture Overview
 
-The system now uses a hybrid architecture to handle year-long data efficiently:
+Two services, both backed by MotherDuck. The dashboard queries the raw
+`transit_data` table directly and aggregates on the fly (results cached in
+memory for 1 hour), so there is no separate consolidation step or relational
+database to operate.
 
 ```
 ┌─────────────┐      ┌──────────────┐      ┌──────────────┐
-│   Scraper   │─────▶│  MotherDuck  │─────▶│Consolidation │
-│  (Raw Data) │      │  (Raw Data)  │      │   Service    │
-└─────────────┘      └──────────────┘      └──────┬───────┘
-                                                   │
-                                                   ▼
-                     ┌──────────────┐      ┌──────────────┐
-                     │  Dashboard   │◀─────│   Postgres   │
-                     │   (React)    │      │ (Aggregates) │
-                     └──────────────┘      └──────────────┘
+│   Scraper   │─────▶│  MotherDuck  │◀─────│  Dashboard   │
+│  (Raw Data) │      │ transit_data │      │   (React)    │
+└─────────────┘      └──────────────┘      └──────────────┘
 ```
 
-### Components:
+### Components
 
-1. **Scraper** - Collects real-time transit data every minute → MotherDuck
-2. **MotherDuck** - Cloud DuckDB storing raw transit readings (millions of rows)
-3. **Consolidation Service** - Runs twice daily (6 AM, 6 PM) to compute aggregates
-4. **Postgres** - Stores pre-computed daily/hourly/route aggregates
-5. **Dashboard** - Reads from Postgres for instant queries
+1. **Scraper** — collects real-time transit data every minute → MotherDuck.
+2. **MotherDuck** — cloud DuckDB storing raw transit readings (millions of rows).
+3. **Dashboard** — React front end + Express API (`server-motherduck.ts`) that
+   queries MotherDuck directly and caches aggregates in memory.
 
-### Why This Architecture?
+### Why this architecture?
 
-- **MotherDuck**: Free tier has 50M row-scans/month limit
-- **Problem**: Dashboard querying year of data = expensive compute
-- **Solution**: Pre-compute aggregates in Postgres, dashboard reads aggregates (instant, no compute)
-- **Benefit**: Raw data available in MotherDuck for ad-hoc analysis when needed
+- **MotherDuck** is a columnar analytics engine — the dashboard's `GROUP BY`
+  aggregates over millions of rows run fast without pre-computation.
+- **In-memory caching** (1 hour TTL) keeps repeated dashboard loads cheap and
+  well under MotherDuck's free-tier row-scan limits.
+- **No extra moving parts** — no cron job, no Postgres to provision, back up, or
+  keep in sync. Raw data stays in one place for ad-hoc analysis.
 
 ## Services to Deploy
 
-### 1. Scraper (Existing)
+### 1. Scraper
 
-**Location**: `/src`
+**Location**: `/` (root)
 **Dockerfile**: `Dockerfile` (root)
 **Environment Variables**:
 ```bash
@@ -46,268 +44,104 @@ UPLOAD_INTERVAL=60000
 ```
 
 **Coolify Setup**:
-- Uses existing scraper service
-- Update environment variables to use MotherDuck
+- Base directory `/`.
+- Set the environment variables above.
 
-### 2. Consolidation Service (New)
-
-**Location**: `/consolidation`
-**Dockerfile**: `consolidation/Dockerfile`
-**Schedule**: Runs twice daily (6 AM, 6 PM)
-**Environment Variables**:
-```bash
-# MotherDuck
-MOTHER_DUCK_API_KEY=your_key
-MOTHERDUCK_DATABASE=my_db
-
-# Postgres
-POSTGRES_HOST=postgres
-POSTGRES_PORT=5432
-POSTGRES_DB=transit
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=your_password
-POSTGRES_SSL=false
-```
-
-**Coolify Setup**:
-1. Create new service: "Transit Consolidation"
-2. Point to GitHub repo: `consolidation/` directory
-3. Add all environment variables above
-4. Link to Postgres database (create if doesn't exist)
-5. Deploy
-
-**Test Run**:
-```bash
-# Run once to test
-npm run once
-
-# Or run in scheduled mode
-npm start
-```
-
-### 3. Dashboard (Updated)
+### 2. Dashboard
 
 **Location**: `/dashboard`
 **Dockerfile**: `dashboard/Dockerfile`
 **Environment Variables**:
 ```bash
-# Postgres (reads from here)
-POSTGRES_HOST=postgres
-POSTGRES_PORT=5432
-POSTGRES_DB=transit
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=your_password
-POSTGRES_SSL=false
+MOTHER_DUCK_API_KEY=your_key
+MOTHERDUCK_DATABASE=my_db
+PORT=3000
 ```
 
 **Coolify Setup**:
-1. Update existing dashboard service
-2. Replace environment variables (remove MotherDuck, add Postgres)
-3. Redeploy
+1. Base directory `/dashboard`.
+2. Set the environment variables above (same MotherDuck token as the scraper).
+3. Deploy.
 
-### 4. Postgres Database (New)
-
-**Coolify Setup**:
-1. Add new Postgres database in Coolify
-2. Name: `transit-postgres`
-3. Database: `transit`
-4. Note the connection details for other services
-
-**Schema**: Automatically created by consolidation service on first run
-
-## Deployment Steps
-
-### Step 1: Create Postgres Database
-
-1. In Coolify, go to "Databases"
-2. Click "Add New Database" → PostgreSQL
-3. Configure:
-   - Name: `transit-postgres`
-   - Database: `transit`
-   - Username: `postgres`
-   - Password: (generate secure password)
-4. Deploy and note connection details
-
-### Step 2: Deploy Consolidation Service
-
-1. In Coolify, go to "Services"
-2. Click "Add New Service"
-3. Configure:
-   - Name: `transit-consolidation`
-   - Repository: Your GitHub repo
-   - Build Pack: Dockerfile
-   - Dockerfile Location: `consolidation/Dockerfile`
-4. Add environment variables (see above)
-5. Link to Postgres database
-6. Deploy
-
-### Step 3: Update Dashboard
-
-1. In Coolify, find existing dashboard service
-2. Update environment variables:
-   - Remove: `MOTHER_DUCK_API_KEY`, `MOTHERDUCK_DATABASE`
-   - Add: Postgres connection variables
-3. Redeploy
-
-### Step 4: Verify Scraper
-
-1. Ensure scraper has MotherDuck environment variables
-2. Redeploy if needed
+> **Note:** both images are `node:20-slim` with `ca-certificates` installed and
+> `GRPC_DEFAULT_SSL_ROOTS_FILE_PATH` set — required because the MotherDuck
+> client talks to the service over gRPC/TLS and `slim` ships no CA bundle.
 
 ## Testing
 
-### Test Consolidation Service
-
-```bash
-cd consolidation
-npm install
-node index.js --once
-```
-
-Expected output:
-```
-Transit Data Consolidation Service
-===================================
-MotherDuck connected
-✓ Postgres schema initialized
-
-Running consolidation once...
-
-[timestamp] Starting consolidation...
-✓ Postgres connected
-Data range: 2025-01-01 to 2025-01-10
-Total records: 234,567
-
-1. Computing daily summaries...
-  ✓ Inserted 10 daily summaries
-
-2. Computing daily route performance...
-  ✓ Inserted 150 daily route records
-
-... (more output)
-
-✓ Consolidation complete
-```
-
-### Test Dashboard
+### Test the Dashboard locally
 
 ```bash
 cd dashboard
 npm install
-npm run dev:postgres
+# Terminal 1: API server (reads MotherDuck)
+MOTHER_DUCK_API_KEY=your_key npm run dev:server
+# Terminal 2: Vite dev server
+npm run dev
 ```
 
-Visit `http://localhost:3000` and verify data loads.
+Visit the Vite URL and verify data loads. Or build and run the production
+server (serves the built front end + API on one port):
+
+```bash
+npm run build
+MOTHER_DUCK_API_KEY=your_key npm start   # http://localhost:3000
+```
 
 ### Test API Endpoints
 
 ```bash
-# Health check
 curl http://localhost:3000/api/health
-
-# Summary
 curl http://localhost:3000/api/summary
-
-# Daily data
+curl http://localhost:3000/api/segment-types
 curl http://localhost:3000/api/daily
 ```
 
 ## Monitoring
 
-### Consolidation Service Logs
+### Dashboard / MotherDuck usage
 
-Check Coolify logs for consolidation service:
-- Should run twice daily (6 AM, 6 PM)
-- Look for "✓ Consolidation complete" messages
-- Watch for any errors
+- The dashboard caches every aggregate for 1 hour, so a busy day still results
+  in only a handful of full-table scans per endpoint.
+- Check the MotherDuck dashboard for row-scan and storage usage.
 
-### Database Size
+### Scraper
 
-Monitor Postgres database size:
-```sql
-SELECT pg_size_pretty(pg_database_size('transit'));
-```
-
-Expected size: ~100MB per year of data with current aggregation level
-
-### MotherDuck Usage
-
-Check MotherDuck dashboard for:
-- Row scan usage (should be low after consolidation)
-- Storage usage (raw data)
+- Watch Coolify logs for `Inserted N records into MotherDuck` and a low error
+  count in the periodic `[Stats]` line.
 
 ## Troubleshooting
 
-### Consolidation Service Not Running
+### Dashboard shows no data / 503
 
-1. Check environment variables are set correctly
-2. Verify Postgres connection: `psql -h $POSTGRES_HOST -U $POSTGRES_USER -d $POSTGRES_DB`
-3. Verify MotherDuck connection: Check API key is valid
-4. Check logs for specific errors
+1. Verify `MOTHER_DUCK_API_KEY` is set and valid.
+2. Check the container logs for `MotherDuck connected - ready to query`.
+3. Confirm the table has rows: query `my_db.transit_data` from the MotherDuck UI.
+4. Hit `curl http://localhost:3000/api/summary` and read any `error` field.
 
-### Dashboard Shows No Data
+### "Could not get default pem root certs"
 
-1. Verify consolidation service has run at least once
-2. Check Postgres has data: `SELECT COUNT(*) FROM daily_summary;`
-3. Check dashboard environment variables point to correct Postgres instance
-4. Check API endpoints return data: `curl http://localhost:3000/api/summary`
+The gRPC/TLS CA bundle is missing. Ensure the image installed `ca-certificates`
+and set `GRPC_DEFAULT_SSL_ROOTS_FILE_PATH=/etc/ssl/certs/ca-certificates.crt`
+(both Dockerfiles already do this).
 
-### Scraper Not Uploading to MotherDuck
+### Scraper not uploading to MotherDuck
 
-1. Verify `MOTHER_DUCK_API_KEY` is set
-2. Check scraper logs for errors
-3. Test MotherDuck connection locally
-
-## Maintenance
-
-### Manual Consolidation Run
-
-If you need to run consolidation outside the schedule:
-
-```bash
-# SSH into Coolify host or use Coolify terminal
-docker exec -it <consolidation-container> npm run once
-```
-
-### Backfill Historical Data
-
-If you need to recompute aggregates:
-
-1. Truncate Postgres tables (keeps schema):
-```sql
-TRUNCATE TABLE daily_summary, daily_route_performance, daily_segment_performance,
-  hourly_segment_performance, segment_summary CASCADE;
-```
-
-2. Run consolidation:
-```bash
-npm run once
-```
-
-### Database Backup
-
-Postgres backup:
-```bash
-pg_dump -h $POSTGRES_HOST -U $POSTGRES_USER $POSTGRES_DB > backup.sql
-```
+1. Verify `MOTHER_DUCK_API_KEY` is set.
+2. Check scraper logs for insert errors.
+3. Test the MotherDuck connection locally.
 
 ## Cost Analysis
 
 ### MotherDuck (Free Tier)
-- Storage: 10GB limit
-- Row scans: 50M/month limit
-- Current usage: ~5M row scans/month with consolidation (90% reduction)
-- Estimated run time: 1+ year before hitting limits
-
-### Postgres
-- Depends on hosting provider
-- Estimated storage: ~1GB per year of aggregates
-- Query cost: Minimal (reading pre-computed data)
+- Storage: 10GB limit.
+- Row scans: 50M/month limit.
+- The dashboard's 1-hour cache keeps scan volume low; the scraper only writes.
 
 ## Future Improvements
 
-1. **Archive old raw data**: Move data older than 1 year to cold storage
-2. **Add more aggregate tables**: Hourly route performance, vehicle-level stats
-3. **Optimize queries**: Add indexes based on usage patterns
-4. **Alerts**: Set up monitoring for consolidation failures
-5. **Dashboard caching**: Add Redis for frequently accessed data
+1. **Archive old raw data**: move data older than 1 year to cold storage.
+2. **Precise delay metric**: join pings to the static GTFS schedule to compute
+   real delay-in-seconds (see `DATA_STRATEGY.md`).
+3. **Dashboard caching**: swap the in-memory cache for Redis if horizontally
+   scaled.

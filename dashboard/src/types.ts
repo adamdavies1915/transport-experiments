@@ -1,5 +1,6 @@
-// Shapes returned by the dashboard API (server-postgres.ts) and consumed by the
-// React app. These mirror the pre-computed Postgres aggregate tables.
+// Shapes returned by the dashboard API (server-motherduck.ts) and consumed by
+// the React app. The server computes these aggregates on the fly from the
+// MotherDuck transit_data table.
 
 export interface Summary {
   total_records: number;

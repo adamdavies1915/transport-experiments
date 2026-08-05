@@ -13,5 +13,5 @@
 
     "strict": true
   },
-  "include": ["vite.config.ts", "server-postgres.ts"]
+  "include": ["vite.config.ts", "server-motherduck.ts"]
 }
