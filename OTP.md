@@ -102,8 +102,9 @@ The dashboard reads `/api/otp`; existing raw APIs call their old flag statistic
 The new columns/tables are additive and created automatically. Deploy both the
 scraper and dashboard changes. No additional secret is needed: the worker inherits
 the scraper's `MOTHER_DUCK_API_KEY` and `MOTHERDUCK_DATABASE`. `GTFS_URL` optionally
-overrides the public schedule download URL. Results update hourly; the dashboard
-cache can add another hour. Reload the page to fetch updated results.
+overrides the public schedule download URL. Results update hourly; the OTP API
+cache can add one minute. Reload the page to fetch updated results. Raw-data
+aggregate endpoints retain their one-hour cache.
 
 New downloads are automatically usable only from their collection date (and not
 before the feed's start date). We do not silently apply today's schedule to old
@@ -123,6 +124,42 @@ Old observations with a validated observed ID mapping contribute reconstructed O
 The seed file contains 86 public-feed pairs observed on September 7; it covers only part of the historical service. New observations expand the mapping automatically.
 Legacy timezone-naive timestamps are interpreted in the agency timezone; ambiguous
 or nonexistent DST wall times are rejected. Backfills are idempotent.
+
+To immediately expand an existing backfill with newly collected pairs:
+
+```bash
+npm run otp:backfill -- --gtfs /path/to/archived-GTFS.zip --refresh-mappings 2026-09-07
+```
+
+This learns paired IDs from the evidence day and recalculates previously requested
+dates containing eligible mapped legacy IDs when their mapping revision is stale.
+It never adds unrequested dates or overwrites raw readings. Dates without matching
+service IDs remain queued for the hourly worker as other service patterns arrive.
+
+To check reconstruction against current observations with known GTFS IDs:
+
+```bash
+npm run otp:validate -- --gtfs /path/to/archived-GTFS.zip --day 2026-09-07 --split 2026-09-07T14:46:00-05:00
+```
+
+The validator learns only from observations before the split, then hides GTFS IDs
+in the later observations. It independently scores observed-pair reconstruction
+and block-only inference against the true IDs at both endpoints of each GPS event.
+Wrong trips count as errors even when their stop locations coincide. The report
+includes abstentions through event counts, distinct trips, route coverage, and
+mismatches. Without `--split`, it splits at the median observation timestamp.
+This validates matching on the sampled service day, not historical stability,
+weekday performance, or the accuracy of GPS-derived departure times. No validation
+result automatically enables block-inferred events in reported OTP.
+
+The [September 7 validation report](reports/otp-validation-2026-09-07.json) used
+440 earlier readings for training and 892 later readings for evaluation. All 46
+mapped events (41 distinct trips) matched the withheld GTFS IDs; the direct-ID
+baseline observed 55 events. Block-only inference matched 12 events across 10
+trips. This short holiday-service sample is insufficient to promote historical
+block guesses into reported OTP. Refreshing the six eligible requested dates
+increased classified events from 2,039 to 3,046 (0.75% overall coverage at that
+calculation time); missing weekday/Sunday mappings remain the principal gap.
 
 ## RTA benchmark and validation
 

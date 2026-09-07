@@ -4,11 +4,12 @@ import { zipSync, strToU8 } from 'fflate';
 import { DuckDBInstance } from '@duckdb/node-api';
 import { activeServices, classifyInterval, estimateOtp, gtfsSeconds, observationEpoch,
   readSchedule, serviceEpoch, type Observation, type Schedule } from './otp';
-import { calculateDay, initializeOtp, saveSchedule } from './otp-worker';
+import { calculateDay, initializeOtp, refreshMappedBackfill, saveSchedule } from './otp-worker';
 import { totals } from '../dashboard/src/otp-data';
 import { otpDaysSql } from '../dashboard/src/otp-query';
 import { processVehicle } from './vehicle';
 import { importCrosswalk, loadCrosswalk, mappedTrip } from './trip-crosswalk';
+import { validateReconstruction } from './otp-validation';
 
 const day = '2026-09-07';
 const base = serviceEpoch(day, 'America/Chicago');
@@ -230,5 +231,51 @@ test('observed mappings recover legacy records, preserve raw data, and reject co
     api = (await connection.runAndReadAll(otpDaysSql(catalog))).getRowObjectsJson();
     assert.equal(api[0].crosswalk_events, 0);
     assert.equal(api[0].classified, 0);
+  } finally { connection.closeSync(); instance.closeSync(); }
+});
+
+test('temporal validation hides held-out IDs and reports wrong trip assignments', () => {
+  const s = schedule();
+  const heldOut = pings().map(p => ({ ...p, legacy_trip_id: 'legacy' }));
+  const training = [{ ...heldOut[0], at: heldOut[0].at - 600 }];
+  const split = heldOut[0].at;
+  const correct = validateReconstruction(s, day, [...training, ...heldOut], split);
+  assert.equal(correct.crosswalk.correct, 1);
+  assert.equal(correct.block.correct, 1);
+  // A legacy ID seen only in the held-out period cannot train its own mapping.
+  const unseen = validateReconstruction(s, day, [...training,
+    ...heldOut.map(p => ({ ...p, legacy_trip_id: 'unseen' }))], split);
+  assert.equal(unseen.crosswalk.events, 0);
+  s.trips.push({ ...s.trips[0], id: 't2' });
+  const wrong = validateReconstruction(s, day, [...training,
+    ...heldOut.map(p => ({ ...p, trip_id: 't2' }))], split);
+  assert.equal(wrong.crosswalk.correct, 0);
+  assert.equal(wrong.crosswalk.wrong, 1);
+  assert.equal(wrong.crosswalk.mismatches[0].actual, 't2');
+  assert.equal(wrong.block.events, 0); // ambiguous trips are not guessed
+});
+
+test('mapping refresh only recalculates requested eligible dates and is resumable', async () => {
+  const instance = await DuckDBInstance.create(':memory:');
+  const connection = await instance.connect();
+  try {
+    await initializeOtp(connection);
+    const s = readSchedule(archive());
+    await connection.run(`CREATE TABLE transit_data AS SELECT 'v1' AS vid, 'legacy' AS trip_id,
+      't1' AS gtfs_trip_id, '12' AS route, '42' AS tablockid, 'Downtown, CBD' AS destination,
+      30.01 AS lat, -90.0 AS lon, false AS is_off_route,
+      TIMESTAMP '2026-09-07 10:10:00' AS timestamp,
+      TIMESTAMPTZ '2026-09-07 10:10:00-05:00' AS observed_at
+      UNION ALL SELECT 'v1', 'legacy', NULL, '12', '42', 'Downtown, CBD', 30.011, -90, false,
+      TIMESTAMP '2026-09-07 10:10:20', NULL`);
+    assert.deepEqual(await refreshMappedBackfill(connection, s, day), []);
+    await connection.run(`INSERT INTO otp_backfill_days VALUES ('${day}', '${s.hash}', NULL, NULL),
+      ('2026-09-06', '${s.hash}', NULL, NULL)`);
+    assert.deepEqual(await refreshMappedBackfill(connection, s, day), [day]);
+    assert.deepEqual(await refreshMappedBackfill(connection, s, day), []);
+    const results = (await connection.runAndReadAll('SELECT service_date::VARCHAR AS day, last_completed_at IS NOT NULL AS completed FROM otp_backfill_days ORDER BY service_date')).getRowObjectsJson();
+    assert.equal(results[0].completed, false);
+    assert.equal(results[1].completed, true);
+    assert.equal((await connection.runAndReadAll('SELECT COUNT(*) AS n FROM transit_data WHERE gtfs_trip_id IS NULL')).getRowObjectsJson()[0].n, '1');
   } finally { connection.closeSync(); instance.closeSync(); }
 });

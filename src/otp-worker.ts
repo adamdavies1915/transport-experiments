@@ -3,7 +3,7 @@ import { readFile } from 'node:fs/promises';
 import { pathToFileURL, fileURLToPath } from 'node:url';
 import { fork, type ChildProcess } from 'node:child_process';
 import 'dotenv/config';
-import { addDays, estimateOtp, localDay, observationEpoch, OTP_METHOD, readSchedule,
+import { activeServices, addDays, estimateOtp, localDay, observationEpoch, OTP_METHOD, readSchedule,
   type Observation, type Schedule } from './otp';
 import { initializeCrosswalk, importCrosswalk, learnCrosswalk, loadCrosswalk, mappedTrip } from './trip-crosswalk';
 
@@ -165,6 +165,38 @@ async function finishBackfillDay(connection: DuckDBConnection, day: string, revi
     last_completed_at = now() WHERE service_date = ${quote(day)}::DATE`);
 }
 
+// Expand an existing backfill using all paired observations on an evidence day.
+// Restrict work to requested dates containing an eligible mapped legacy ID;
+// unmapped service patterns stay queued for the normal hourly worker.
+export async function refreshMappedBackfill(connection: DuckDBConnection, schedule: Schedule, evidenceDay: string): Promise<string[]> {
+  await learnCrosswalk(connection, schedule, evidenceDay);
+  const revision = await crosswalkRevision(connection, schedule.hash);
+  const candidates = await rows<{ day: string; gtfs_id: string }>(connection, `WITH mappings AS (
+    SELECT route, legacy_id, MIN(gtfs_id) AS gtfs_id FROM otp_trip_mappings
+    WHERE schedule_hash = ${quote(schedule.hash)} GROUP BY route, legacy_id
+    HAVING COUNT(DISTINCT gtfs_id) = 1
+  ) SELECT DISTINCT CAST(b.service_date AS VARCHAR) AS day, m.gtfs_id
+    FROM otp_backfill_days b JOIN transit_data t
+      ON t.timestamp >= b.service_date AND t.timestamp < b.service_date + INTERVAL '1 day'
+    JOIN mappings m ON t.route = m.route AND t.trip_id = m.legacy_id
+    WHERE b.schedule_hash = ${quote(schedule.hash)}
+      AND (b.applied_revision IS NULL OR b.applied_revision <> ${quote(revision)})`);
+  const trips = new Map(schedule.trips.map(t => [t.id, t]));
+  const services = new Map<string, Set<string>>();
+  const days = [...new Set(candidates.filter(r => {
+    const active = services.get(r.day) ?? activeServices(schedule, r.day);
+    services.set(r.day, active);
+    const trip = trips.get(r.gtfs_id);
+    return trip && active.has(trip.service);
+  }).map(r => r.day))].sort();
+  console.log(`[OTP] Refreshing ${days.length} requested dates with observed trip mappings`);
+  for (const day of days) {
+    await calculateDay(connection, day, schedule);
+    await finishBackfillDay(connection, day, revision);
+  }
+  return days;
+}
+
 export async function openOtpDatabase(): Promise<{ instance: DuckDBInstance; connection: DuckDBConnection }> {
   const token = process.env.MOTHER_DUCK_API_KEY;
   if (!token) throw new Error('Missing MOTHER_DUCK_API_KEY');
@@ -213,6 +245,16 @@ async function main(): Promise<void> {
   }
   const get = (flag: string) => { const i = args.indexOf(flag); return i < 0 ? undefined : args[i + 1]; };
   const file = get('--gtfs'), from = get('--from'), to = get('--to'), crosswalk = get('--crosswalk');
+  const evidenceDay = get('--refresh-mappings');
+  if (file && evidenceDay) {
+    if (addDays(evidenceDay, 0) !== evidenceDay) throw new Error('Invalid evidence date');
+    const schedule = readSchedule(new Uint8Array(await readFile(file)));
+    if (evidenceDay < schedule.start || evidenceDay > schedule.end) throw new Error('Evidence date outside archive validity');
+    const db = await openOtpDatabase();
+    try { await refreshMappedBackfill(db.connection, schedule, evidenceDay); }
+    finally { db.connection.closeSync(); db.instance.closeSync(); }
+    return;
+  }
   if (!file || !from || !to) throw new Error('Usage: npm run otp:backfill -- --gtfs archive.zip --from YYYY-MM-DD --to YYYY-MM-DD');
   if (addDays(from, 0) !== from || addDays(to, 0) !== to || from > to) throw new Error('Invalid date range');
   const bytes = new Uint8Array(await readFile(file));

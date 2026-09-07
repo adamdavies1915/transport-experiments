@@ -36,8 +36,8 @@ function getCached<T>(key: string): T | null {
   return item.data as T;
 }
 
-function setCache(key: string, data: unknown): void {
-  cache.set(key, { data, expires: Date.now() + CACHE_TTL });
+function setCache(key: string, data: unknown, ttl = CACHE_TTL): void {
+  cache.set(key, { data, expires: Date.now() + ttl });
 }
 
 const MOTHER_DUCK_API_KEY = process.env.MOTHER_DUCK_API_KEY;
@@ -95,7 +95,8 @@ app.get('/api/otp', async (_req: Request, res: Response) => {
     if (Number(tables[0].count) < 3) return res.json({ status: 'not_ready', days: [] });
     const days = await query<OtpDay>(otpDaysSql(DATABASE_NAME));
     const result: OtpData = { status: days.length ? 'ready' : 'not_ready', days };
-    setCache('otp', result);
+    // OTP reads small precomputed tables; show backfill progress within a minute.
+    setCache('otp', result, 60 * 1000);
     res.json(result);
   } catch (err) { res.status(500).json({ error: errorMessage(err) }); }
 });
