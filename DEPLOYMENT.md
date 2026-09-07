@@ -4,8 +4,10 @@
 
 Two services, both backed by MotherDuck. The dashboard queries the raw
 `transit_data` table directly and aggregates on the fly (results cached in
-memory for 1 hour), so there is no separate consolidation step or relational
-database to operate.
+memory for 1 hour) for speed and feed-flag statistics. For schedule-based OTP,
+an hourly child process of the scraper matches our GPS observations to archived
+GTFS schedules and writes `otp_events` and `otp_coverage`. No third service is
+required. See [OTP.md](OTP.md) for the definition, limitations, and backfills.
 
 ```
 ┌─────────────┐      ┌──────────────┐      ┌──────────────┐
@@ -17,6 +19,8 @@ database to operate.
 ### Components
 
 1. **Scraper** — collects real-time transit data every minute → MotherDuck.
+   Also archives public schedules daily and runs the independent OTP calculation
+   hourly in a separate process so raw collection can continue.
 2. **MotherDuck** — cloud DuckDB storing raw transit readings (millions of rows).
 3. **Dashboard** — React front end + Express API (`server-motherduck.ts`) that
    queries MotherDuck directly and caches aggregates in memory.
@@ -31,6 +35,14 @@ database to operate.
   keep in sync. Raw data stays in one place for ad-hoc analysis.
 
 ## Services to Deploy
+
+For the OTP rollout, redeploy **both** services from this revision, scraper first.
+Its migrations add `gtfs_trip_id` and `observed_at` and create the OTP tables without
+changing existing raw readings. Verify the scraper logs show `[OTP]` calculations,
+then check the dashboard's `/api/otp` and schedule coverage. A successful initial
+calculation can contain zero classified events; allow new matched observations to
+accumulate. Historic readings can be reconstructed with the observed ID mapping backfill documented in OTP.md; the dashboard labels that provenance. Without usable schedules or observations the UI
+shows unavailable. The dashboard displays the calculation timestamp.
 
 ### 1. Scraper
 
@@ -136,7 +148,7 @@ and set `GRPC_DEFAULT_SSL_ROOTS_FILE_PATH=/etc/ssl/certs/ca-certificates.crt`
 ### MotherDuck (Free Tier)
 - Storage: 10GB limit.
 - Row scans: 50M/month limit.
-- The dashboard's 1-hour cache keeps scan volume low; the scraper only writes.
+- The dashboard caches results for one hour. The OTP worker also scans observations for recent days and up to two requested historical dates per hourly run.
 
 ## Future Improvements
 

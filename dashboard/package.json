@@ -10,6 +10,7 @@
     "start": "tsx server-motherduck.ts",
     "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.node.json",
     "lint": "eslint .",
+    "test": "node --import tsx --test src/*.test.tsx",
     "preview": "vite preview"
   },
   "dependencies": {

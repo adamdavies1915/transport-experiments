@@ -1,8 +1,9 @@
 import 'dotenv/config';
 import EventSource from 'eventsource';
 import { initMotherDuck, insertRecords, closeMotherDuck } from './motherduck';
-import { findSegment } from './segments';
+import { processVehicle } from './vehicle';
 import type { RawVehicle, TransitRecord } from './types';
+import { startOtpWorker } from './otp-worker';
 
 const SSE_URL = process.env.SSE_URL || 'https://nolatransit.fly.dev/sse';
 const UPLOAD_INTERVAL = parseInt(process.env.UPLOAD_INTERVAL ?? '') || 60000; // 1 minute (MotherDuck handles batching)
@@ -18,8 +19,9 @@ let buffer: TransitRecord[] = [];
 let currentES: EventSource | undefined;
 let lastMessageAt = Date.now();
 let sampleLogged = false;
+let stopOtpWorker: (() => void) | undefined;
 // In-memory dedup: last-seen tmstmp per vehicle id (Task 2).
-const lastSeenTmstmp = new Map<string, string>();
+const lastSeenTmstmp = new Map<string, number>();
 const stats = {
   messagesReceived: 0,
   vehiclesBuffered: 0,
@@ -29,18 +31,6 @@ const stats = {
   errors: 0,
   startTime: new Date(),
 };
-
-// Parse an integer-ish SSE field, preserving null when absent/unparseable so
-// we never coerce a missing value to a misleading 0.
-function parseIntOrNull(value: string | undefined): number | null {
-  if (value == null || value === '') return null;
-  const n = parseInt(value, 10);
-  return Number.isNaN(n) ? null : n;
-}
-
-function nullIfEmpty(value: string | undefined): string | null {
-  return value == null || value === '' ? null : value;
-}
 
 function logStats(): void {
   const uptime = Math.round((Date.now() - stats.startTime.getTime()) / 1000);
@@ -56,35 +46,6 @@ function enforceBufferCap(): void {
   console.error(`[DROP] Retry buffer exceeded ${MAX_BUFFER_RECORDS}; dropped ${overflow} oldest record(s). Total dropped: ${stats.recordsDropped}`);
 }
 
-function processVehicle(v: RawVehicle): TransitRecord | null {
-  // Skip vehicles with invalid coordinates
-  if (v.lat === '0' && v.lon === '0') return null;
-
-  const lat = parseFloat(v.lat);
-  const lon = parseFloat(v.lon);
-  const segment = findSegment(v.rt, lat, lon);
-
-  return {
-    vid: v.vid,
-    timestamp: v.tmstmp,
-    lat,
-    lon,
-    heading: parseInt(v.hdg ?? '') || 0,
-    route: v.rt,
-    trip_id: v.tatripid ?? null,
-    destination: v.des || null,
-    speed: parseInt(v.spd ?? '') || 0,
-    is_delayed: v.dly === true,
-    is_off_route: v.or === true,
-    pdist: parseIntOrNull(v.pdist),
-    pid: parseIntOrNull(v.pid),
-    rid: nullIfEmpty(v.rid),
-    tablockid: nullIfEmpty(v.tablockid),
-    srvtmstmp: nullIfEmpty(v.srvtmstmp),
-    ...segment
-  };
-}
-
 function processMessage(data: string): void {
   try {
     const vehicles = JSON.parse(data) as RawVehicle[];
@@ -94,7 +55,7 @@ function processMessage(data: string): void {
     for (const v of vehicles) {
       // Dedup: skip pings whose timestamp hasn't advanced for this vehicle.
       const prev = lastSeenTmstmp.get(v.vid);
-      if (prev !== undefined && v.tmstmp <= prev) {
+      if (prev !== undefined && Date.parse(v.tmstmp) <= prev) {
         stats.vehiclesDeduped++;
         continue;
       }
@@ -102,7 +63,7 @@ function processMessage(data: string): void {
       const record = processVehicle(v);
       if (record) {
         // Only advance the dedup watermark for pings we actually keep.
-        lastSeenTmstmp.set(v.vid, v.tmstmp);
+        lastSeenTmstmp.set(v.vid, Date.parse(v.tmstmp));
         if (!sampleLogged) {
           console.log('[Sample] First parsed record:', JSON.stringify(record));
           sampleLogged = true;
@@ -187,6 +148,7 @@ function checkFeedFreshness(): void {
 }
 
 async function shutdown(signal: string): Promise<void> {
+  stopOtpWorker?.();
   console.log(`\nReceived ${signal}. Shutting down gracefully...`);
 
   // Insert any remaining buffered data
@@ -223,6 +185,7 @@ async function main(): Promise<void> {
   }
 
   connectSSE();
+  if (!DRY_RUN) stopOtpWorker = startOtpWorker();
 
   // Insert buffer periodically
   setInterval(uploadBuffer, UPLOAD_INTERVAL);

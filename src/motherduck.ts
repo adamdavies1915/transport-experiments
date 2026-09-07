@@ -55,6 +55,8 @@ export async function initMotherDuck(): Promise<void> {
     ['rid', 'VARCHAR'],
     ['tablockid', 'VARCHAR'],
     ['srvtmstmp', 'VARCHAR'],
+    ['observed_at', 'TIMESTAMPTZ'],
+    ['gtfs_trip_id', 'VARCHAR'],
   ];
   for (const [name, type] of newColumns) {
     await connection.run(
@@ -72,6 +74,8 @@ const INSERT_COLUMNS = [
   'destination', 'speed', 'is_delayed', 'is_off_route',
   'segment_id', 'segment_name', 'segment_type',
   'pdist', 'pid', 'rid', 'tablockid', 'srvtmstmp',
+  'observed_at',
+  'gtfs_trip_id',
 ] as const;
 
 // Escape a string value for inline SQL, or return NULL for nullish input.
@@ -87,7 +91,7 @@ export async function insertRecords(records: TransitRecord[]): Promise<void> {
   const values = records.map(r =>
     `(${[
       sqlString(r.vid),
-      `'${r.timestamp}'`,
+      sqlString(r.timestamp),
       r.lat,
       r.lon,
       r.heading,
@@ -95,7 +99,7 @@ export async function insertRecords(records: TransitRecord[]): Promise<void> {
       sqlString(r.trip_id),
       sqlString(r.destination),
       r.speed,
-      r.is_delayed,
+      r.is_delayed ?? 'NULL',
       r.is_off_route,
       r.segment_id ?? 'NULL',
       sqlString(r.segment_name),
@@ -104,7 +108,11 @@ export async function insertRecords(records: TransitRecord[]): Promise<void> {
       r.pid ?? 'NULL',
       sqlString(r.rid),
       sqlString(r.tablockid),
-      sqlString(r.srvtmstmp)
+      sqlString(r.srvtmstmp),
+      // Preserve offsets for DST-safe schedule comparisons. Legacy naive
+      // timestamps remain available but must not be cast using server timezone.
+      /(Z|[+-]\d\d:\d\d)$/.test(r.timestamp) ? sqlString(r.timestamp) : 'NULL',
+      sqlString(r.gtfs_trip_id)
     ].join(', ')})`
   ).join(',\n');
 

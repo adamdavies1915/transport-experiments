@@ -8,6 +8,8 @@ import type {
   Summary, SegmentTypeRow, SegmentRow, RouteRow,
   HourlyRow, DailyRow, DailySegmentRow
 } from './src/types';
+import type { OtpData, OtpDay } from './src/otp-data';
+import { otpDaysSql } from './src/otp-query';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -83,6 +85,21 @@ app.get('/api/health', (_req: Request, res: Response) => {
 });
 
 // API Routes - query the transit_data table directly (aggregate on the fly)
+app.get('/api/otp', async (_req: Request, res: Response) => {
+  try {
+    const cached = getCached<OtpData>('otp');
+    if (cached) return res.json(cached);
+    const tables = await query<{ count: number }>(`SELECT COUNT(*) AS count
+      FROM information_schema.tables WHERE table_catalog = '${DATABASE_NAME.replace(/'/g, "''")}'
+        AND table_schema = 'main' AND table_name IN ('otp_events', 'otp_coverage', 'otp_trip_mappings')`);
+    if (Number(tables[0].count) < 3) return res.json({ status: 'not_ready', days: [] });
+    const days = await query<OtpDay>(otpDaysSql(DATABASE_NAME));
+    const result: OtpData = { status: days.length ? 'ready' : 'not_ready', days };
+    setCache('otp', result);
+    res.json(result);
+  } catch (err) { res.status(500).json({ error: errorMessage(err) }); }
+});
+
 app.get('/api/summary', async (_req: Request, res: Response) => {
   try {
     const cached = getCached<Summary>('summary');
@@ -163,13 +180,13 @@ app.get('/api/routes', async (_req: Request, res: Response) => {
         COUNT(*) as readings,
         SUM(CASE WHEN is_delayed THEN 1 ELSE 0 END) as delayed,
         ROUND(100.0 * SUM(CASE WHEN is_delayed THEN 1 ELSE 0 END) / COUNT(*), 2) as delay_pct,
-        ROUND(100.0 - (100.0 * SUM(CASE WHEN is_delayed THEN 1 ELSE 0 END) / COUNT(*)), 2) as on_time_pct,
+        ROUND(100.0 - (100.0 * SUM(CASE WHEN is_delayed THEN 1 ELSE 0 END) / COUNT(*)), 2) as not_flagged_pct,
         ROUND(AVG(speed), 1) as avg_speed
       FROM ${DATABASE_NAME}.transit_data
       WHERE route != 'U'
       GROUP BY route
       HAVING COUNT(*) > 100
-      ORDER BY on_time_pct DESC
+      ORDER BY not_flagged_pct DESC
     `);
     setCache('routes', result);
     res.json(result);
@@ -213,7 +230,7 @@ app.get('/api/daily', async (_req: Request, res: Response) => {
         COUNT(*) as readings,
         COUNT(DISTINCT vid) as vehicles,
         SUM(CASE WHEN is_delayed THEN 1 ELSE 0 END) as delayed,
-        ROUND(100.0 - (100.0 * SUM(CASE WHEN is_delayed THEN 1 ELSE 0 END) / COUNT(*)), 2) as on_time_pct,
+        ROUND(100.0 - (100.0 * SUM(CASE WHEN is_delayed THEN 1 ELSE 0 END) / COUNT(*)), 2) as not_flagged_pct,
         ROUND(AVG(speed), 2) as avg_speed
       FROM ${DATABASE_NAME}.transit_data
       GROUP BY DATE_TRUNC('day', timestamp)
@@ -242,7 +259,7 @@ app.get('/api/daily-routes', async (req: Request, res: Response) => {
         DATE_TRUNC('day', timestamp) as date,
         route,
         COUNT(*) as readings,
-        ROUND(100.0 - (100.0 * SUM(CASE WHEN is_delayed THEN 1 ELSE 0 END) / COUNT(*)), 2) as on_time_pct,
+        ROUND(100.0 - (100.0 * SUM(CASE WHEN is_delayed THEN 1 ELSE 0 END) / COUNT(*)), 2) as not_flagged_pct,
         ROUND(AVG(speed), 2) as avg_speed
       FROM ${DATABASE_NAME}.transit_data
       ${whereClause}
@@ -267,7 +284,7 @@ app.get('/api/daily-segments', async (_req: Request, res: Response) => {
         DATE_TRUNC('day', timestamp) as date,
         segment_type,
         COUNT(*) as readings,
-        ROUND(100.0 - (100.0 * SUM(CASE WHEN is_delayed THEN 1 ELSE 0 END) / COUNT(*)), 2) as on_time_pct,
+        ROUND(100.0 - (100.0 * SUM(CASE WHEN is_delayed THEN 1 ELSE 0 END) / COUNT(*)), 2) as not_flagged_pct,
         ROUND(AVG(speed), 2) as avg_speed
       FROM ${DATABASE_NAME}.transit_data
       WHERE route = '12' AND segment_type IS NOT NULL

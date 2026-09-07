@@ -5,6 +5,12 @@ turn raw vehicle pings into **measured schedule adherence** — without needing 
 
 Last updated: 2026-07-19
 
+**Correction (2026-09-07):** Live validation found that `tripid`, not `tatripid`,
+matches the public GTFS `trips.trip_id`. The earlier proposed join and suggestion
+below to skip `tripid` were incorrect. The collector now stores `gtfs_trip_id`
+from `tripid`; `rid` is also not assumed to be the GTFS route ID. See [OTP.md](OTP.md)
+for the implemented independent calculation and its coverage limitations.
+
 ---
 
 ## 1. Current pipeline

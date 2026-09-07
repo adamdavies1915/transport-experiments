@@ -1,0 +1,438 @@
+{
+  "schedule_sha256": "3b32471680f5736301fdcaa2ae98bf62ba6e108ea51589febb1d66114ee567f9",
+  "evidence_date": "2026-09-07",
+  "scope": "Pairs observed on the evidence date; historical reconstruction is restricted to the matching GTFS hash, route, active service, and available block/destination. Stability within that schedule is an assumption.",
+  "mappings": [
+    {
+      "route": "103",
+      "tatripid": "3754362",
+      "tripid": "4360070"
+    },
+    {
+      "route": "103",
+      "tatripid": "3754363",
+      "tripid": "2586070"
+    },
+    {
+      "route": "103",
+      "tatripid": "3754390",
+      "tripid": "1990070"
+    },
+    {
+      "route": "105",
+      "tatripid": "3754524",
+      "tripid": "5844070"
+    },
+    {
+      "route": "11",
+      "tatripid": "3749730",
+      "tripid": "6719070"
+    },
+    {
+      "route": "11",
+      "tatripid": "3749731",
+      "tripid": "5712070"
+    },
+    {
+      "route": "11",
+      "tatripid": "3749765",
+      "tripid": "2510070"
+    },
+    {
+      "route": "114A",
+      "tatripid": "3754637",
+      "tripid": "6328070"
+    },
+    {
+      "route": "114A",
+      "tatripid": "3754668",
+      "tripid": "4922070"
+    },
+    {
+      "route": "114A",
+      "tatripid": "3754669",
+      "tripid": "3117070"
+    },
+    {
+      "route": "114B",
+      "tatripid": "3754818",
+      "tripid": "2566070"
+    },
+    {
+      "route": "114B",
+      "tatripid": "3754819",
+      "tripid": "3370070"
+    },
+    {
+      "route": "114B",
+      "tatripid": "3754845",
+      "tripid": "1511070"
+    },
+    {
+      "route": "114B",
+      "tatripid": "3754846",
+      "tripid": "3872070"
+    },
+    {
+      "route": "12",
+      "tatripid": "3750068",
+      "tripid": "4124070"
+    },
+    {
+      "route": "12",
+      "tatripid": "3750077",
+      "tripid": "5312070"
+    },
+    {
+      "route": "12",
+      "tatripid": "3750078",
+      "tripid": "2594070"
+    },
+    {
+      "route": "12",
+      "tatripid": "3750079",
+      "tripid": "1893070"
+    },
+    {
+      "route": "12",
+      "tatripid": "3750147",
+      "tripid": "3429070"
+    },
+    {
+      "route": "12",
+      "tatripid": "3750154",
+      "tripid": "251070"
+    },
+    {
+      "route": "12",
+      "tatripid": "3750155",
+      "tripid": "3453070"
+    },
+    {
+      "route": "12",
+      "tatripid": "3750156",
+      "tripid": "4334070"
+    },
+    {
+      "route": "202",
+      "tatripid": "3755454",
+      "tripid": "880070"
+    },
+    {
+      "route": "202",
+      "tatripid": "3755474",
+      "tripid": "1352070"
+    },
+    {
+      "route": "27",
+      "tatripid": "3750461",
+      "tripid": "5489070"
+    },
+    {
+      "route": "27",
+      "tatripid": "3750489",
+      "tripid": "5130070"
+    },
+    {
+      "route": "3",
+      "tatripid": "3748633",
+      "tripid": "3412070"
+    },
+    {
+      "route": "3",
+      "tatripid": "3748672",
+      "tripid": "1070070"
+    },
+    {
+      "route": "3",
+      "tatripid": "3748673",
+      "tripid": "570070"
+    },
+    {
+      "route": "3",
+      "tatripid": "3748674",
+      "tripid": "1298070"
+    },
+    {
+      "route": "31",
+      "tatripid": "3750594",
+      "tripid": "186070"
+    },
+    {
+      "route": "31",
+      "tatripid": "3750611",
+      "tripid": "5641070"
+    },
+    {
+      "route": "32",
+      "tatripid": "3750696",
+      "tripid": "5188070"
+    },
+    {
+      "route": "32",
+      "tatripid": "3750713",
+      "tripid": "6351070"
+    },
+    {
+      "route": "45",
+      "tatripid": "3750792",
+      "tripid": "6505070"
+    },
+    {
+      "route": "46",
+      "tatripid": "3755313",
+      "tripid": "300070"
+    },
+    {
+      "route": "46",
+      "tatripid": "3755350",
+      "tripid": "4292070"
+    },
+    {
+      "route": "47",
+      "tatripid": "3751184",
+      "tripid": "2767070"
+    },
+    {
+      "route": "47",
+      "tatripid": "3751244",
+      "tripid": "6119070"
+    },
+    {
+      "route": "47",
+      "tatripid": "3751245",
+      "tripid": "2986070"
+    },
+    {
+      "route": "47",
+      "tatripid": "3751246",
+      "tripid": "1062070"
+    },
+    {
+      "route": "48",
+      "tatripid": "3751525",
+      "tripid": "291070"
+    },
+    {
+      "route": "48",
+      "tatripid": "3751526",
+      "tripid": "2420070"
+    },
+    {
+      "route": "48",
+      "tatripid": "3751579",
+      "tripid": "448070"
+    },
+    {
+      "route": "48",
+      "tatripid": "3751580",
+      "tripid": "6872070"
+    },
+    {
+      "route": "49",
+      "tatripid": "3751897",
+      "tripid": "419070"
+    },
+    {
+      "route": "51",
+      "tatripid": "3752088",
+      "tripid": "3401070"
+    },
+    {
+      "route": "51",
+      "tatripid": "3752089",
+      "tripid": "2064070"
+    },
+    {
+      "route": "51",
+      "tatripid": "3752120",
+      "tripid": "5365070"
+    },
+    {
+      "route": "52",
+      "tatripid": "3752271",
+      "tripid": "3204070"
+    },
+    {
+      "route": "52",
+      "tatripid": "3752299",
+      "tripid": "5960070"
+    },
+    {
+      "route": "52",
+      "tatripid": "3752300",
+      "tripid": "105070"
+    },
+    {
+      "route": "55",
+      "tatripid": "3752477",
+      "tripid": "3691070"
+    },
+    {
+      "route": "55",
+      "tatripid": "3752517",
+      "tripid": "979070"
+    },
+    {
+      "route": "55",
+      "tatripid": "3752518",
+      "tripid": "4611070"
+    },
+    {
+      "route": "55",
+      "tatripid": "3752519",
+      "tripid": "3105070"
+    },
+    {
+      "route": "57",
+      "tatripid": "3752695",
+      "tripid": "4626070"
+    },
+    {
+      "route": "57",
+      "tatripid": "3752696",
+      "tripid": "5812070"
+    },
+    {
+      "route": "57",
+      "tatripid": "3752726",
+      "tripid": "6917070"
+    },
+    {
+      "route": "61",
+      "tatripid": "3752916",
+      "tripid": "4929070"
+    },
+    {
+      "route": "61",
+      "tatripid": "3752957",
+      "tripid": "2397070"
+    },
+    {
+      "route": "61",
+      "tatripid": "3752958",
+      "tripid": "1007070"
+    },
+    {
+      "route": "61",
+      "tatripid": "3752959",
+      "tripid": "6080070"
+    },
+    {
+      "route": "62",
+      "tatripid": "3753143",
+      "tripid": "2223070"
+    },
+    {
+      "route": "62",
+      "tatripid": "3753148",
+      "tripid": "1959070"
+    },
+    {
+      "route": "62",
+      "tatripid": "3753149",
+      "tripid": "3651070"
+    },
+    {
+      "route": "62",
+      "tatripid": "3753178",
+      "tripid": "1881070"
+    },
+    {
+      "route": "66",
+      "tatripid": "3753338",
+      "tripid": "725070"
+    },
+    {
+      "route": "67",
+      "tatripid": "3753444",
+      "tripid": "6877070"
+    },
+    {
+      "route": "68",
+      "tatripid": "3753560",
+      "tripid": "4042070"
+    },
+    {
+      "route": "68",
+      "tatripid": "3753582",
+      "tripid": "2030070"
+    },
+    {
+      "route": "8",
+      "tatripid": "3749142",
+      "tripid": "730070"
+    },
+    {
+      "route": "8",
+      "tatripid": "3749197",
+      "tripid": "3514070"
+    },
+    {
+      "route": "8",
+      "tatripid": "3749198",
+      "tripid": "308070"
+    },
+    {
+      "route": "80",
+      "tatripid": "3753701",
+      "tripid": "3307070"
+    },
+    {
+      "route": "80",
+      "tatripid": "3753730",
+      "tripid": "6213070"
+    },
+    {
+      "route": "84",
+      "tatripid": "3753913",
+      "tripid": "656070"
+    },
+    {
+      "route": "84",
+      "tatripid": "3753914",
+      "tripid": "3243070"
+    },
+    {
+      "route": "86",
+      "tatripid": "3754025",
+      "tripid": "2913070"
+    },
+    {
+      "route": "9",
+      "tatripid": "3749482",
+      "tripid": "4907070"
+    },
+    {
+      "route": "9",
+      "tatripid": "3749483",
+      "tripid": "4088070"
+    },
+    {
+      "route": "9",
+      "tatripid": "3749484",
+      "tripid": "3219070"
+    },
+    {
+      "route": "9",
+      "tatripid": "3749530",
+      "tripid": "2058070"
+    },
+    {
+      "route": "9",
+      "tatripid": "3749532",
+      "tripid": "6842070"
+    },
+    {
+      "route": "91",
+      "tatripid": "3754174",
+      "tripid": "294070"
+    },
+    {
+      "route": "91",
+      "tatripid": "3754206",
+      "tripid": "5942070"
+    }
+  ],
+  "source": "https://nolatransit.fly.dev/sse"
+}

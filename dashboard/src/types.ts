@@ -1,6 +1,7 @@
 // Shapes returned by the dashboard API (server-motherduck.ts) and consumed by
 // the React app. The server computes these aggregates on the fly from the
 // MotherDuck transit_data table.
+import type { OtpData } from './otp-data';
 
 export interface Summary {
   total_records: number;
@@ -31,7 +32,7 @@ export interface RouteRow {
   readings: number;
   delayed: number;
   delay_pct: number;
-  on_time_pct: number;
+  not_flagged_pct: number;
   avg_speed: number;
 }
 
@@ -47,7 +48,7 @@ export interface DailyRow {
   readings: number;
   vehicles: number;
   delayed: number;
-  on_time_pct: number;
+  not_flagged_pct: number;
   avg_speed: number;
 }
 
@@ -55,12 +56,13 @@ export interface DailySegmentRow {
   date: string;
   segment_type: string;
   readings: number;
-  on_time_pct: number;
+  not_flagged_pct: number;
   avg_speed: number;
 }
 
 // Aggregated payload assembled by the useTransitData hook.
 export interface TransitData {
+  otp: OtpData;
   summary: Summary;
   segmentType: SegmentTypeRow[];
   segments: SegmentRow[];

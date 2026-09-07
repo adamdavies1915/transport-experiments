@@ -1,3 +1,4 @@
+import OtpPanel from './OtpPanel';
 import { useTransitData } from './hooks/useTransitData';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
@@ -97,7 +98,7 @@ function App() {
           <StatCard
             title="Mixed Traffic Speed"
             value={`${mixedData?.avg_speed || 0} mph`}
-            subtitle={`${mixedData?.delay_pct || 0}% delayed`}
+            subtitle={`${mixedData?.delay_pct || 0}% of readings flagged delayed`}
             color="red"
           />
           <StatCard
@@ -183,31 +184,10 @@ function App() {
           </div>
         </div>
 
+        <OtpPanel data={data.otp} />
+
         {/* Timeline Charts */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          {/* Daily On-Time Performance */}
-          <div className="bg-slate-800 rounded-lg p-6">
-            <h2 className="text-xl font-semibold mb-4">📅 Daily On-Time Performance</h2>
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={data.daily}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#475569" />
-                <XAxis
-                  dataKey="date"
-                  stroke="#94a3b8"
-                  tick={{ fontSize: 10 }}
-                  tickFormatter={(d) => new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                />
-                <YAxis stroke="#94a3b8" domain={[80, 100]} />
-                <Tooltip
-                  contentStyle={{ backgroundColor: '#1e293b', border: 'none' }}
-                  labelFormatter={(d) => new Date(d).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
-                  formatter={(value) => [`${value}%`, 'On-Time']}
-                />
-                <Line type="monotone" dataKey="on_time_pct" stroke={COLORS.primary} strokeWidth={2} dot={false} />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-
           {/* Daily ROW vs Mixed Speed */}
           {data.dailySegments && data.dailySegments.length > 0 && (
             <div className="bg-slate-800 rounded-lg p-6">
@@ -241,46 +221,6 @@ function App() {
               </ResponsiveContainer>
             </div>
           )}
-        </div>
-
-        {/* Route Performance Table */}
-        <div className="bg-slate-800 rounded-lg p-6 mb-8">
-          <h2 className="text-xl font-semibold mb-4">On-Time Performance by Route</h2>
-          <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead>
-                <tr className="border-b border-slate-700">
-                  <th className="pb-3 text-slate-400 font-medium">Route</th>
-                  <th className="pb-3 text-slate-400 font-medium text-right">Readings</th>
-                  <th className="pb-3 text-slate-400 font-medium text-right">On-Time %</th>
-                  <th className="pb-3 text-slate-400 font-medium text-right">Avg Speed</th>
-                  <th className="pb-3 text-slate-400 font-medium">Performance</th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.routes.map((route, i) => (
-                  <tr key={i} className="border-b border-slate-700/50">
-                    <td className="py-3 font-medium">{route.route}</td>
-                    <td className="py-3 text-right text-slate-400">{Number(route.readings).toLocaleString()}</td>
-                    <td className="py-3 text-right">
-                      <span className={route.on_time_pct >= 90 ? 'text-green-400' : route.on_time_pct >= 80 ? 'text-yellow-400' : 'text-red-400'}>
-                        {route.on_time_pct}%
-                      </span>
-                    </td>
-                    <td className="py-3 text-right">{route.avg_speed} mph</td>
-                    <td className="py-3">
-                      <div className="w-full bg-slate-700 rounded-full h-2">
-                        <div
-                          className={`h-2 rounded-full ${route.on_time_pct >= 90 ? 'bg-green-500' : route.on_time_pct >= 80 ? 'bg-yellow-500' : 'bg-red-500'}`}
-                          style={{ width: `${route.on_time_pct}%` }}
-                        ></div>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
         </div>
 
         {/* Footer */}

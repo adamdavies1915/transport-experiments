@@ -7,12 +7,17 @@
   "scripts": {
     "start": "tsx src/index.ts",
     "dev": "tsx watch src/index.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test src/*.test.ts",
+    "otp:backfill": "tsx src/otp-worker.ts"
   },
   "dependencies": {
     "@duckdb/node-api": "^1.5.4-r.1",
+    "@js-temporal/polyfill": "^0.5.1",
+    "csv-parse": "^7.0.2",
     "dotenv": "^17.2.3",
     "eventsource": "^2.0.2",
+    "fflate": "^0.8.3",
     "tsx": "^4.19.2"
   },
   "devDependencies": {

@@ -3,6 +3,7 @@ import type {
   TransitData, Summary, SegmentTypeRow, SegmentRow, RouteRow,
   HourlyRow, DailyRow, DailySegmentRow
 } from '../types';
+import type { OtpData } from '../otp-data';
 
 const API_BASE = import.meta.env.DEV ? 'http://localhost:3000/api' : '/api';
 
@@ -14,6 +15,7 @@ interface UseTransitDataResult {
 
 async function getJSON<T>(path: string): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`);
+  if (!res.ok) throw new Error(`Transit data request failed (${res.status})`);
   return res.json() as Promise<T>;
 }
 
@@ -25,19 +27,21 @@ export function useTransitData(): UseTransitDataResult {
   useEffect(() => {
     async function fetchData(): Promise<void> {
       try {
-        const [summary, segmentTypes, segments, routes, hourly, daily, dailySegments] = await Promise.all([
+        const [summary, segmentTypes, segments, routes, hourly, daily, dailySegments, otp] = await Promise.all([
           getJSON<Summary & { error?: string }>('/summary'),
           getJSON<SegmentTypeRow[]>('/segment-types'),
           getJSON<SegmentRow[]>('/segments'),
           getJSON<RouteRow[]>('/routes'),
           getJSON<HourlyRow[]>('/hourly'),
           getJSON<DailyRow[]>('/daily'),
-          getJSON<DailySegmentRow[]>('/daily-segments')
+          getJSON<DailySegmentRow[]>('/daily-segments'),
+          getJSON<OtpData>('/otp')
         ]);
 
         if (summary.error) throw new Error(summary.error);
 
         setData({
+          otp,
           summary,
           segmentType: segmentTypes,
           segments,

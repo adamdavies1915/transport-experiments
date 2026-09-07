@@ -6,6 +6,10 @@ Independent third-party collection of New Orleans RTA real-time transit data. Ca
 
 To analyze streetcar delays in mixed traffic vs dedicated right-of-way segments, and provide independent data to verify or challenge RTA performance claims.
 
+The dashboard's OTP now uses independently observed scheduled timepoint events,
+with direct or mapped GTFS trip IDs, early/late classifications, and coverage reporting.
+See [OTP methodology and operation](OTP.md). The real-time `dly` flag is not OTP.
+
 ## Architecture
 
 ```

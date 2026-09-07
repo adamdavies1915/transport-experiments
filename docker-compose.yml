@@ -4,6 +4,7 @@ services:
     restart: unless-stopped
     environment:
       - SSE_URL=${SSE_URL:-https://nolatransit.fly.dev/sse}
+      - GTFS_URL=${GTFS_URL:-https://www.norta.com/RTA/media/GTFS/GTFS.zip}
       - UPLOAD_INTERVAL=${UPLOAD_INTERVAL:-60000}
       - RECONNECT_DELAY=${RECONNECT_DELAY:-5000}
       - MOTHER_DUCK_API_KEY=${MOTHER_DUCK_API_KEY}

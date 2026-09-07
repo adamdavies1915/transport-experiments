@@ -30,6 +30,7 @@ export interface RawVehicle {
   hdg?: string;
   rt: string;
   tatripid?: string;
+  tripid?: number | string; // Verified GTFS trips.txt key; tatripid is a different ID.
   des?: string;
   spd?: string;
   dly?: boolean;
@@ -51,9 +52,10 @@ export interface TransitRecord extends SegmentMatch {
   heading: number;
   route: string;
   trip_id: string | null;
+  gtfs_trip_id: string | null;
   destination: string | null;
   speed: number;
-  is_delayed: boolean;
+  is_delayed: boolean | null;
   is_off_route: boolean;
   // Previously-dropped fields we now persist (all nullable).
   pdist: number | null;
