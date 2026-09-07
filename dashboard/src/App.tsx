@@ -1,4 +1,5 @@
 import OtpPanel from './OtpPanel';
+import StreetcarPanel from './StreetcarPanel';
 import { useTransitData } from './hooks/useTransitData';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
@@ -185,6 +186,7 @@ function App() {
         </div>
 
         <OtpPanel data={data.otp} />
+        <StreetcarPanel />
 
         {/* Timeline Charts */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">

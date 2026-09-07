@@ -9,6 +9,13 @@ an hourly child process of the scraper matches our GPS observations to archived
 GTFS schedules and writes `otp_events` and `otp_coverage`. No third service is
 required. See [OTP.md](OTP.md) for the definition, limitations, and backfills.
 
+The scraper also starts an hourly streetcar-analysis child process, first run
+90 seconds after startup. It writes derived passage and quality tables used by
+`/api/streetcars`. Deploy both existing services for this feature; no third
+application is needed. The endpoint caches for one minute and supports gzip.
+See [STREETCAR_ANALYSIS.md](STREETCAR_ANALYSIS.md) for backfill, source refresh,
+and the distinction between GPS intervals and fixed-distance passages.
+
 ```
 ┌─────────────┐      ┌──────────────┐      ┌──────────────┐
 │   Scraper   │─────▶│  MotherDuck  │◀─────│  Dashboard   │

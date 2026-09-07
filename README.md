@@ -11,6 +11,11 @@ with direct or reconstructed GTFS trip IDs, early/late classifications, and cove
 Historical trip-order inference is labelled and can be excluded with the trip-matching filter.
 See [OTP methodology and operation](OTP.md). The real-time `dly` flag is not OTP.
 
+The [streetcar signal study](STREETCAR_ANALYSIS.md) compares complete 200 m track
+passages on St. Charles, Canal, and Rampart–Loyola, separating passenger stops,
+traffic signals, and their overlap. An interactive map shows OSM locations and
+Mapillary evidence; travel-time ranges make sampling and timestamp precision limits visible.
+
 ## Architecture
 
 ```

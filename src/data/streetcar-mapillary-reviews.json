@@ -1,0 +1,164 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "site_id": "st_charles:signal:osm-116008997",
+      "feature_id": "783132794144215",
+      "detection_id": "1385374535863680",
+      "image_id": "1385364082531392",
+      "captured_at": "2016-02-27T14:46:41.809000+00:00",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.080783966325,
+          29.933891529124
+        ]
+      },
+      "image_url": "https://www.mapillary.com/app/?pKey=1385364082531392",
+      "reviewed_at": "2026-09-07T20:48:14.130664+00:00",
+      "outcome": "signal_present_at_capture",
+      "notes": "Dated street-level view shows multiple vehicle traffic-light heads beside streetcar tracks at St. Charles/Jackson. Presence is visible; no current control-phase claim."
+    },
+    {
+      "site_id": "canal:signal:osm-115990312",
+      "feature_id": "1704373113790995",
+      "detection_id": "664238629480950",
+      "image_id": "664109332827213",
+      "captured_at": "2022-10-09T09:46:59.916000+00:00",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.100678671709,
+          29.974440856021
+        ]
+      },
+      "image_url": "https://www.mapillary.com/app/?pKey=664109332827213",
+      "reviewed_at": "2026-09-07T20:48:14.130704+00:00",
+      "outcome": "signal_present_at_capture",
+      "notes": "Dated image clearly shows overhead and pole-mounted vehicle traffic lights, N. Carrollton Ave sign, crossing streetcar tracks, and passenger platform. Supports a combined stop-and-signal exposure rather than attributing all waiting to the light."
+    },
+    {
+      "site_id": "rampart:signal:osm-116044225",
+      "feature_id": "559317705444520",
+      "detection_id": "1308262223030401",
+      "image_id": "1308079676381989",
+      "captured_at": "2022-03-25T16:25:24.500000+00:00",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.069202829194,
+          29.959691049337
+        ]
+      },
+      "image_url": "https://www.mapillary.com/app/?pKey=1308079676381989",
+      "reviewed_at": "2026-09-07T20:48:14.130707+00:00",
+      "outcome": "signal_present_at_capture",
+      "notes": "Dated panoramic image shows Toulouse street signs, vehicle signal heads, separate pedestrian signals, and streetcar tracks crossing the intersection. Hardware presence is clear; phase timing is not measured."
+    },
+    {
+      "site_id": "st_charles:signal:osm-115873908",
+      "image_id": "1767558977145940",
+      "captured_at": "2022-10-06T13:47:56.106000+00:00",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.090259186719,
+          29.928760207682
+        ]
+      },
+      "image_url": "https://www.mapillary.com/app/?pKey=1767558977145940",
+      "reviewed_at": "2026-09-07T20:51:38.660587+00:00",
+      "outcome": "signal_not_visible_at_capture",
+      "notes": "Available 2022 views show Pleasant/St. Charles crossing, track median and both directions without vehicle signal heads at this junction. Distant lights belong to another junction. OSM candidate is contradicted by these views; current presence remains unverified."
+    },
+    {
+      "site_id": "st_charles:signal:osm-115873908",
+      "image_id": "1305697227584402",
+      "captured_at": "2022-10-06T13:20:08.130000+00:00",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.09018522783,
+          29.928608246918
+        ]
+      },
+      "image_url": "https://www.mapillary.com/app/?pKey=1305697227584402",
+      "reviewed_at": "2026-09-07T20:51:38.660587+00:00",
+      "outcome": "signal_not_visible_at_capture",
+      "notes": "Available 2022 views show Pleasant/St. Charles crossing, track median and both directions without vehicle signal heads at this junction. Distant lights belong to another junction. OSM candidate is contradicted by these views; current presence remains unverified."
+    },
+    {
+      "site_id": "st_charles:signal:osm-115873908",
+      "image_id": "1027238802586705",
+      "captured_at": "2022-10-06T13:20:08.697000+00:00",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.090160600263,
+          29.928608552996
+        ]
+      },
+      "image_url": "https://www.mapillary.com/app/?pKey=1027238802586705",
+      "reviewed_at": "2026-09-07T20:51:38.660587+00:00",
+      "outcome": "signal_not_visible_at_capture",
+      "notes": "Available 2022 views show Pleasant/St. Charles crossing, track median and both directions without vehicle signal heads at this junction. Distant lights belong to another junction. OSM candidate is contradicted by these views; current presence remains unverified."
+    },
+    {
+      "site_id": "canal:rail_signal:osm-4756265624",
+      "image_id": "1027891658792166",
+      "image_url": "https://www.mapillary.com/app/?pKey=1027891658792166",
+      "captured_at": "2024-07-06T15:57:22.984000+00:00",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.073480357898,
+          29.956105518436
+        ]
+      },
+      "reviewed_at": "2026-09-07T20:56:17.208087+00:00",
+      "outcome": "rail_signal_function_unresolved",
+      "notes": "Available view shows vehicle signal heads near streetcar tracks and junction trackwork, but does not securely assign a visible head to this OSM railway node or distinguish a streetcar traffic-control head from a switch/route indicator. Retain as rail signal with unknown function; no promotion to road traffic signal."
+    },
+    {
+      "site_id": "rampart:rail_signal:osm-4431089497",
+      "image_id": "1781138436141031",
+      "image_url": "https://www.mapillary.com/app/?pKey=1781138436141031",
+      "captured_at": "2023-05-14T10:29:43.211000+00:00",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.072883445005,
+          29.955580337291
+        ]
+      },
+      "reviewed_at": "2026-09-07T20:56:17.208100+00:00",
+      "outcome": "rail_signal_function_unresolved",
+      "notes": "Available view shows vehicle signal heads near streetcar tracks and junction trackwork, but does not securely assign a visible head to this OSM railway node or distinguish a streetcar traffic-control head from a switch/route indicator. Retain as rail signal with unknown function; no promotion to road traffic signal."
+    }
+  ],
+  "notes": "Manual visual reviews of dated public Mapillary imagery. These establish presence at capture time, not present-day operation or streetcar signal phases.",
+  "exclusions": [
+    {
+      "site_id": "st_charles:signal:osm-115873908",
+      "source_ids": [
+        "osm/node/115873908",
+        "osm/node/115873911",
+        "osm/node/116009021",
+        "osm/node/116009319"
+      ],
+      "osm_node_versions": {
+        "115873908": 5,
+        "115873911": 5,
+        "116009021": 5,
+        "116009319": 5
+      },
+      "image_ids": [
+        "1767558977145940",
+        "1305697227584402",
+        "1027238802586705"
+      ],
+      "reviewed_at": "2026-09-07T20:51:38.660587+00:00",
+      "reason": "OSM signal candidate contradicted by available 2022 imagery; current presence unverified. Excluded locally from signal exposure until better evidence resolves it. Raw OSM is preserved. Override applies only while all four OSM node revisions remain unchanged."
+    }
+  ]
+}

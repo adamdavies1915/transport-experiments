@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit",
     "test": "tsx --test src/*.test.ts",
     "otp:backfill": "tsx src/otp-worker.ts",
-    "otp:validate": "tsx src/otp-validation.ts"
+    "otp:validate": "tsx src/otp-validation.ts",
+    "streetcars:backfill": "tsx src/streetcar-worker.ts"
   },
   "dependencies": {
     "@duckdb/node-api": "^1.5.4-r.1",

@@ -4,6 +4,7 @@ import { initMotherDuck, insertRecords, closeMotherDuck } from './motherduck';
 import { processVehicle } from './vehicle';
 import type { RawVehicle, TransitRecord } from './types';
 import { startOtpWorker } from './otp-worker';
+import { startStreetcarWorker } from './streetcar-worker';
 
 const SSE_URL = process.env.SSE_URL || 'https://nolatransit.fly.dev/sse';
 const UPLOAD_INTERVAL = parseInt(process.env.UPLOAD_INTERVAL ?? '') || 60000; // 1 minute (MotherDuck handles batching)
@@ -20,6 +21,7 @@ let currentES: EventSource | undefined;
 let lastMessageAt = Date.now();
 let sampleLogged = false;
 let stopOtpWorker: (() => void) | undefined;
+let stopStreetcarWorker: (() => void) | undefined;
 // In-memory dedup: last-seen tmstmp per vehicle id (Task 2).
 const lastSeenTmstmp = new Map<string, number>();
 const stats = {
@@ -149,6 +151,7 @@ function checkFeedFreshness(): void {
 
 async function shutdown(signal: string): Promise<void> {
   stopOtpWorker?.();
+  stopStreetcarWorker?.();
   console.log(`\nReceived ${signal}. Shutting down gracefully...`);
 
   // Insert any remaining buffered data
@@ -185,7 +188,7 @@ async function main(): Promise<void> {
   }
 
   connectSSE();
-  if (!DRY_RUN) stopOtpWorker = startOtpWorker();
+  if (!DRY_RUN) { stopOtpWorker = startOtpWorker(); stopStreetcarWorker = startStreetcarWorker(); }
 
   // Insert buffer periodically
   setInterval(uploadBuffer, UPLOAD_INTERVAL);

@@ -4,14 +4,20 @@ import cors from 'cors';
 import { DuckDBInstance, type DuckDBConnection } from '@duckdb/node-api';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import { gzip } from 'node:zlib';
+import { promisify } from 'node:util';
 import type {
   Summary, SegmentTypeRow, SegmentRow, RouteRow,
   HourlyRow, DailyRow, DailySegmentRow
 } from './src/types';
 import type { OtpData, OtpDay } from './src/otp-data';
 import { otpDaysSql } from './src/otp-query';
+import type { StreetcarData, StreetcarNetwork } from './src/streetcar-data';
+import { decodeStreetcarBins, decodeStreetcarSiteBins, decodeStreetcarQuality, emptyStreetcarData,
+  streetcarCatalog, streetcarQueries, streetcarQuote, streetcarRange } from './src/streetcar-query';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+const gzipAsync=promisify(gzip);
 
 const app = express();
 app.use(cors());
@@ -85,6 +91,46 @@ app.get('/api/health', (_req: Request, res: Response) => {
 });
 
 // API Routes - query the transit_data table directly (aggregate on the fly)
+app.get('/api/streetcars', async (req: Request, res: Response) => {
+  try {
+    const send=async(value:StreetcarData)=>{
+      res.vary('Accept-Encoding');
+      if(req.acceptsEncodings('gzip')) {
+        const body=await gzipAsync(JSON.stringify(value));res.set('Content-Encoding','gzip').type('json').send(body);
+      } else res.json(value);
+    };
+    const catalog=streetcarCatalog(DATABASE_NAME);
+    const tables=await query<{count:number}>(`SELECT COUNT(*) AS count FROM information_schema.tables
+      WHERE table_catalog=${streetcarQuote(DATABASE_NAME)} AND table_schema='main'
+        AND table_name IN ('streetcar_networks','streetcar_bins','streetcar_site_bins','streetcar_quality')`);
+    if(Number(tables[0].count)<4)return res.json(emptyStreetcarData());
+    const networks=await query<{version:string;network_json:string;method_json:string}>(`SELECT version,network_json,method_json FROM ${catalog}.streetcar_networks ORDER BY installed_at DESC LIMIT 1`);
+    if(!networks.length)return res.json(emptyStreetcarData());
+    const saved=networks[0],network=JSON.parse(saved.network_json) as StreetcarNetwork;
+    const method=JSON.parse(saved.method_json) as StreetcarData['method'];
+    const ranges=await query<{from:string|null;to:string|null}>(`SELECT MIN(date)::VARCHAR AS "from",MAX(date)::VARCHAR AS "to" FROM ${catalog}.streetcar_quality WHERE network_version=${streetcarQuote(saved.version)} AND method=${streetcarQuote(method.name)}`);
+    if(!ranges[0].from||!ranges[0].to)return res.json(emptyStreetcarData(network));
+    const corridor=typeof req.query.corridor==='string'?req.query.corridor:'st_charles';
+    if(!network.corridors.some(c=>c.id===corridor))return res.status(400).json({error:'Choose St. Charles, Canal, or Rampart–Loyola.'});
+    let range:{from:string;to:string};
+    try {range=streetcarRange({from:typeof req.query.from==='string'?req.query.from:undefined,to:typeof req.query.to==='string'?req.query.to:undefined},ranges[0].from,ranges[0].to);}
+    catch(err){return res.status(400).json({error:errorMessage(err)});}
+    const key=`streetcars:${saved.version}:${method.name}:${corridor}:${range.from}:${range.to}`;
+    const cached=getCached<StreetcarData>(key);if(cached)return send(cached);
+    const sql=streetcarQueries(DATABASE_NAME,saved.version,corridor,range.from,range.to,method.name);
+    // One DuckDB connection: serialize its queries; all read compact derived tables.
+    const bins=await query<Record<string,unknown>>(sql.bins);
+    const sites=await query<Record<string,unknown>>(sql.site_bins);
+    const quality=await query<Record<string,unknown>>(sql.quality);
+    const result:StreetcarData={status:quality.length?'ready':'not_ready',network,
+      bins:decodeStreetcarBins(bins,method.timestamp_quantization_seconds??60),site_bins:decodeStreetcarSiteBins(sites,method.timestamp_quantization_seconds??60),quality:decodeStreetcarQuality(quality),
+      updated_at:quality.map(q=>String(q.updated_at)).sort().at(-1)??null,
+      available_from:ranges[0].from,available_to:ranges[0].to,selected_from:range.from,selected_to:range.to,
+      method};
+    setCache(key,result,60_000);return send(result);
+  } catch(err){res.status(500).json({error:errorMessage(err)});}
+});
+
 app.get('/api/otp', async (_req: Request, res: Response) => {
   try {
     const cached = getCached<OtpData>('otp');
