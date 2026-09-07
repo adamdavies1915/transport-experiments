@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-import type { CorridorId, ExposureCategory, StreetcarBin, StreetcarData, StreetcarSite } from './streetcar-data';
+import type { CorridorId, ExposureCategory, StreetcarBin, StreetcarData, StreetcarNetwork, StreetcarSite } from './streetcar-data';
 
 const categories: Array<{ id: ExposureCategory; label: string; color: string; description: string }> = [
   { id: 'signal_only', label: 'Signal only', color: '#fbbf24', description: 'Near a signal, away from passenger stops' },
@@ -47,15 +47,15 @@ function speedRange(summary: ReturnType<typeof summarize>) {
 type Filters = { corridor: CorridorId; from: string; to: string; direction: string; dayType: string; hourFrom: number; hourTo: number };
 type Props = { data?: StreetcarData; initialFilters?: Partial<Filters>; initialSelectedSite?: string };
 
-function NetworkMap({ data, corridor, direction, selectedSite, mixedSites, onSelect }: {
-  data: StreetcarData; corridor: CorridorId; direction: string; selectedSite: string;
+export function NetworkMap({ network, corridor, direction, selectedSite, mixedSites, onSelect }: {
+  network: StreetcarNetwork; corridor: CorridorId; direction: string; selectedSite: string;
   mixedSites: Set<string>;
   onSelect: (id: string) => void;
 }) {
   const [zoom, setZoom] = useState(1);
-  const paths = data.network.paths.filter(path => path.corridor === corridor && (direction === 'all' || path.direction === direction));
+  const paths = network.paths.filter(path => path.corridor === corridor && (direction === 'all' || path.direction === direction));
   const routes = new Set(paths.map(path => path.route));
-  const sites = data.network.sites.filter(site => site.corridor === corridor && (routes.size === 0 || site.routes.some(route => routes.has(route))));
+  const sites = network.sites.filter(site => site.corridor === corridor && (routes.size === 0 || site.routes.some(route => routes.has(route))));
   const points = paths.flatMap(path => path.points);
   const bounds = points.length ? points : sites;
   const minLon = Math.min(...bounds.map(point => point.lon));
@@ -246,7 +246,7 @@ export default function StreetcarPanel({ data: suppliedData, initialFilters, ini
         </div>
       </div>}
       <h3 className="font-medium mb-3">Explore the corridor</h3>
-      <NetworkMap key={filters.corridor} data={data} corridor={filters.corridor} direction={direction} selectedSite={selectedSite} mixedSites={new Set(selectedBins.filter(row => row.category === 'both').map(row => row.site_id))} onSelect={selectSite} />
+      <NetworkMap key={filters.corridor} network={data.network} corridor={filters.corridor} direction={direction} selectedSite={selectedSite} mixedSites={new Set(selectedBins.filter(row => row.category === 'both').map(row => row.site_id))} onSelect={selectSite} />
       {selected && <div className="border border-slate-500 rounded-lg bg-slate-900 p-4 mt-3" aria-live="polite">
         <div className="flex justify-between gap-3"><h4 className="font-semibold">{selected.site.name}</h4><button type="button" className="text-sm underline text-slate-400" onClick={() => setSelectedSite('')}>Clear selection</button></div>
         <p className="text-xs text-slate-400 mt-1">{siteType(selected.site)} · {selected.site.verification === 'gtfs' ? 'GTFS location' : selected.site.verification === 'mapillary' ? reviewedImages.length > 0 ? 'Mapillary location corroborated; imagery reviewed' : 'Mapillary detection corroborated; imagery unreviewed' : 'OSM location; imagery unverified'} · {selected.site.lat.toFixed(5)}, {selected.site.lon.toFixed(5)}</p>

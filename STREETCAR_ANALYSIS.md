@@ -1,5 +1,9 @@
 # Streetcar speeds, stops, and traffic signals
 
+The dashboard now opens on the simpler [Signal priority view](STREETCAR_PRIORITY.md).
+The fixed-window speed and timing diagnostics described below are retained under
+Advanced analysis. New receipt-based stationary waits have separate coverage.
+
 The dashboard's streetcar study covers St. Charles (12), Canal (47/48), and
 Rampart–Loyola (46). It combines our vehicle observations with GTFS tracks and
 passenger stops, OSM signal locations, and a separately recorded Mapillary check.

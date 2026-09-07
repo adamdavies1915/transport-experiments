@@ -293,3 +293,63 @@ test('a first GPS boundary hit followed by dwell does not erase uncertain arriva
   // a 220 s passage. Exact-hit bounds of [180,180] would falsely exclude it.
   assert.ok(bin.duration_lower_seconds! <= 220 && bin.duration_upper_seconds! >= 220);
 });
+
+test('persistable passages retain spatial identity, trip identity, nominal timing bounds and all overlapping sites', () => {
+  const result = analyzePassages(network([site('light', 'signal', 500), site('stop-a', 'stop', 550)]), DATE,
+    [obs(300), obs(500, 60), obs(700, 120)]);
+  assert.equal(result.passages.length, 1);
+  const passage = result.passages[0];
+  assert.equal(passage.path_id, 'out');
+  assert.equal(passage.window_id, 'out:400');
+  assert.equal(passage.from_meters, 400);
+  assert.equal(passage.to_meters, 600);
+  assert.equal(passage.vid, 'car1');
+  assert.equal(passage.trip_id, 'trip1');
+  assert.equal(passage.category, 'both');
+  assert.deepEqual(passage.signal_ids, ['light']);
+  assert.deepEqual(passage.stop_ids, ['stop-a']);
+  close(passage.entry_at, AT + 30);
+  close(passage.exit_at, AT + 90);
+  close(passage.duration_seconds, 60);
+  assert.equal(passage.duration_lower_seconds, 0);
+  assert.equal(passage.duration_upper_seconds, 120);
+  assert.equal(result.site_bins.length, 2);
+});
+
+test('separate contiguous fragments of one vehicle trip have distinct run IDs, including repeated windows', () => {
+  const result = analyzePassages(network(), DATE, [
+    obs(250), obs(650, 60), obs(850, 180), obs(1250, 240), obs(250, 360), obs(650, 420),
+  ]);
+  assert.equal(result.passages.length, 3);
+  assert.equal(new Set(result.passages.map(p => p.run_id)).size, 3);
+  assert.equal(result.passages.filter(p => p.window_id === 'out:400').length, 2);
+  assert.equal(new Set(result.passages.map(p => `${p.run_id}|${p.window_id}`)).size, 3);
+});
+
+test('run IDs distinguish vehicles and trip assignments, and passage output is deterministic under input order changes', () => {
+  const observations = [obs(250), obs(850, 60), obs(250, 0, 0, { vid: 'car2', trip_id: null }),
+    obs(850, 60, 0, { vid: 'car2', trip_id: null })];
+  const n = network();
+  const first = analyzePassages(n, DATE, observations);
+  const second = analyzePassages(n, DATE, [...observations].reverse());
+  assert.equal(first.passages.length, 4);
+  assert.equal(new Set(first.passages.map(p => p.run_id)).size, 2);
+  assert.deepEqual(first.passages, second.passages);
+  assert.deepEqual(first.bins, second.bins);
+  assert.ok(first.passages.some(p => p.trip_id === null));
+});
+
+test('passage events partition each run without overlap and exactly reconcile existing corridor metrics', () => {
+  const result = analyzePassages(network([site('light', 'signal', 500), site('stop-a', 'stop', 550)]), DATE,
+    [obs(250), obs(950, 60), obs(1650, 120)]);
+  const passages = result.passages;
+  assert.ok(passages.length > 1);
+  assert.equal(new Set(passages.map(p => p.run_id)).size, 1);
+  for (let n = 1; n < passages.length; n++) {
+    assert.ok(passages[n - 1].to_meters <= passages[n].from_meters);
+    assert.ok(passages[n - 1].exit_at <= passages[n].entry_at);
+  }
+  assert.equal(passages.length, result.bins.reduce((sum, bin) => sum + bin.intervals, 0));
+  close(passages.reduce((sum, p) => sum + p.duration_seconds, 0), result.bins.reduce((sum, bin) => sum + bin.duration_seconds, 0));
+  assert.equal(passages.reduce((sum, p) => sum + p.to_meters - p.from_meters, 0), result.bins.reduce((sum, bin) => sum + bin.distance_meters, 0));
+});

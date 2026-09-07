@@ -1,11 +1,12 @@
 import OtpPanel from './OtpPanel';
-import StreetcarPanel from './StreetcarPanel';
+import PriorityPanel from './PriorityPanel';
 import { useTransitData } from './hooks/useTransitData';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
   ResponsiveContainer, Cell, LineChart, Line
 } from 'recharts';
-import type { ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
+import type { OtpData } from './otp-data';
 
 const COLORS = {
   dedicated: '#22c55e',
@@ -40,15 +41,15 @@ function StatCard({ title, value, subtitle, color = 'blue' }: StatCardProps) {
   );
 }
 
-function App() {
+function OverviewPage({ onRetry }: { onRetry: () => void }) {
   const { data, loading, error } = useTransitData();
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="flex items-center justify-center rounded-xl bg-slate-800 p-12" role="status">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
-          <p className="mt-4 text-slate-400">Loading transit data...</p>
+          <p className="mt-4 text-slate-300">Loading the transit overview…</p>
         </div>
       </div>
     );
@@ -56,10 +57,11 @@ function App() {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="bg-red-500/10 border border-red-500 rounded-lg p-6 max-w-md">
-          <h2 className="text-red-500 font-bold text-lg">Error</h2>
+      <div className="rounded-xl bg-slate-800 p-6" role="alert">
+        <div>
+          <h2 className="text-amber-300 font-semibold text-lg">The overview is unavailable</h2>
           <p className="mt-2 text-slate-300">{error}</p>
+          <button type="button" className="mt-4 text-blue-300 underline" onClick={onRetry}>Retry overview</button>
         </div>
       </div>
     );
@@ -72,13 +74,11 @@ function App() {
   const speedDiff = ((dedicatedData?.avg_speed || 0) / (mixedData?.avg_speed || 1)).toFixed(1);
 
   return (
-    <div className="min-h-screen p-6">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
+    <section aria-labelledby="overview-heading">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold">NOLA Transit Dashboard</h1>
-          <p className="text-slate-400 mt-1">
-            Independent transit performance data
+          <h2 id="overview-heading" className="text-2xl font-semibold">Transit overview</h2>
+          <p className="text-slate-300 mt-2">
+            Collection coverage and speed trends across the network.
           </p>
         </div>
 
@@ -185,9 +185,6 @@ function App() {
           </div>
         </div>
 
-        <OtpPanel data={data.otp} />
-        <StreetcarPanel />
-
         {/* Timeline Charts */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           {/* Daily ROW vs Mixed Speed */}
@@ -225,18 +222,78 @@ function App() {
           )}
         </div>
 
-        {/* Footer */}
-        <div className="text-center text-slate-500 text-sm">
-          <p>Data collected independently from NOLA RTA real-time feed</p>
-          <p className="mt-1">
-            <a href="https://github.com/adamdavies1915/transport-experiments" className="text-blue-400 hover:underline">
-              View Source
-            </a>
-          </p>
-        </div>
-      </div>
-    </div>
+    </section>
   );
+}
+
+function OverviewView() {
+  const [attempt, setAttempt] = useState(0);
+  return <OverviewPage key={attempt} onRetry={() => setAttempt(value => value + 1)} />;
+}
+
+function OtpView() {
+  const [attempt, setAttempt] = useState(0);
+  const [result, setResult] = useState<{ attempt: number; data?: OtpData; error?: string }>({ attempt: -1 });
+  useEffect(() => {
+    const controller = new AbortController();
+    fetch('/api/otp', { signal: controller.signal }).then(async response => {
+      if (!response.ok) throw new Error(`On-time performance request failed (${response.status}).`);
+      return response.json() as Promise<OtpData>;
+    }).then(data => { if (!controller.signal.aborted) setResult({ attempt, data }); })
+      .catch((error: Error) => { if (!controller.signal.aborted) setResult({ attempt, error: error.message }); });
+    return () => controller.abort();
+  }, [attempt]);
+  if (result.attempt !== attempt) return <p className="rounded-xl bg-slate-800 p-12 text-center text-slate-300" role="status">Loading on-time performance…</p>;
+  if (result.error) return <div className="rounded-xl bg-slate-800 p-6" role="alert"><h2 className="text-lg text-amber-300 font-semibold">On-time performance is unavailable</h2><p className="mt-2 text-slate-300">{result.error}</p><button className="mt-4 text-blue-300 underline" type="button" onClick={() => setAttempt(value => value + 1)}>Retry on-time performance</button></div>;
+  return result.data ? <OtpPanel data={result.data} /> : null;
+}
+
+const views = [
+  { id: 'signal-priority', label: 'Signal priority', detail: 'Streetcar journey times' },
+  { id: 'overview', label: 'Overview', detail: 'Network and data coverage' },
+  { id: 'otp', label: 'On-time performance', detail: 'Service against the schedule' },
+] as const;
+type ViewId = typeof views[number]['id'];
+function viewFromHash(): ViewId {
+  const hash = typeof window === 'undefined' ? '' : window.location.hash.slice(1);
+  return views.find(view => view.id === hash)?.id ?? 'signal-priority';
+}
+
+function App({ initialView }: { initialView?: ViewId }) {
+  const [view, setView] = useState<ViewId>(initialView ?? viewFromHash);
+  useEffect(() => {
+    const handleHashChange = () => setView(viewFromHash());
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+  return <div className="min-h-screen px-4 py-6 sm:px-6 sm:py-8">
+    <div className="max-w-7xl mx-auto">
+      <header className="mb-6 sm:mb-8">
+        <p className="text-xs uppercase tracking-widest text-amber-300 mb-2">Independent transit data</p>
+        <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight">NOLA transit performance</h1>
+        <p className="text-slate-300 mt-2 max-w-2xl">Explore streetcar travel times, signal priority, and on-time service.</p>
+      </header>
+      <nav aria-label="Dashboard views" className="sticky top-0 z-20 -mx-4 px-4 pt-2 pb-4 bg-slate-900/95 backdrop-blur sm:rounded-xl mb-5">
+        <div className="grid grid-cols-3 gap-2">
+          {views.map(item => <a key={item.id} href={`#${item.id}`} aria-current={view === item.id ? 'page' : undefined}
+            className={`rounded-lg border px-3 py-3 sm:px-4 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-300 ${view === item.id ? 'border-amber-300 bg-amber-300 text-slate-950' : 'border-slate-600 bg-slate-800 text-slate-200 hover:bg-slate-700'}`}
+            onClick={() => setView(item.id)}>
+            <span className="block text-sm sm:text-base font-semibold">{item.label}</span>
+            <span className={`hidden sm:block text-xs mt-1 ${view === item.id ? 'text-slate-800' : 'text-slate-400'}`}>{item.detail}</span>
+          </a>)}
+        </div>
+      </nav>
+      <main id="dashboard-content" aria-label={views.find(item => item.id === view)?.label}>
+        {view === 'signal-priority' && <PriorityPanel />}
+        {view === 'overview' && <OverviewView />}
+        {view === 'otp' && <OtpView />}
+      </main>
+      <footer className="border-t border-slate-700 mt-10 pt-5 text-sm text-slate-400 flex flex-wrap gap-x-6 gap-y-2 justify-between">
+        <p>Our observations from the NOLA RTA real-time feed.</p>
+        <a href="https://github.com/adamdavies1915/transport-experiments" className="text-blue-300 hover:underline">Source and methods</a>
+      </footer>
+    </div>
+  </div>;
 }
 
 export default App;

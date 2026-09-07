@@ -5,7 +5,7 @@ import type {
 } from '../types';
 import type { OtpData } from '../otp-data';
 
-const API_BASE = import.meta.env.DEV ? 'http://localhost:3000/api' : '/api';
+const API_BASE = '/api';
 
 interface UseTransitDataResult {
   data: TransitData | null;

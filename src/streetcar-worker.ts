@@ -5,9 +5,12 @@ import { fork, type ChildProcess } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { addDays, localDay, observationEpoch } from './otp';
 import { analyzeStreetcars, METHOD, type StreetcarObservation } from './streetcar-analysis';
+import { detectStreetcarWaits, WAIT_METHOD, type WaitSnapshot } from './streetcar-waits';
 import type { StreetcarNetwork } from '../dashboard/src/streetcar-data';
 
 const quote = (s: string) => `'${s.replace(/'/g, "''")}'`;
+const DERIVED_BATCH_SIZE = 5000; // keep remote round trips bounded for historical processing
+const PRIORITY_VERSION = 'streetcar-priority-same-window-v1';
 export async function readStreetcarNetwork(file?: string): Promise<StreetcarNetwork> {
   const network = JSON.parse(await readFile(file ?? fileURLToPath(new URL('./data/streetcar-network.json', import.meta.url)), 'utf8')) as StreetcarNetwork;
   if (!network.version || !network.paths?.length || !network.sites?.length || network.corridors?.length !== 3) throw new Error('Invalid streetcar network catalog');
@@ -33,6 +36,53 @@ export async function initializeStreetcars(c: DuckDBConnection, network: Streetc
     raw_points INTEGER,candidate_intervals INTEGER,accepted_intervals INTEGER,excluded VARCHAR,
     network_version VARCHAR,method VARCHAR,updated_at TIMESTAMPTZ,PRIMARY KEY(date,corridor))`);
   await c.run(`CREATE TABLE IF NOT EXISTS streetcar_backfill_days (date DATE PRIMARY KEY,applied_version VARCHAR,completed_at TIMESTAMPTZ)`);
+  await c.run(`CREATE TABLE IF NOT EXISTS streetcar_passages (
+    date DATE,corridor VARCHAR,route VARCHAR,direction VARCHAR,path_id VARCHAR,window_id VARCHAR,
+    from_meters DOUBLE,to_meters DOUBLE,run_id VARCHAR,vid VARCHAR,trip_id VARCHAR,
+    entry_at DOUBLE,exit_at DOUBLE,hour INTEGER,day_type VARCHAR,category VARCHAR,
+    signal_ids VARCHAR,stop_ids VARCHAR,duration_seconds DOUBLE,duration_lower_seconds DOUBLE,
+    duration_upper_seconds DOUBLE,network_version VARCHAR,method VARCHAR,
+    PRIMARY KEY(date,run_id,window_id)
+  )`);
+  await c.run(`CREATE TABLE IF NOT EXISTS streetcar_priority_days (
+    date DATE PRIMARY KEY,applied_version VARCHAR,updated_at TIMESTAMPTZ
+  )`);
+  await c.run(`CREATE TABLE IF NOT EXISTS streetcar_waits (
+    id VARCHAR PRIMARY KEY,date DATE,corridor VARCHAR,route VARCHAR,site_id VARCHAR,context VARCHAR,
+    started_at DOUBLE,ended_at DOUBLE,duration_seconds DOUBLE,network_version VARCHAR,method VARCHAR
+  )`);
+  await c.run('ALTER TABLE streetcar_waits ADD COLUMN IF NOT EXISTS method VARCHAR');
+  await c.run(`CREATE TABLE IF NOT EXISTS streetcar_wait_quality (
+    date DATE,corridor VARCHAR,snapshots INTEGER,first_at DOUBLE,last_at DOUBLE,updated_at TIMESTAMPTZ,
+    PRIMARY KEY(date,corridor)
+  )`);
+}
+export async function calculateStreetcarWaitDay(c: DuckDBConnection, network: StreetcarNetwork, day: string) {
+  const exists=(await c.runAndReadAll("SELECT COUNT(*) AS n FROM information_schema.tables WHERE table_name='streetcar_snapshots' AND table_catalog=current_database()")).getRowObjectsJson();
+  if(!Number(exists[0].n))return;
+  const rows=(await c.runAndReadAll(`SELECT vid,route,COALESCE(legacy_trip_id,gtfs_trip_id) AS trip_id,
+    epoch(received_at) AS received_at,epoch(provider_observed_at) AS provider_at,lat,lon,speed,is_off_route
+    FROM streetcar_snapshots WHERE received_at>=timezone('America/Chicago',${quote(day)}::TIMESTAMP)
+      AND received_at<timezone('America/Chicago',${quote(addDays(day,1))}::TIMESTAMP)
+      AND lower(COALESCE(destination,'')) NOT LIKE '%not in service%' ORDER BY received_at`)).getRowObjectsJson();
+  const snapshots:WaitSnapshot[]=rows.map(r=>({vid:r.vid==null?'':String(r.vid),route:String(r.route),trip_id:r.trip_id==null?null:String(r.trip_id),
+    received_at:Number(r.received_at),provider_at:r.provider_at==null?null:Number(r.provider_at),
+    lat:r.lat==null?NaN:Number(r.lat),lon:r.lon==null?NaN:Number(r.lon),speed:r.speed==null?null:Number(r.speed),off_route:r.is_off_route===true}));
+  const events=detectStreetcarWaits(network,snapshots);
+  await c.run('BEGIN TRANSACTION');
+  try {
+    await c.run(`DELETE FROM streetcar_waits WHERE date=${quote(day)}::DATE`);
+    await c.run(`DELETE FROM streetcar_wait_quality WHERE date=${quote(day)}::DATE`);
+    for(let i=0;i<events.length;i+=DERIVED_BATCH_SIZE)await c.run(`INSERT INTO streetcar_waits VALUES ${events.slice(i,i+DERIVED_BATCH_SIZE).map(e=>`(${[
+      quote(e.id),quote(day),quote(e.corridor),quote(e.route),quote(e.site_id),quote(e.context),e.started_at,e.ended_at,e.duration_seconds,quote(network.version),quote(WAIT_METHOD.name),
+    ].join(',')})`).join(',')}`);
+    for(const corridor of network.corridors) {
+      const selected=snapshots.filter(s=>corridor.routes.includes(s.route));
+      await c.run(`INSERT INTO streetcar_wait_quality VALUES (${quote(day)},${quote(corridor.id)},${selected.length},${selected.length?selected[0].received_at:'NULL'},${selected.length?selected.at(-1)!.received_at:'NULL'},now())`);
+    }
+    await c.run('COMMIT');
+  }catch(err){await c.run('ROLLBACK');throw err;}
+  console.log(`[Streetcars] ${day}: ${snapshots.length} retained snapshots, ${events.length} completed candidate waits (receipt clock)`);
 }
 export async function calculateStreetcarDay(c: DuckDBConnection, network: StreetcarNetwork, day: string): Promise<void> {
   const routes = [...new Set(network.paths.map(p => p.route))];
@@ -55,11 +105,22 @@ export async function calculateStreetcarDay(c: DuckDBConnection, network: Street
     b.duration_lower_seconds??'NULL',b.duration_upper_seconds??'NULL'].join(',');
   await c.run('BEGIN TRANSACTION');
   try {
-    for (const table of ['streetcar_bins','streetcar_site_bins','streetcar_quality']) await c.run(`DELETE FROM ${table} WHERE date=${quote(day)}::DATE`);
-    for (let i = 0; i < result.bins.length; i += 500) await c.run(`INSERT INTO streetcar_bins VALUES ${result.bins.slice(i,i+500).map(b=>`(${metricValues(b)})`).join(',')}`);
-    for (let i = 0; i < result.site_bins.length; i += 500) await c.run(`INSERT INTO streetcar_site_bins VALUES ${result.site_bins.slice(i,i+500).map(b=>`(${quote(b.site_id)},${metricValues(b)})`).join(',')}`);
+    for (const table of ['streetcar_bins','streetcar_site_bins','streetcar_quality','streetcar_passages']) await c.run(`DELETE FROM ${table} WHERE date=${quote(day)}::DATE`);
+    for(let i=0;i<result.passages.length;i+=DERIVED_BATCH_SIZE) {
+      const values=result.passages.slice(i,i+DERIVED_BATCH_SIZE).map(p=>`(${[
+        quote(p.date),quote(p.corridor),quote(p.route),quote(p.direction),quote(p.path_id),quote(p.window_id),
+        p.from_meters,p.to_meters,quote(p.run_id),quote(p.vid),p.trip_id==null?'NULL':quote(p.trip_id),
+        p.entry_at,p.exit_at,p.hour,quote(p.day_type),quote(p.category),quote(JSON.stringify(p.signal_ids)),quote(JSON.stringify(p.stop_ids)),
+        p.duration_seconds,p.duration_lower_seconds,p.duration_upper_seconds,quote(network.version),quote(PRIORITY_VERSION),
+      ].join(',')})`);
+      await c.run(`INSERT INTO streetcar_passages VALUES ${values.join(',')}`);
+    }
+    for (let i = 0; i < result.bins.length; i += DERIVED_BATCH_SIZE) await c.run(`INSERT INTO streetcar_bins VALUES ${result.bins.slice(i,i+DERIVED_BATCH_SIZE).map(b=>`(${metricValues(b)})`).join(',')}`);
+    for (let i = 0; i < result.site_bins.length; i += DERIVED_BATCH_SIZE) await c.run(`INSERT INTO streetcar_site_bins VALUES ${result.site_bins.slice(i,i+DERIVED_BATCH_SIZE).map(b=>`(${quote(b.site_id)},${metricValues(b)})`).join(',')}`);
     if (result.quality.length) await c.run(`INSERT INTO streetcar_quality VALUES ${result.quality.map(q=>`(${quote(q.date)},${quote(q.corridor)},${q.raw_points},${q.candidate_intervals},${q.accepted_intervals},${quote(JSON.stringify(q.excluded))},${quote(network.version)},${quote(METHOD.name)},now())`).join(',')}`);
     await c.run(`UPDATE streetcar_backfill_days SET applied_version=${quote(network.version + ':' + METHOD.name)},completed_at=now() WHERE date=${quote(day)}::DATE`);
+    await c.run(`INSERT INTO streetcar_priority_days VALUES (${quote(day)},${quote(network.version+':'+PRIORITY_VERSION)},now())
+      ON CONFLICT(date) DO UPDATE SET applied_version=excluded.applied_version,updated_at=excluded.updated_at`);
     await c.run('COMMIT');
   } catch (err) { await c.run('ROLLBACK'); throw err; }
   console.log(`[Streetcars] ${day}: ${observations.length} GPS points, ${result.quality.reduce((n,q)=>n+q.accepted_intervals,0)} usable GPS intervals, ${result.bins.reduce((n,b)=>n+b.intervals,0)} completed passages, ${result.site_bins.length} site summaries`);
@@ -91,10 +152,16 @@ async function main() {
   try {
     if(args.includes('--recent')) {
       const today=localDay(Date.now()/1000,'America/Chicago');
-      for(let offset=-1;offset<=0;offset++) await calculateStreetcarDay(c,network,addDays(today,offset));
-      const pending=(await c.runAndReadAll(`SELECT date::VARCHAR AS day FROM streetcar_backfill_days
-        WHERE applied_version IS NULL OR applied_version<>${quote(network.version+':'+METHOD.name)}
-        ORDER BY completed_at ASC NULLS FIRST,date LIMIT 2`)).getRowObjectsJson();
+      for(let offset=-1;offset<=0;offset++) {
+        const day=addDays(today,offset);
+        await calculateStreetcarDay(c,network,day);
+        await calculateStreetcarWaitDay(c,network,day);
+      }
+      const pending=(await c.runAndReadAll(`SELECT b.date::VARCHAR AS day FROM streetcar_backfill_days b
+        LEFT JOIN streetcar_priority_days p ON p.date=b.date
+        WHERE b.applied_version IS NULL OR b.applied_version<>${quote(network.version+':'+METHOD.name)}
+          OR p.applied_version IS NULL OR p.applied_version<>${quote(network.version+':'+PRIORITY_VERSION)}
+        ORDER BY b.completed_at ASC NULLS FIRST,b.date LIMIT 2`)).getRowObjectsJson();
       for(const r of pending) await calculateStreetcarDay(c,network,String(r.day));
       return;
     }

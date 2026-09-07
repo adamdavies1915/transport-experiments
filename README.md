@@ -16,6 +16,11 @@ passages on St. Charles, Canal, and Rampart–Loyola, separating passenger stops
 traffic signals, and their overlap. An interactive map shows OSM locations and
 Mapillary evidence; travel-time ranges make sampling and timestamp precision limits visible.
 
+The dashboard opens on [Signal priority](STREETCAR_PRIORITY.md): candidate stationary
+waits, extra time relative to faster passages through the same location, and explicit
+priority scenarios for the covered portion of each route. Overview and OTP have
+separate pages. Detailed diagnostics remain available under Advanced analysis.
+
 ## Architecture
 
 ```

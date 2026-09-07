@@ -24,6 +24,16 @@ export interface StreetcarBin {
   vehicle_ids: string[];
 }
 export interface StreetcarSiteBin extends StreetcarBin { site_id: string }
+/** One completed spatial window, before aggregation. Duration bounds use the
+ * reported provider clock; consumers apply timestamp uncertainty once. */
+export interface StreetcarPassage {
+  date: string; corridor: CorridorId; route: string; direction: string;
+  path_id: string; window_id: string; from_meters: number; to_meters: number;
+  run_id: string; vid: string; trip_id: string | null;
+  entry_at: number; exit_at: number; hour: number; day_type: 'weekday' | 'weekend';
+  category: ExposureCategory; signal_ids: string[]; stop_ids: string[];
+  duration_seconds: number; duration_lower_seconds: number; duration_upper_seconds: number;
+}
 export interface StreetcarQuality {
   date: string; corridor: CorridorId; raw_points: number; candidate_intervals: number;
   accepted_intervals: number; excluded: Record<string, number>;

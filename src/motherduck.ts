@@ -1,11 +1,20 @@
 import { DuckDBInstance, type DuckDBConnection } from '@duckdb/node-api';
 import type { TransitRecord } from './types';
+import { initializeStreetcarSnapshots, persistStreetcarSnapshots, type StreetcarSnapshot } from './streetcar-snapshots';
 
 const MOTHER_DUCK_API_KEY = process.env.MOTHER_DUCK_API_KEY;
 const DATABASE_NAME = process.env.MOTHERDUCK_DATABASE || 'my_db'; // MotherDuck default database
 
 let instance: DuckDBInstance | undefined;
 let connection: DuckDBConnection | undefined;
+// The collector's raw and snapshot buffers share one connection. Serialize
+// their operations, including close, so timer/shutdown drains cannot race.
+let databaseOperations: Promise<void> = Promise.resolve();
+function serializeDatabase<T>(operation: () => Promise<T>): Promise<T> {
+  const result = databaseOperations.then(operation);
+  databaseOperations = result.then(() => undefined, () => undefined);
+  return result;
+}
 
 // Initialize MotherDuck connection
 export async function initMotherDuck(): Promise<void> {
@@ -64,6 +73,7 @@ export async function initMotherDuck(): Promise<void> {
     );
   }
 
+  await initializeStreetcarSnapshots(connection, DATABASE_NAME);
   console.log('MotherDuck initialized successfully');
 }
 
@@ -85,57 +95,73 @@ function sqlString(value: string | null | undefined): string {
 
 // Batch insert records using bulk INSERT
 export async function insertRecords(records: TransitRecord[]): Promise<void> {
-  if (!connection) throw new Error('MotherDuck not initialized');
+  if (!records.length) return;
+  return serializeDatabase(async () => {
+    if (!connection) throw new Error('MotherDuck not initialized');
 
-  // Build bulk INSERT statement. Value order MUST match INSERT_COLUMNS.
-  const values = records.map(r =>
-    `(${[
-      sqlString(r.vid),
-      sqlString(r.timestamp),
-      r.lat,
-      r.lon,
-      r.heading,
-      sqlString(r.route),
-      sqlString(r.trip_id),
-      sqlString(r.destination),
-      r.speed,
-      r.is_delayed ?? 'NULL',
-      r.is_off_route,
-      r.segment_id ?? 'NULL',
-      sqlString(r.segment_name),
-      sqlString(r.segment_type),
-      r.pdist ?? 'NULL',
-      r.pid ?? 'NULL',
-      sqlString(r.rid),
-      sqlString(r.tablockid),
-      sqlString(r.srvtmstmp),
-      // Preserve offsets for DST-safe schedule comparisons. Legacy naive
-      // timestamps remain available but must not be cast using server timezone.
-      /(Z|[+-]\d\d:\d\d)$/.test(r.timestamp) ? sqlString(r.timestamp) : 'NULL',
-      sqlString(r.gtfs_trip_id)
-    ].join(', ')})`
-  ).join(',\n');
+    // Build bulk INSERT statement. Value order MUST match INSERT_COLUMNS.
+    const values = records.map(r =>
+      `(${[
+        sqlString(r.vid),
+        sqlString(r.timestamp),
+        r.lat,
+        r.lon,
+        r.heading,
+        sqlString(r.route),
+        sqlString(r.trip_id),
+        sqlString(r.destination),
+        r.speed,
+        r.is_delayed ?? 'NULL',
+        r.is_off_route,
+        r.segment_id ?? 'NULL',
+        sqlString(r.segment_name),
+        sqlString(r.segment_type),
+        r.pdist ?? 'NULL',
+        r.pid ?? 'NULL',
+        sqlString(r.rid),
+        sqlString(r.tablockid),
+        sqlString(r.srvtmstmp),
+        // Preserve offsets for DST-safe schedule comparisons. Legacy naive
+        // timestamps remain available but must not be cast using server timezone.
+        /(Z|[+-]\d\d:\d\d)$/.test(r.timestamp) ? sqlString(r.timestamp) : 'NULL',
+        sqlString(r.gtfs_trip_id)
+      ].join(', ')})`
+    ).join(',\n');
 
-  const sql = `INSERT INTO ${DATABASE_NAME}.transit_data (${INSERT_COLUMNS.join(', ')}) VALUES\n${values}`;
+    const sql = `INSERT INTO ${DATABASE_NAME}.transit_data (${INSERT_COLUMNS.join(', ')}) VALUES\n${values}`;
 
-  await connection.run(sql);
-  console.log(`Inserted ${records.length} records into MotherDuck`);
+    await connection.run(sql);
+    console.log(`Inserted ${records.length} records into MotherDuck`);
+  });
+}
+
+export async function insertStreetcarSnapshotRecords(records: StreetcarSnapshot[]): Promise<void> {
+  if (!records.length) return;
+  return serializeDatabase(async () => {
+    if (!connection) throw new Error('MotherDuck not initialized');
+    await persistStreetcarSnapshots(connection, records, DATABASE_NAME);
+    console.log(`Persisted ${records.length} streetcar SSE snapshots (receipt time is not GPS fix time)`);
+  });
 }
 
 // Read-only query helper for analysis scripts. Returns JS-typed row objects.
 export async function runQuery(sql: string): Promise<Record<string, unknown>[]> {
-  if (!connection) throw new Error('MotherDuck not initialized');
-  const reader = await connection.runAndReadAll(sql);
-  return reader.getRowObjectsJS();
+  return serializeDatabase(async () => {
+    if (!connection) throw new Error('MotherDuck not initialized');
+    const reader = await connection.runAndReadAll(sql);
+    return reader.getRowObjectsJS();
+  });
 }
 
 export async function closeMotherDuck(): Promise<void> {
-  if (connection) {
-    connection.closeSync();
-    connection = undefined;
-  }
-  if (instance) {
-    instance.closeSync();
-    instance = undefined;
-  }
+  return serializeDatabase(async () => {
+    if (connection) {
+      connection.closeSync();
+      connection = undefined;
+    }
+    if (instance) {
+      instance.closeSync();
+      instance = undefined;
+    }
+  });
 }

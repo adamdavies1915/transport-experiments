@@ -1,7 +1,8 @@
 import 'dotenv/config';
 import EventSource from 'eventsource';
-import { initMotherDuck, insertRecords, closeMotherDuck } from './motherduck';
+import { initMotherDuck, insertRecords, insertStreetcarSnapshotRecords, closeMotherDuck } from './motherduck';
 import { processVehicle } from './vehicle';
+import { captureStreetcarSnapshots, SnapshotRetryBuffer, snapshotSourceUrl } from './streetcar-snapshots';
 import type { RawVehicle, TransitRecord } from './types';
 import { startOtpWorker } from './otp-worker';
 import { startStreetcarWorker } from './streetcar-worker';
@@ -11,6 +12,7 @@ const UPLOAD_INTERVAL = parseInt(process.env.UPLOAD_INTERVAL ?? '') || 60000; //
 const RECONNECT_DELAY = parseInt(process.env.RECONNECT_DELAY ?? '') || 5000;
 // Cap on the retry buffer; when exceeded we drop the OLDEST records (Task 3).
 const MAX_BUFFER_RECORDS = parseInt(process.env.MAX_BUFFER_RECORDS ?? '') || 500000;
+const MAX_SNAPSHOT_BUFFER_RECORDS = Math.max(1, parseInt(process.env.MAX_SNAPSHOT_BUFFER_RECORDS ?? '') || 100000);
 // If no SSE message arrives within this window, force a reconnect (Task 3).
 const STALE_FEED_THRESHOLD = parseInt(process.env.STALE_FEED_THRESHOLD ?? '') || 300000; // 5 min
 // When the MotherDuck token is absent we run without writing (local smoke test).
@@ -22,6 +24,12 @@ let lastMessageAt = Date.now();
 let sampleLogged = false;
 let stopOtpWorker: (() => void) | undefined;
 let stopStreetcarWorker: (() => void) | undefined;
+let shuttingDown = false;
+let uploadInFlight: Promise<void> | undefined;
+let uploadTimer: ReturnType<typeof setInterval> | undefined;
+let statsTimer: ReturnType<typeof setInterval> | undefined;
+let freshnessTimer: ReturnType<typeof setInterval> | undefined;
+let reconnectTimer: ReturnType<typeof setTimeout> | undefined;
 // In-memory dedup: last-seen tmstmp per vehicle id (Task 2).
 const lastSeenTmstmp = new Map<string, number>();
 const stats = {
@@ -30,13 +38,20 @@ const stats = {
   vehiclesDeduped: 0,
   uploadsCompleted: 0,
   recordsDropped: 0,
+  snapshotsPersisted: 0,
+  snapshotsDropped: 0,
   errors: 0,
   startTime: new Date(),
 };
+const snapshotBuffer = new SnapshotRetryBuffer(MAX_SNAPSHOT_BUFFER_RECORDS, count => {
+  stats.snapshotsDropped += count;
+  console.error(`[DROP] Snapshot retry buffer exceeded ${MAX_SNAPSHOT_BUFFER_RECORDS}; dropped ${count} oldest snapshot(s). Total dropped: ${stats.snapshotsDropped}`);
+});
 
 function logStats(): void {
   const uptime = Math.round((Date.now() - stats.startTime.getTime()) / 1000);
   console.log(`[Stats] Uptime: ${uptime}s | Messages: ${stats.messagesReceived} | Buffered: ${buffer.length} | Uploads: ${stats.uploadsCompleted} | Deduped: ${stats.vehiclesDeduped} | Dropped: ${stats.recordsDropped} | Errors: ${stats.errors}`);
+  console.log(`[SnapshotStats] Pending: ${snapshotBuffer.size} | Persisted: ${stats.snapshotsPersisted} | Dropped: ${stats.snapshotsDropped}`);
 }
 
 // Enforce MAX_BUFFER_RECORDS by dropping the OLDEST records. Loud on purpose.
@@ -48,11 +63,20 @@ function enforceBufferCap(): void {
   console.error(`[DROP] Retry buffer exceeded ${MAX_BUFFER_RECORDS}; dropped ${overflow} oldest record(s). Total dropped: ${stats.recordsDropped}`);
 }
 
-function processMessage(data: string): void {
+function processMessage(data: string, receivedAt: string, feedEventId?: string): void {
+  if (shuttingDown) return;
   try {
     const vehicles = JSON.parse(data) as RawVehicle[];
+    if (!Array.isArray(vehicles)) throw new Error('Expected an SSE vehicle array');
     stats.messagesReceived++;
     lastMessageAt = Date.now();
+
+    // This additive ledger retains every target vehicle in every received
+    // frame, including moved coordinates within one provider minute and
+    // repeated stationary frames. The existing OTP/raw watermark stays below.
+    snapshotBuffer.add(captureStreetcarSnapshots(vehicles, {
+      received_at: receivedAt, source_url: SSE_URL, feed_event_id: feedEventId,
+    }));
 
     for (const v of vehicles) {
       // Dedup: skip pings whose timestamp hasn't advanced for this vehicle.
@@ -80,7 +104,7 @@ function processMessage(data: string): void {
   }
 }
 
-async function uploadBuffer(): Promise<void> {
+async function uploadLegacyBuffer(): Promise<void> {
   if (buffer.length === 0) {
     console.log('Buffer empty, skipping insert');
     return;
@@ -109,29 +133,60 @@ async function uploadBuffer(): Promise<void> {
   }
 }
 
-function connectSSE(): EventSource {
-  console.log(`Connecting to SSE endpoint: ${SSE_URL}`);
+async function uploadBuffers(): Promise<void> {
+  await uploadLegacyBuffer();
+  try {
+    const count = await snapshotBuffer.flush(async snapshots => {
+      if (DRY_RUN) console.log(`[DryRun] Would persist ${snapshots.length} streetcar SSE snapshots`);
+      else await insertStreetcarSnapshotRecords(snapshots);
+    });
+    stats.snapshotsPersisted += count;
+  } catch (err) {
+    stats.errors++;
+    console.error('Snapshot insert failed; retained for retry:', (err as Error).message);
+  }
+}
+
+async function uploadBuffer(): Promise<void> {
+  if (uploadInFlight) return uploadInFlight;
+  const attempt = uploadBuffers();
+  uploadInFlight = attempt;
+  try { await attempt; }
+  finally { if (uploadInFlight === attempt) uploadInFlight = undefined; }
+}
+
+function connectSSE(): EventSource | undefined {
+  if (shuttingDown) return;
+  clearTimeout(reconnectTimer);
+  reconnectTimer = undefined;
+  currentES?.close();
+  console.log(`Connecting to SSE endpoint: ${snapshotSourceUrl(SSE_URL) ?? '(configured feed)'}`);
 
   const es = new EventSource(SSE_URL);
   currentES = es;
 
   es.onopen = () => {
+    if (currentES !== es || shuttingDown) return;
     console.log('SSE connection established');
     lastMessageAt = Date.now(); // reset freshness clock on (re)connect
   };
 
   es.onmessage = (event: MessageEvent<string>) => {
-    processMessage(event.data);
+    if (currentES !== es || shuttingDown) return;
+    const receivedAt = new Date().toISOString();
+    processMessage(event.data, receivedAt, event.lastEventId);
   };
 
   es.onerror = (err) => {
+    if (currentES !== es || shuttingDown) return;
     stats.errors++;
     console.error('SSE connection error:', (err as { message?: string }).message || 'Unknown error');
 
     if (es.readyState === EventSource.CLOSED) {
       console.log(`Reconnecting in ${RECONNECT_DELAY}ms...`);
       es.close();
-      setTimeout(connectSSE, RECONNECT_DELAY);
+      clearTimeout(reconnectTimer);
+      reconnectTimer = setTimeout(connectSSE, RECONNECT_DELAY);
     }
   };
 
@@ -140,6 +195,7 @@ function connectSSE(): EventSource {
 
 // Freshness self-check: if the feed goes silent, log loudly and reconnect.
 function checkFeedFreshness(): void {
+  if (shuttingDown) return;
   const silentFor = Date.now() - lastMessageAt;
   if (silentFor < STALE_FEED_THRESHOLD) return;
 
@@ -150,19 +206,25 @@ function checkFeedFreshness(): void {
 }
 
 async function shutdown(signal: string): Promise<void> {
+  if (shuttingDown) return;
+  shuttingDown = true;
+  currentES?.close();
+  clearTimeout(reconnectTimer);
+  clearInterval(uploadTimer);
+  clearInterval(statsTimer);
+  clearInterval(freshnessTimer);
   stopOtpWorker?.();
   stopStreetcarWorker?.();
   console.log(`\nReceived ${signal}. Shutting down gracefully...`);
 
   // Insert any remaining buffered data
-  if (buffer.length > 0) {
-    console.log(`Inserting ${buffer.length} buffered records...`);
-    try {
-      await uploadBuffer();
-    } catch (err) {
-      console.error('Error inserting buffer on shutdown:', (err as Error).message);
-    }
-  }
+  try {
+    // Await any timer drain, then flush rows received while it was in flight.
+    // A failed drain restores its rows, so this also makes one final retry.
+    await uploadBuffer();
+    if (buffer.length || snapshotBuffer.size) await uploadBuffer();
+  } catch (err) { console.error('Error inserting buffers on shutdown:', (err as Error).message); }
+  if (buffer.length || snapshotBuffer.size) console.error(`[DROP] Shutdown left ${buffer.length} raw records and ${snapshotBuffer.size} snapshots unpersisted in memory.`);
 
   await closeMotherDuck();
   logStats();
@@ -171,9 +233,10 @@ async function shutdown(signal: string): Promise<void> {
 
 async function main(): Promise<void> {
   console.log('NOLA Transit Scraper (MotherDuck version) starting...');
-  console.log(`SSE URL: ${SSE_URL}`);
+  console.log(`SSE URL: ${snapshotSourceUrl(SSE_URL) ?? '(configured feed)'}`);
   console.log(`Insert interval: ${UPLOAD_INTERVAL / 1000}s`);
   console.log(`Max buffer: ${MAX_BUFFER_RECORDS} | Stale threshold: ${STALE_FEED_THRESHOLD / 1000}s`);
+  console.log(`Streetcar snapshot retry cap: ${MAX_SNAPSHOT_BUFFER_RECORDS} | received_at records receipt, not GPS fix time`);
 
   if (DRY_RUN) {
     console.warn('MOTHER_DUCK_API_KEY not set — running in DRY RUN mode (inserts are stubbed).');
@@ -191,13 +254,13 @@ async function main(): Promise<void> {
   if (!DRY_RUN) { stopOtpWorker = startOtpWorker(); stopStreetcarWorker = startStreetcarWorker(); }
 
   // Insert buffer periodically
-  setInterval(uploadBuffer, UPLOAD_INTERVAL);
+  uploadTimer = setInterval(() => { void uploadBuffer().catch(err => console.error('Unexpected upload failure:', String(err))); }, UPLOAD_INTERVAL);
 
   // Log stats every 60 seconds
-  setInterval(logStats, 60000);
+  statsTimer = setInterval(logStats, 60000);
 
   // Feed freshness watchdog
-  setInterval(checkFeedFreshness, Math.min(STALE_FEED_THRESHOLD, 60000));
+  freshnessTimer = setInterval(checkFeedFreshness, Math.min(STALE_FEED_THRESHOLD, 60000));
 
   // Handle graceful shutdown
   process.on('SIGTERM', () => shutdown('SIGTERM'));

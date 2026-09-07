@@ -1,7 +1,8 @@
 import type {
   CorridorId, ExposureCategory, GeoPoint, StreetcarBin, StreetcarData,
-  StreetcarNetwork, StreetcarPath, StreetcarQuality, StreetcarSite, StreetcarSiteBin,
+  StreetcarNetwork, StreetcarPassage, StreetcarPath, StreetcarQuality, StreetcarSite, StreetcarSiteBin,
 } from '../dashboard/src/streetcar-data';
+import { createHash } from 'node:crypto';
 
 export interface StreetcarObservation {
   vid: string; route: string; trip_id: string | null; at: number;
@@ -398,13 +399,14 @@ function crossing(points: TrackPoint[], boundary: number): Crossing | null {
  * its speed categories must not be used as a comparison baseline.
  */
 export function analyzeStreetcars(network: StreetcarNetwork, date: string, observations: StreetcarObservation[]): {
-  bins: StreetcarBin[]; site_bins: StreetcarSiteBin[]; quality: StreetcarQuality[];
+  bins: StreetcarBin[]; site_bins: StreetcarSiteBin[]; quality: StreetcarQuality[]; passages: StreetcarPassage[];
 } {
   const index = buildIndex(network);
   const matches: MatchedPair[] = [];
   const { quality } = analyzeStreetcarIntervals(network, date, observations, match => matches.push(match));
   const bins = new Map<string, Accumulator<StreetcarBin>>();
   const siteBins = new Map<string, Accumulator<StreetcarSiteBin>>();
+  const passages: StreetcarPassage[] = [];
   const weekday = new Date(`${date}T12:00:00Z`).getUTCDay();
   const dayType = weekday === 0 || weekday === 6 ? 'weekend' : 'weekday';
   const windowMeters = METHOD.window_meters!;
@@ -424,6 +426,12 @@ export function analyzeStreetcars(network: StreetcarNetwork, date: string, obser
     if (!track.length) return;
     const first = track[0]; const indexedPath = index.paths[first.option.path];
     const observation = first.pair.a.observation;
+    // A gap, route/trip switch, or rejected match starts a separate contiguous
+    // run, even if the same scheduled trip later reappears. Structured input
+    // prevents null/string or delimiter collisions in this stable identifier.
+    const runId = createHash('sha256').update(JSON.stringify([
+      date, observation.vid, observation.route, observation.trip_id, indexedPath.path.id, observation.at,
+    ])).digest('hex');
     const points: TrackPoint[] = [{ at: observation.at, position: first.option.from }];
     for (const match of track) points.push({ at: match.pair.b.observation.at,
       position: Math.max(points.at(-1)!.position, match.option.to) });
@@ -452,6 +460,14 @@ export function analyzeStreetcars(network: StreetcarNetwork, date: string, obser
       add(bins, key, initial, observation.vid, duration, lower, upper);
       for (const site of sites) add(siteBins, `${key}|${site.id}`, { ...initial, site_id: site.id },
         observation.vid, duration, lower, upper);
+      passages.push({ date, corridor: indexedPath.path.corridor, route: observation.route,
+        direction: indexedPath.path.direction, path_id: indexedPath.path.id,
+        window_id: `${indexedPath.path.id}:${from}`, from_meters: from, to_meters: from + windowMeters,
+        run_id: runId, vid: observation.vid, trip_id: observation.trip_id,
+        entry_at: entry.estimated, exit_at: exit.estimated, hour, day_type: dayType, category,
+        signal_ids: sites.filter(site => site.kind === 'signal').map(site => site.id).sort(),
+        stop_ids: sites.filter(site => site.kind === 'stop').map(site => site.id).sort(),
+        duration_seconds: duration, duration_lower_seconds: lower, duration_upper_seconds: upper });
     }
   };
   let track: MatchedPair[] = [];
@@ -465,5 +481,6 @@ export function analyzeStreetcars(network: StreetcarNetwork, date: string, obser
   analyzeTrack(track);
   const finish = <T extends StreetcarBin>(map: Map<string, Accumulator<T>>): T[] => [...map.entries()]
     .sort(([a], [b]) => a.localeCompare(b)).map(([, aggregate]) => ({ ...aggregate.bin, vehicle_ids: [...aggregate.vehicles].sort() }));
-  return { bins: finish(bins), site_bins: finish(siteBins), quality };
+  passages.sort((a, b) => a.entry_at - b.entry_at || a.run_id.localeCompare(b.run_id) || a.from_meters - b.from_meters);
+  return { bins: finish(bins), site_bins: finish(siteBins), quality, passages };
 }

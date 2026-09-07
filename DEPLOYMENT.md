@@ -15,6 +15,9 @@ The scraper also starts an hourly streetcar-analysis child process, first run
 application is needed. The endpoint caches for one minute and supports gzip.
 See [STREETCAR_ANALYSIS.md](STREETCAR_ANALYSIS.md) for backfill, source refresh,
 and the distinction between GPS intervals and fixed-distance passages.
+The collector also retains streetcar SSE receipts in an additive snapshot ledger.
+The same worker supplies `/api/streetcar-priority` with per-location benchmarks and
+candidate stationary waits. See [STREETCAR_PRIORITY.md](STREETCAR_PRIORITY.md).
 
 ```
 ┌─────────────┐      ┌──────────────┐      ┌──────────────┐

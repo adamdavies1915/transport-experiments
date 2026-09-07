@@ -15,6 +15,8 @@ import { otpDaysSql } from './src/otp-query';
 import type { StreetcarData, StreetcarNetwork } from './src/streetcar-data';
 import { decodeStreetcarBins, decodeStreetcarSiteBins, decodeStreetcarQuality, emptyStreetcarData,
   streetcarCatalog, streetcarQueries, streetcarQuote, streetcarRange } from './src/streetcar-query';
+import { PRIORITY_METHOD, PRIORITY_WAIT_METHOD, type PriorityData, type PriorityWaitData } from './src/priority-data';
+import {decodePriorityStats,priorityFilters,priorityProfiles,priorityStatsSql} from './src/priority-query';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const gzipAsync=promisify(gzip);
@@ -91,6 +93,51 @@ app.get('/api/health', (_req: Request, res: Response) => {
 });
 
 // API Routes - query the transit_data table directly (aggregate on the fly)
+app.get('/api/streetcar-priority',async(req:Request,res:Response)=>{
+  try {
+    const catalog=streetcarCatalog(DATABASE_NAME),q=streetcarQuote;
+    const saved=await query<{network_json:string}>(`SELECT network_json FROM ${catalog}.streetcar_networks ORDER BY installed_at DESC LIMIT 1`);
+    if(!saved.length)return res.status(503).json({error:'Streetcar source catalog is being prepared.'});
+    const network=JSON.parse(saved[0].network_json) as StreetcarNetwork;
+    const corridor=typeof req.query.corridor==='string'?req.query.corridor:'st_charles';
+    if(!network.corridors.some(c=>c.id===corridor))return res.status(400).json({error:'Choose St. Charles, Canal, or Rampart–Loyola.'});
+    const dates=await query<{from:string|null;to:string|null}>(`SELECT MIN(date)::VARCHAR AS "from",MAX(date)::VARCHAR AS "to" FROM ${catalog}.streetcar_quality WHERE network_version=${q(network.version)}`);
+    if(!dates[0].from||!dates[0].to)return res.status(503).json({error:'Streetcar observations are being prepared.'});
+    let filters,range;
+    try {
+      filters=priorityFilters(req.query);
+      const to=typeof req.query.to==='string'?req.query.to:dates[0].to;
+      const requestedFrom=typeof req.query.from==='string'?req.query.from:undefined;
+      const defaultFrom=Number.isFinite(Date.parse(to))?new Date(Date.parse(to+'T00:00:00Z')-27*86400000).toISOString().slice(0,10):undefined;
+      range=streetcarRange({from:requestedFrom??(defaultFrom?[defaultFrom,dates[0].from].sort().at(-1):undefined),to},dates[0].from,dates[0].to);
+    }catch(err){return res.status(400).json({error:errorMessage(err)});}
+    const key=`priority:${network.version}:${JSON.stringify({corridor,...range,...filters})}`;
+    const cached=getCached<PriorityData>(key);if(cached)return res.json(cached);
+    const tables=await query<{table_name:string}>(`SELECT table_name FROM information_schema.tables WHERE table_catalog=${q(DATABASE_NAME)} AND table_name IN ('streetcar_passages','streetcar_waits','streetcar_wait_quality','streetcar_priority_days')`);
+    const names=new Set(tables.map(t=>t.table_name));
+    const stats=names.has('streetcar_passages')?decodePriorityStats(await query<Record<string,unknown>>(priorityStatsSql(DATABASE_NAME,network.version,corridor,range.from,range.to,filters))):[];
+    const waits:PriorityWaitData={status:'collecting',snapshots:0,from:null,to:null,events:0,signal_only_seconds:0,mixed_seconds:0,stop_only_seconds:0,sites:[],clock:'collector_receipt'};
+    if(names.has('streetcar_waits')&&names.has('streetcar_wait_quality')) {
+      const where=`corridor=${q(corridor)} AND date BETWEEN ${q(range.from)}::DATE AND ${q(range.to)}::DATE`;
+      const quality=await query<{snapshots:number;first:string|null;last:string|null}>(`SELECT COALESCE(SUM(snapshots),0)::INTEGER AS snapshots,
+        to_timestamp(MIN(first_at))::VARCHAR AS first,to_timestamp(MAX(last_at))::VARCHAR AS last FROM ${catalog}.streetcar_wait_quality WHERE ${where}`);
+      waits.snapshots=quality[0].snapshots;waits.from=quality[0].first;waits.to=quality[0].last;
+      waits.status=waits.snapshots?'ready':'collecting';
+      const local="timezone('America/Chicago',to_timestamp(started_at))";
+      const rows=await query<{site_id:string;context:'signal_only'|'stop_only'|'both';events:number;total_seconds:number;mean_seconds:number}>(`SELECT site_id,context,COUNT(*)::INTEGER AS events,SUM(duration_seconds) AS total_seconds,AVG(duration_seconds) AS mean_seconds FROM ${catalog}.streetcar_waits
+        WHERE ${where} AND network_version=${q(network.version)} AND method=${q(PRIORITY_WAIT_METHOD)} AND EXTRACT(HOUR FROM ${local}) BETWEEN ${filters.hour_from} AND ${filters.hour_to}
+        ${filters.day_type==='all'?'':`AND (EXTRACT(ISODOW FROM ${local}) ${filters.day_type==='weekday'?'<= 5':'>= 6'})`}
+        GROUP BY site_id,context ORDER BY total_seconds DESC`);
+      waits.sites=rows.map(row=>({...row,name:network.sites.find(s=>s.id===row.site_id)?.name??row.site_id}));
+      for(const row of rows){waits.events+=row.events;if(row.context==='signal_only')waits.signal_only_seconds+=row.total_seconds;else if(row.context==='both')waits.mixed_seconds+=row.total_seconds;else waits.stop_only_seconds+=row.total_seconds;}
+    }
+    const updated=names.has('streetcar_priority_days')?await query<{at:string|null;days:number}>(`SELECT MAX(updated_at)::VARCHAR AS at,COUNT(*)::INTEGER AS days FROM ${catalog}.streetcar_priority_days WHERE applied_version=${q(network.version+':'+PRIORITY_METHOD.name)} AND date BETWEEN ${q(range.from)}::DATE AND ${q(range.to)}::DATE`):[];
+    const result:PriorityData={status:stats.length?'ready':'not_ready',network,profiles:priorityProfiles(network,corridor,stats),waits,
+      available_from:dates[0].from,available_to:dates[0].to,selected_from:range.from,selected_to:range.to,updated_at:updated[0]?.at??null,
+      processed_days:updated[0]?.days??0,selected_days:1+Math.round((Date.parse(range.to)-Date.parse(range.from))/86400000),method:PRIORITY_METHOD};
+    setCache(key,result,60_000);res.json(result);
+  }catch(err){res.status(500).json({error:errorMessage(err)});}
+});
 app.get('/api/streetcars', async (req: Request, res: Response) => {
   try {
     const send=async(value:StreetcarData)=>{
