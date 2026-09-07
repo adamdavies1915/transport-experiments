@@ -17,8 +17,10 @@ for on time. The timing window follows the historical RTA definition documented 
 RTA's current internal event selection, tolerances, and adjustments have **not** been
 verified as identical, so the dashboard identifies our result as an independent estimate.
 
-Direct schedule trip IDs and conflict-free observed ID mappings enter reported OTP. Inferred block matches are
-stored for diagnostics and **excluded** from the dashboard numerator and denominator.
+Direct schedule trip IDs, conflict-free observed ID mappings, and labelled recurring
+trip-order reconstruction enter reported OTP. The dashboard's **Observed trip IDs
+only** filter excludes trip-order inference. Single-day block/time-window matches
+are stored for diagnostics and **excluded** from the dashboard numerator and denominator.
 Percentages are weighted by events, never averages of route/day percentages.
 Zero observations produce `Unavailable`, not 0% or 100%.
 
@@ -38,7 +40,7 @@ The collector now preserves both:
 
 Missing historical `gtfs_trip_id` values can be reconstructed from observed
 `tatripid`/`tripid` pairs. `otp_trip_mappings` stores each pair under its schedule
-SHA-256, route, and evidence dates. It retains contradictory pairs rather than
+SHA-256, route, service calendar, and evidence dates. It retains contradictory pairs rather than
 replacing them. Only a unique target is usable, and the historical route, active
 service, and any available block/destination must agree. The event records
 `match_method = 'crosswalk'` and `mapping_legacy_id`; raw readings are unchanged.
@@ -50,6 +52,37 @@ archive's effective period; evidence collected today alone cannot prove stabilit
 on every older date. The archive hash prevents carrying a mapping into a changed
 GTFS schedule. Unmatched IDs remain unmeasured. We never equate a legacy ID with
 a GTFS ID merely because their strings coincide.
+
+## Historical trip-order reconstruction
+
+`otp_sequence_mappings` stores inferred pairs separately from observed ID pairs.
+For a route/block on a service date, the observed number of distinct trip runs must
+equal the scheduled count. Runs must have one vehicle each, at least two readings,
+no overlap, unique ordering, and destinations matching the scheduled trip order.
+Equal scheduled start times, incomplete blocks, and conflicting evidence are rejected.
+No nearest-departure selection or on-time threshold is used to assign these IDs.
+
+A mapping must recur on at least two distinct complete service dates with no
+competing target in that service calendar. Calendar scoping matters: a legacy ID
+can have different Friday and Monday–Thursday GTFS IDs. Available historical block
+and destination fields must still agree before the mapping is applied. Events use
+`match_method = 'sequence'`; the dashboard displays their count and allows exclusion.
+An observed pair contradicting an inference immediately excludes that inferred pair
+on the next uncached API query and subsequent calculations.
+
+This is **inference**, not recovery of a missing original field. It assumes repeated
+full-block order represents the published trips; extra/missing runs that compensate
+for one another or historical schedule changes can still cause incorrect matches.
+The [initial audit](reports/otp-sequence-validation-2026-09-07.json), trained only on
+August 1–September 6, yielded 5,401 eligible mappings. Of 129 directly observed
+September 7 ID pairs, 84 had eligible inferred counterparts and all 84 agreed.
+Only holiday service was directly checked in that audit; it does not independently
+validate every weekday/Sunday mapping or historical departure time.
+
+The hourly worker now compares historical inference with newly observed ID pairs
+and records per-service counts/errors in `otp_sequence_validation`. Validation uses
+only evidence dates preceding the evaluation day, preventing same-day leakage.
+New direct IDs take priority over inference, and conflicting inferred IDs are rejected.
 
 ## Observation and matching rules
 
@@ -120,10 +153,23 @@ npm run otp:backfill -- --gtfs /path/to/archived-GTFS.zip --from 2026-08-01 --to
 
 The command checks declared feed validity, but the operator must verify that this
 archive actually applied on those dates. It uses our stored vehicle observations.
-Old observations with a validated observed ID mapping contribute reconstructed OTP; other observations remain unmeasured or block-based diagnostics.
+Old observations with an observed ID mapping or eligible historical sequence mapping
+contribute reconstructed OTP; other observations remain unmeasured or block-based diagnostics.
 The seed file contains 86 public-feed pairs observed on September 7; it covers only part of the historical service. New observations expand the mapping automatically.
 Legacy timezone-naive timestamps are interpreted in the agency timezone; ambiguous
 or nonexistent DST wall times are rejected. Backfills are idempotent.
+
+To build recurring trip-order mappings from complete historical dates and backfill:
+
+```bash
+npm run otp:backfill -- --gtfs /path/to/archived-GTFS.zip --from 2026-08-01 --to 2026-09-07 --sequence-from 2026-08-01 --sequence-to 2026-09-06
+```
+
+Use complete evidence dates before the current validation day. This explicitly
+replaces inferred candidates for the archive with the supplied training range,
+retains competing candidates, and recalculates the requested dates. Raw readings
+and observed ID mappings are preserved. The normal worker continues learning direct
+pairs and revisiting requested historical dates as the mapping revision changes.
 
 To immediately expand an existing backfill with newly collected pairs:
 
@@ -159,7 +205,7 @@ baseline observed 55 events. Block-only inference matched 12 events across 10
 trips. This short holiday-service sample is insufficient to promote historical
 block guesses into reported OTP. Refreshing the six eligible requested dates
 increased classified events from 2,039 to 3,046 (0.75% overall coverage at that
-calculation time); missing weekday/Sunday mappings remain the principal gap.
+calculation time). This predates the separate historical trip-order reconstruction.
 
 ## RTA benchmark and validation
 

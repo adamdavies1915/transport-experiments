@@ -27,8 +27,8 @@ export interface Schedule {
 }
 export interface Observation {
   vid: string; trip_id: string | null; route: string; block: string | null;
-  exact_id: boolean; // Verified raw tripid or a conflict-free observed ID mapping.
-  id_source?: 'trip_id' | 'crosswalk';
+  exact_id: boolean; // Assigned identity; id_source distinguishes direct IDs from reconstruction.
+  id_source?: 'trip_id' | 'crosswalk' | 'sequence';
   legacy_trip_id?: string;
   destination: string | null; at: number; lat: number; lon: number; off_route: boolean;
 }
@@ -36,7 +36,7 @@ export interface OtpEvent {
   service_date: string; route: string; trip_id: string; stop_sequence: number;
   stop_id: string; scheduled_at: number; observed_from: number; observed_to: number;
   deviation_seconds: number; status: 'early' | 'on_time' | 'late' | 'uncertain';
-  match_method: 'trip_id' | 'crosswalk' | 'block'; vid: string;
+  match_method: 'trip_id' | 'crosswalk' | 'sequence' | 'block'; vid: string;
   mapping_legacy_id: string | null;
 }
 export interface OtpCoverage {
@@ -192,13 +192,14 @@ export function estimateOtp(schedule: Schedule, day: string, observations: Obser
   for (const group of runs) {
     const pings = [...new Map(group.sort((a, b) => a.at - b.at).map(p => [p.at, p])).values()];
     const first = pings[0], last = pings[pings.length - 1];
-    if (new Set(pings.filter(p => p.id_source === 'crosswalk').map(p => p.legacy_trip_id)).size > 1) continue;
+    if (new Set(pings.filter(p => p.id_source === 'crosswalk' || p.id_source === 'sequence').map(p => p.legacy_trip_id)).size > 1) continue;
     const c = coverage.get(first.route)!;
     // Only count groups overlapping this service day's schedule envelope.
     if (last.at < epoch || first.at >= epoch + 48 * 3600) continue;
     const direct = first.exact_id && pings.every(p => p.exact_id) ? byId.get(first.trip_id!) : undefined;
     let trip: ScheduledTrip | undefined;
-    let method: OtpEvent['match_method'] = pings.some(p => p.id_source === 'crosswalk') ? 'crosswalk' : 'trip_id';
+    let method: OtpEvent['match_method'] = pings.some(p => p.id_source === 'sequence') ? 'sequence' :
+      pings.some(p => p.id_source === 'crosswalk') ? 'crosswalk' : 'trip_id';
     const overlaps = (t: ScheduledTrip, base: number, window: number) =>
       first.at >= base + t.stops[0].arrival - window &&
       last.at <= base + t.stops[t.stops.length - 1].departure + window;
@@ -261,7 +262,7 @@ export function estimateOtp(schedule: Schedule, day: string, observations: Obser
         stop_sequence: stop.sequence, stop_id: stop.id, scheduled_at: scheduled,
         observed_from: from, observed_to: to, deviation_seconds: (from + to) / 2 - scheduled,
         status, match_method: method, vid: pings[0].vid,
-        mapping_legacy_id: method === 'crosswalk' ? pings.find(p => p.id_source === 'crosswalk')?.legacy_trip_id ?? null : null });
+        mapping_legacy_id: method === 'crosswalk' || method === 'sequence' ? pings.find(p => p.legacy_trip_id)?.legacy_trip_id ?? null : null });
       c.observed_timepoints++; if (status !== 'uncertain') c.classified_timepoints++;
     }
   }

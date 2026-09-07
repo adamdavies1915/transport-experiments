@@ -13,6 +13,7 @@ export async function initializeCrosswalk(connection: DuckDBConnection): Promise
     evidence_from DATE, evidence_to DATE,
     PRIMARY KEY(schedule_hash, route, legacy_id, gtfs_id)
   )`);
+  await connection.run('ALTER TABLE otp_trip_mappings ADD COLUMN IF NOT EXISTS service_id VARCHAR');
 }
 
 export async function importCrosswalk(connection: DuckDBConnection, schedule: Schedule, input: unknown): Promise<number> {
@@ -29,9 +30,10 @@ export async function importCrosswalk(connection: DuckDBConnection, schedule: Sc
   }
   await initializeCrosswalk(connection);
   if (!file.mappings.length) return 0;
-  await connection.run(`INSERT INTO otp_trip_mappings VALUES ${file.mappings.map(m =>
-    `(${quote(schedule.hash)},${quote(m.route)},${quote(m.tatripid)},${quote(m.tripid)},${quote(file.evidence_date)},${quote(file.evidence_date)})`).join(',')}
+  await connection.run(`INSERT INTO otp_trip_mappings (schedule_hash, route, legacy_id, gtfs_id, evidence_from, evidence_to, service_id) VALUES ${file.mappings.map(m =>
+    `(${quote(schedule.hash)},${quote(m.route)},${quote(m.tatripid)},${quote(m.tripid)},${quote(file.evidence_date)},${quote(file.evidence_date)},${quote(trips.get(m.tripid)!.service)})`).join(',')}
     ON CONFLICT(schedule_hash, route, legacy_id, gtfs_id) DO UPDATE SET
+      service_id = excluded.service_id,
       evidence_from = LEAST(otp_trip_mappings.evidence_from, excluded.evidence_from),
       evidence_to = GREATEST(otp_trip_mappings.evidence_to, excluded.evidence_to)`);
   return file.mappings.length;
@@ -47,9 +49,16 @@ export async function learnCrosswalk(connection: DuckDBConnection, schedule: Sch
     mappings: result.filter(m => trips.get(m.tripid)?.route === m.route) });
 }
 
-export async function loadCrosswalk(connection: DuckDBConnection, schedule: Schedule): Promise<Map<string, ScheduledTrip>> {
+export async function loadCrosswalk(connection: DuckDBConnection, schedule: Schedule, day?: string): Promise<Map<string, ScheduledTrip>> {
+  // Older observed pairs predate service scoping. Resolve them from their exact
+  // archived GTFS IDs; one legacy ID can legitimately vary by service calendar.
+  await connection.run(`UPDATE otp_trip_mappings m SET service_id = t.service_id
+    FROM (VALUES ${schedule.trips.map(t => `(${quote(t.id)},${quote(t.service)})`).join(',')}) t(gtfs_id,service_id)
+    WHERE m.schedule_hash = ${quote(schedule.hash)} AND m.gtfs_id = t.gtfs_id AND m.service_id IS NULL`);
+  const active = day ? [...activeServices(schedule, day)] : undefined;
   const records = (await connection.runAndReadAll(`SELECT route, legacy_id, MIN(gtfs_id) AS gtfs_id
     FROM otp_trip_mappings WHERE schedule_hash = ${quote(schedule.hash)}
+    ${active ? `AND service_id IN (${active.length ? active.map(quote).join(',') : "''"})` : ''}
     GROUP BY route, legacy_id HAVING COUNT(DISTINCT gtfs_id) = 1`)).getRowObjectsJson();
   const trips = new Map(schedule.trips.map(t => [t.id, t]));
   const mapping = new Map<string, ScheduledTrip>();

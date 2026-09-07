@@ -1,0 +1,19 @@
+{
+  "schedule_hash": "3b32471680f5736301fdcaa2ae98bf62ba6e108ea51589febb1d66114ee567f9",
+  "training_from": "2026-08-01",
+  "training_to": "2026-09-06",
+  "evaluation_day": "2026-09-07",
+  "raw_runs": 74700,
+  "candidates": 6258,
+  "eligible": 5401,
+  "eligible_by_service": {
+    "1": 1322,
+    "2": 1632,
+    "3": 1174,
+    "4": 1273
+  },
+  "known_pairs": 129,
+  "compared": 84,
+  "wrong": [],
+  "limitation": "Only holiday-service mappings have direct-ID validation so far. Historical sequence reconstruction remains inferred."
+}

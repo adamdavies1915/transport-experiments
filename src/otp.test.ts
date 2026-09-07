@@ -10,6 +10,7 @@ import { otpDaysSql } from '../dashboard/src/otp-query';
 import { processVehicle } from './vehicle';
 import { importCrosswalk, loadCrosswalk, mappedTrip } from './trip-crosswalk';
 import { validateReconstruction } from './otp-validation';
+import { eligibleSequenceMappings, inferSequenceMappings, validateSequencePairs, validateSequences, type HistoricalRun } from './trip-sequence';
 
 const day = '2026-09-07';
 const base = serviceEpoch(day, 'America/Chicago');
@@ -133,7 +134,7 @@ test('current-day coverage counts only scheduled events due so far', () => {
 });
 test('monthly totals weight events, preserve zero OTP, and leave empty selections null', () => {
   const blank = { date: day, route: '12', scheduled: 100, observed: 100, classified: 100, early: 0,
-    late: 0, uncertain: 0, block_events: 0, crosswalk_events: 0, observed_trips: 1, matched_trips: 1, block_matched_trips: 0, updated_at: '' };
+    late: 0, uncertain: 0, block_events: 0, crosswalk_events: 0, sequence_events: 0, sequence_early: 0, sequence_on_time: 0, sequence_late: 0, sequence_uncertain: 0, observed_trips: 1, matched_trips: 1, block_matched_trips: 0, updated_at: '' };
   assert.equal(totals([{ ...blank, on_time: 100 }, { ...blank, classified: 1, on_time: 0, late: 1 }]).on_time_pct, 99.01);
   assert.equal(totals([{ ...blank, on_time: 0, late: 100 }]).on_time_pct, 0);
   assert.equal(totals([]).on_time_pct, null);
@@ -278,4 +279,81 @@ test('mapping refresh only recalculates requested eligible dates and is resumabl
     assert.equal(results[1].completed, true);
     assert.equal((await connection.runAndReadAll('SELECT COUNT(*) AS n FROM transit_data WHERE gtfs_trip_id IS NULL')).getRowObjectsJson()[0].n, '1');
   } finally { connection.closeSync(); instance.closeSync(); }
+});
+
+test('sequence inference requires recurring complete nonoverlapping block order, not schedule proximity', () => {
+  const s = schedule();
+  s.exceptions.push({ service_id: 'holiday', date: '20260908', exception_type: '1' });
+  s.trips.push({ ...s.trips[0], id: 't2', stops: s.trips[0].stops.map(p => ({ ...p, arrival: p.arrival + 7200, departure: p.departure + 7200 })) });
+  const runs: HistoricalRun[] = [day, '2026-09-08'].flatMap(day => [
+    { day, route: '12', legacy_id: 'legacy-a', block: '42', destination: 'Downtown', first_at: 100, last_at: 200, readings: 5, vehicles: 1 },
+    { day, route: '12', legacy_id: 'legacy-b', block: '42', destination: 'Downtown', first_at: 300, last_at: 400, readings: 5, vehicles: 1 },
+  ]);
+  const mappings = eligibleSequenceMappings(inferSequenceMappings(s, runs));
+  assert.deepEqual(mappings.map(m => [m.legacy_id, m.gtfs_id]), [['legacy-a', 't1'], ['legacy-b', 't2']]);
+  assert.equal(eligibleSequenceMappings(inferSequenceMappings(s, runs.slice(0, 2))).length, 0);
+  assert.equal(inferSequenceMappings(s, runs.filter(r => r.legacy_id === 'legacy-a')).length, 0);
+  assert.equal(inferSequenceMappings(s, runs.map(r => ({ ...r, last_at: 500 }))).length, 0);
+  const swapped = runs.map((r, i) => i < 2 ? r : { ...r, legacy_id: r.legacy_id === 'legacy-a' ? 'legacy-b' : 'legacy-a' });
+  assert.equal(eligibleSequenceMappings(inferSequenceMappings(s, swapped)).length, 0);
+  // Different calendars are separate mappings; conflicts within one still fail.
+  const a = mappings[0];
+  assert.equal(eligibleSequenceMappings([a, { ...a, service_id: 'weekday', gtfs_id: 'weekday-trip' }]).length, 2);
+  assert.equal(eligibleSequenceMappings([a, { ...a, gtfs_id: 'wrong' }]).length, 0);
+});
+
+test('sequence OTP keeps provenance and observed contradictions immediately invalidate the API', async () => {
+  const instance = await DuckDBInstance.create(':memory:');
+  const connection = await instance.connect();
+  try {
+    await initializeOtp(connection);
+    const s = schedule();
+    await connection.run(`INSERT INTO otp_sequence_mappings VALUES ('test','12','legacy','t1','holiday','["2026-09-05","2026-08-29"]',2)`);
+    await connection.run(`CREATE TABLE transit_data AS SELECT 'v1' AS vid, 'legacy' AS trip_id,
+      NULL::VARCHAR AS gtfs_trip_id, '12' AS route, '42' AS tablockid, 'Downtown' AS destination,
+      30.01 AS lat, -90.0 AS lon, false AS is_off_route,
+      TIMESTAMP '2026-09-07 10:10:00' AS timestamp, NULL::TIMESTAMPTZ AS observed_at
+      UNION ALL SELECT 'v1', 'legacy', NULL, '12', '42', 'Downtown', 30.011, -90, false,
+      TIMESTAMP '2026-09-07 10:10:20', NULL`);
+    await calculateDay(connection, day, s, base + 86400);
+    const catalog = String((await connection.runAndReadAll('SELECT current_database() AS name')).getRowObjectsJson()[0].name);
+    let api = (await connection.runAndReadAll(otpDaysSql(catalog))).getRowObjectsJson();
+    assert.equal(api[0].classified, 1);
+    assert.equal(api[0].sequence_events, 1);
+    s.trips.push({ ...s.trips[0], id: 't2' });
+    await importCrosswalk(connection, s, { schedule_sha256: s.hash, evidence_date: day,
+      mappings: [{ route: '12', tatripid: 'legacy', tripid: 't2' }] });
+    api = (await connection.runAndReadAll(otpDaysSql(catalog))).getRowObjectsJson();
+    assert.equal(api[0].sequence_events, 0);
+    assert.equal(api[0].classified, 0);
+    await connection.run("UPDATE transit_data SET gtfs_trip_id = 't2'");
+    assert.equal((await validateSequences(connection, s, day))[0].wrong, 1);
+    assert.equal((await connection.runAndReadAll('SELECT wrong FROM otp_sequence_validation')).getRowObjectsJson()[0].wrong, 1);
+  } finally { connection.closeSync(); instance.closeSync(); }
+});
+
+test('observed mappings are scoped to active service calendars', async () => {
+  const instance = await DuckDBInstance.create(':memory:');
+  const connection = await instance.connect();
+  try {
+    const s = schedule();
+    s.exceptions.push({ service_id: 'weekday', date: '20260908', exception_type: '1' });
+    s.trips.push({ ...s.trips[0], id: 'weekday-trip', service: 'weekday' });
+    await importCrosswalk(connection, s, { schedule_sha256: s.hash, evidence_date: day,
+      mappings: [{ route: '12', tatripid: 'shared-legacy', tripid: 't1' }] });
+    await importCrosswalk(connection, s, { schedule_sha256: s.hash, evidence_date: '2026-09-08',
+      mappings: [{ route: '12', tatripid: 'shared-legacy', tripid: 'weekday-trip' }] });
+    assert.equal((await loadCrosswalk(connection, s, day)).get('12|shared-legacy')?.id, 't1');
+    assert.equal((await loadCrosswalk(connection, s, '2026-09-08')).get('12|shared-legacy')?.id, 'weekday-trip');
+  } finally { connection.closeSync(); instance.closeSync(); }
+});
+
+test('sequence validation excludes same-day evidence and counts wrong IDs', () => {
+  const s = schedule();
+  s.trips.push({ ...s.trips[0], id: 't2' });
+  const mapping = { route: '12', legacy_id: 'legacy', gtfs_id: 't1', service_id: 'holiday', evidence_days: ['2026-08-29', '2026-09-05'] };
+  const pairs = [{ route: '12', legacy_id: 'legacy', gtfs_id: 't1' }];
+  assert.equal(validateSequencePairs(s, [mapping], pairs, day)[0].correct, 1);
+  assert.equal(validateSequencePairs(s, [{ ...mapping, evidence_days: ['2026-09-05', day] }], pairs, day)[0].compared, 0);
+  assert.equal(validateSequencePairs(s, [mapping], [{ ...pairs[0], gtfs_id: 't2' }], day)[0].wrong, 1);
 });

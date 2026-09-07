@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-import { percentage, totals, type OtpData } from './otp-data';
+import { observedIdsOnly, percentage, totals, type OtpData } from './otp-data';
 
 const pct = (value: number | null) => value === null ? 'Unavailable' : `${value.toFixed(1)}%`;
 // Published benchmarks stay separate from our observations and calculation.
@@ -15,8 +15,9 @@ export default function OtpPanel({ data }: { data: OtpData }) {
   const months = [...new Set(data.days.map(d => d.date.slice(0, 7)))].sort().reverse();
   const [selectedMonth, setSelectedMonth] = useState('');
   const [selectedRoute, setSelectedRoute] = useState('all');
+  const [matching, setMatching] = useState('all');
   const month = selectedMonth || months[0] || '';
-  const monthly = data.days.filter(d => d.date.startsWith(month));
+  const monthly = data.days.filter(d => d.date.startsWith(month)).map(d => matching === 'observed' ? observedIdsOnly(d) : d);
   const routes = [...new Set(monthly.map(d => d.route))].sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
   const route = routes.includes(selectedRoute) ? selectedRoute : 'all';
   const selected = monthly.filter(d => route === 'all' || d.route === route);
@@ -37,7 +38,7 @@ export default function OtpPanel({ data }: { data: OtpData }) {
         Independent estimate from our vehicle observations at scheduled timepoints.
         On time: 1 minute early through 5 minutes late. Departures are measured at intermediate
         stops; arrivals at the final stop. Each classified stop event counts once.
-        Reported OTP uses direct trip IDs and observed ID mappings.
+        Reported OTP uses direct trip IDs, observed ID mappings, and historical trip-order reconstruction.
       </p>
       {data.status === 'not_ready' ? (
         <p className="text-amber-300">Schedule-based OTP is not available yet. Waiting for a valid schedule and matched observations. Missing data is not counted as on time.</p>
@@ -46,6 +47,10 @@ export default function OtpPanel({ data }: { data: OtpData }) {
           <div className="flex flex-wrap gap-4 mb-4">
             <label>Month <select className="bg-slate-900 rounded p-2 ml-2" value={month} onChange={e => setSelectedMonth(e.target.value)}>
               {months.map(m => <option key={m}>{m}</option>)}
+            </select></label>
+            <label>Trip matching <select className="bg-slate-900 rounded p-2 ml-2" value={matching} onChange={e => setMatching(e.target.value)}>
+              <option value="all">Include inferred historical trips</option>
+              <option value="observed">Observed trip IDs only</option>
             </select></label>
             <label>Route <select className="bg-slate-900 rounded p-2 ml-2" value={route} onChange={e => setSelectedRoute(e.target.value)}>
               <option value="all">All bus and streetcar routes</option>
@@ -64,10 +69,12 @@ export default function OtpPanel({ data }: { data: OtpData }) {
             {summary.classified.toLocaleString()} of {summary.scheduled.toLocaleString()} scheduled timepoints measured with a clear outcome;
             {' '}{summary.uncertain.toLocaleString()} observations straddle a timing boundary.
             {' '}{summary.crosswalk_events.toLocaleString()} stop events were reconstructed using observed ID mappings.
+            {' '}{summary.sequence_events.toLocaleString()} stop events use inferred historical trip IDs from recurring complete block sequences.
             {' '}{summary.matched_trips.toLocaleString()} of {summary.observed_trips.toLocaleString()} observed trip groups matched;
             {' '}{summary.block_matched_trips.toLocaleString()} use inferred block matches and are excluded from reported OTP.
             Missing, ambiguous, and unobserved events are excluded from OTP, so incomplete coverage can bias this estimate.
           </p>
+          {summary.sequence_events > 0 && <p className="text-amber-300 mb-4">Historical inference included: trip order must agree on at least two complete service dates. Current-data checks can validate matching, but cannot prove every historical assignment. Select observed trip IDs only to exclude this inference.</p>}
           {summary.classified === 0 && <p className="text-amber-300 mb-4">No reliably classified stop events for this selection. OTP remains unavailable.</p>}
           {summary.classified > 0 && (summary.coverage_pct ?? 0) < 50 && <p className="text-amber-300 mb-4">Low coverage: this sample may not represent the full service.</p>}
           <ResponsiveContainer width="100%" height={260}>

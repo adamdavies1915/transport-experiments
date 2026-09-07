@@ -6,11 +6,13 @@ import 'dotenv/config';
 import { activeServices, addDays, estimateOtp, localDay, observationEpoch, OTP_METHOD, readSchedule,
   type Observation, type Schedule } from './otp';
 import { initializeCrosswalk, importCrosswalk, learnCrosswalk, loadCrosswalk, mappedTrip } from './trip-crosswalk';
+import { initializeSequences, loadSequenceMappings, rebuildSequenceMappings, validateSequences } from './trip-sequence';
 
 export const GTFS_URL = 'https://www.norta.com/RTA/media/GTFS/GTFS.zip';
 export const quote = (v: string): string => `'${v.replace(/'/g, "''")}'`;
 export async function initializeOtp(connection: DuckDBConnection): Promise<void> {
   await initializeCrosswalk(connection);
+  await initializeSequences(connection);
   await connection.run(`CREATE TABLE IF NOT EXISTS otp_schedules (
     hash VARCHAR PRIMARY KEY, source VARCHAR, fetched_at TIMESTAMPTZ,
     usable_from DATE, valid_to DATE, zip_base64 VARCHAR
@@ -67,7 +69,8 @@ export async function refreshSchedule(connection: DuckDBConnection): Promise<voi
 
 export async function calculateDay(connection: DuckDBConnection, day: string, schedule: Schedule, asOf = Date.now() / 1000): Promise<void> {
   if (day < schedule.start || day > schedule.end) throw new Error(`Schedule does not cover ${day}`);
-  const mapping = await loadCrosswalk(connection, schedule);
+  const mapping = await loadCrosswalk(connection, schedule, day);
+  const sequences = await loadSequenceMappings(connection, schedule, day);
   const raw = await rows<Record<string, unknown>>(connection, `SELECT DISTINCT
     vid, trip_id AS legacy_id, gtfs_trip_id,
     route, tablockid AS block, destination, lat, lon, is_off_route,
@@ -86,9 +89,10 @@ export async function calculateDay(connection: DuckDBConnection, day: string, sc
     const block = r.block == null ? null : String(r.block);
     const destination = r.destination == null ? null : String(r.destination);
     const mapped = r.gtfs_trip_id == null ? mappedTrip(mapping, String(r.route), String(r.legacy_id), block, destination) : undefined;
-    observations.push({ vid: String(r.vid), trip_id: r.gtfs_trip_id != null ? String(r.gtfs_trip_id) : mapped?.id ?? String(r.legacy_id), route: String(r.route),
-      exact_id: r.gtfs_trip_id != null || mapped !== undefined,
-      id_source: mapped ? 'crosswalk' : 'trip_id', legacy_trip_id: String(r.legacy_id), block, destination,
+    const inferred = r.gtfs_trip_id == null && !mapped ? mappedTrip(sequences, String(r.route), String(r.legacy_id), block, destination) : undefined;
+    observations.push({ vid: String(r.vid), trip_id: r.gtfs_trip_id != null ? String(r.gtfs_trip_id) : mapped?.id ?? inferred?.id ?? String(r.legacy_id), route: String(r.route),
+      exact_id: r.gtfs_trip_id != null || mapped !== undefined || inferred !== undefined,
+      id_source: inferred ? 'sequence' : mapped ? 'crosswalk' : 'trip_id', legacy_trip_id: String(r.legacy_id), block, destination,
       lat: Number(r.lat), lon: Number(r.lon), off_route: r.is_off_route === true, at });
   }
   const { events, coverage } = estimateOtp(schedule, day, observations, asOf);
@@ -118,7 +122,7 @@ export async function calculateDay(connection: DuckDBConnection, day: string, sc
     await connection.run('COMMIT');
   } catch (err) { await connection.run('ROLLBACK'); throw err; }
   const reported = events.filter(e => e.status !== 'uncertain' && e.match_method !== 'block').length;
-  console.log(`[OTP] ${day}: ${events.length} observed timepoints; ${reported} direct/mapped events classified for dashboard OTP`);
+  console.log(`[OTP] ${day}: ${events.length} observed timepoints; ${reported} events classified for dashboard OTP (${events.filter(e => e.status !== 'uncertain' && e.match_method === 'sequence').length} use historical sequence inference)`);
 }
 
 export async function processRecentDays(connection: DuckDBConnection): Promise<void> {
@@ -134,6 +138,7 @@ export async function processRecentDays(connection: DuckDBConnection): Promise<v
     const schedule = parsed.get(snapshot.hash) ?? readSchedule(Buffer.from(snapshot.zip_base64, 'base64'));
     parsed.set(snapshot.hash, schedule);
     await learnCrosswalk(connection, schedule, day);
+    await validateSequences(connection, schedule, day);
     await calculateDay(connection, day, schedule);
   }
   // Only explicitly requested historical dates are revisited. Bound each hourly
@@ -157,7 +162,9 @@ export async function processRecentDays(connection: DuckDBConnection): Promise<v
 async function crosswalkRevision(connection: DuckDBConnection, hash: string): Promise<string> {
   const result = await rows<{ revision: string }>(connection, `SELECT md5(COALESCE(string_agg(
     route || '|' || legacy_id || '|' || gtfs_id, ',' ORDER BY route, legacy_id, gtfs_id), '')) AS revision
-    FROM otp_trip_mappings WHERE schedule_hash = ${quote(hash)}`);
+    FROM (SELECT route, legacy_id, gtfs_id FROM otp_trip_mappings WHERE schedule_hash = ${quote(hash)}
+      UNION ALL SELECT route, legacy_id, gtfs_id || ':' || evidence_count AS gtfs_id
+      FROM otp_sequence_mappings WHERE schedule_hash = ${quote(hash)}) mappings`);
   return `${OTP_METHOD}:${result[0].revision}`;
 }
 async function finishBackfillDay(connection: DuckDBConnection, day: string, revision: string): Promise<void> {
@@ -173,7 +180,7 @@ export async function refreshMappedBackfill(connection: DuckDBConnection, schedu
   const revision = await crosswalkRevision(connection, schedule.hash);
   const candidates = await rows<{ day: string; gtfs_id: string }>(connection, `WITH mappings AS (
     SELECT route, legacy_id, MIN(gtfs_id) AS gtfs_id FROM otp_trip_mappings
-    WHERE schedule_hash = ${quote(schedule.hash)} GROUP BY route, legacy_id
+    WHERE schedule_hash = ${quote(schedule.hash)} GROUP BY route, legacy_id, service_id
     HAVING COUNT(DISTINCT gtfs_id) = 1
   ) SELECT DISTINCT CAST(b.service_date AS VARCHAR) AS day, m.gtfs_id
     FROM otp_backfill_days b JOIN transit_data t
@@ -264,6 +271,11 @@ async function main(): Promise<void> {
   try {
     await saveSchedule(db.connection, bytes, file, from);
     if (crosswalk) await importCrosswalk(db.connection, schedule, JSON.parse(await readFile(crosswalk, 'utf8')));
+    if (get('--sequence-from') || get('--sequence-to')) {
+      if (!get('--sequence-from') || !get('--sequence-to')) throw new Error('Both sequence evidence dates are required');
+      const count = await rebuildSequenceMappings(db.connection, schedule, get('--sequence-from')!, get('--sequence-to')!);
+      console.log(`[OTP] ${count} recurring sequence mappings inferred; provenance retained separately`);
+    }
     const revision = await crosswalkRevision(db.connection, schedule.hash);
     const days: string[] = [];
     for (let day = from; day <= to; day = addDays(day, 1)) days.push(day);

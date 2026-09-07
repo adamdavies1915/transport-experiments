@@ -91,8 +91,8 @@ app.get('/api/otp', async (_req: Request, res: Response) => {
     if (cached) return res.json(cached);
     const tables = await query<{ count: number }>(`SELECT COUNT(*) AS count
       FROM information_schema.tables WHERE table_catalog = '${DATABASE_NAME.replace(/'/g, "''")}'
-        AND table_schema = 'main' AND table_name IN ('otp_events', 'otp_coverage', 'otp_trip_mappings')`);
-    if (Number(tables[0].count) < 3) return res.json({ status: 'not_ready', days: [] });
+        AND table_schema = 'main' AND table_name IN ('otp_events', 'otp_coverage', 'otp_trip_mappings', 'otp_sequence_mappings')`);
+    if (Number(tables[0].count) < 4) return res.json({ status: 'not_ready', days: [] });
     const days = await query<OtpDay>(otpDaysSql(DATABASE_NAME));
     const result: OtpData = { status: days.length ? 'ready' : 'not_ready', days };
     // OTP reads small precomputed tables; show backfill progress within a minute.
