@@ -1,0 +1,1801 @@
+{
+  "started_at": "2026-09-08T01:56:48.525074+00:00",
+  "rounds": [
+    {
+      "round": 0,
+      "at": "2026-09-08T01:56:48.528379+00:00",
+      "map": {
+        "started_at": "2026-09-08T01:56:48.527615+00:00",
+        "received_at": "2026-09-08T01:56:48.741396+00:00",
+        "http_date": "Tue, 08 Sep 2026 01:56:48 GMT",
+        "vehicles": [
+          {
+            "id": "933",
+            "rt": "12",
+            "lat": "29.94753887327431",
+            "lon": "-90.07124501449422",
+            "dn": "SSW",
+            "pid": "558",
+            "pd": "OUTBOUND",
+            "fs": "S. Carrollton at S. Claiborne"
+          },
+          {
+            "id": "953",
+            "rt": "12",
+            "lat": "29.926602279418834",
+            "lon": "-90.09912096408806",
+            "dn": "E",
+            "pid": "588",
+            "pd": "INBOUND",
+            "fs": "Canal St. via Garden District"
+          },
+          {
+            "id": "972",
+            "rt": "12",
+            "lat": "29.936071822886944",
+            "lon": "-90.07754310567158",
+            "dn": "NE",
+            "pid": "588",
+            "pd": "INBOUND",
+            "fs": "Canal St. via Garden District"
+          },
+          {
+            "id": "459",
+            "rt": "12",
+            "lat": "29.927252292295087",
+            "lon": "-90.11019239801469",
+            "dn": "WNW",
+            "pid": "558",
+            "pd": "OUTBOUND",
+            "fs": "S. Carrollton at S. Claiborne"
+          },
+          {
+            "id": "460",
+            "rt": "12",
+            "lat": "29.941108386781163",
+            "lon": "-90.13174392710523",
+            "dn": "SE",
+            "pid": "588",
+            "pd": "INBOUND",
+            "fs": "Canal St. via Garden District"
+          }
+        ]
+      },
+      "predictions": {
+        "started_at": "2026-09-08T01:56:48.528067+00:00",
+        "received_at": "2026-09-08T01:56:48.699109+00:00",
+        "http_date": "Tue, 08 Sep 2026 01:56:48 GMT",
+        "stop_code": "259",
+        "stop_name": "St Charles Ave at Poydras St",
+        "direction": "OUTBOUND",
+        "no_prediction_message": null,
+        "predictions": [
+          {
+            "pt": "17 MIN",
+            "fd": "S. Carrollton at S. Claiborne",
+            "v": "972",
+            "scheduled": "false",
+            "rn": "12"
+          }
+        ]
+      }
+    },
+    {
+      "round": 1,
+      "at": "2026-09-08T01:57:08.525613+00:00",
+      "map": {
+        "started_at": "2026-09-08T01:57:08.525720+00:00",
+        "received_at": "2026-09-08T01:57:08.719364+00:00",
+        "http_date": "Tue, 08 Sep 2026 01:57:08 GMT",
+        "vehicles": [
+          {
+            "id": "933",
+            "rt": "12",
+            "lat": "29.947442809210585",
+            "lon": "-90.07128055780201",
+            "dn": "SSW",
+            "pid": "558",
+            "pd": "OUTBOUND",
+            "fs": "S. Carrollton at S. Claiborne"
+          },
+          {
+            "id": "953",
+            "rt": "12",
+            "lat": "29.92662145297502",
+            "lon": "-90.09939660265782",
+            "dn": "SSE",
+            "pid": "588",
+            "pd": "INBOUND",
+            "fs": "Canal St. via Garden District"
+          },
+          {
+            "id": "972",
+            "rt": "12",
+            "lat": "29.936071822886944",
+            "lon": "-90.07754310567158",
+            "dn": "NE",
+            "pid": "588",
+            "pd": "INBOUND",
+            "fs": "Canal St. via Garden District"
+          },
+          {
+            "id": "459",
+            "rt": "12",
+            "lat": "29.92777936600093",
+            "lon": "-90.11144498351565",
+            "dn": "WNW",
+            "pid": "558",
+            "pd": "OUTBOUND",
+            "fs": "S. Carrollton at S. Claiborne"
+          },
+          {
+            "id": "460",
+            "rt": "12",
+            "lat": "29.940085125787068",
+            "lon": "-90.1302831633492",
+            "dn": "SE",
+            "pid": "588",
+            "pd": "INBOUND",
+            "fs": "Canal St. via Garden District"
+          }
+        ]
+      },
+      "predictions": {
+        "started_at": "2026-09-08T01:57:08.525887+00:00",
+        "received_at": "2026-09-08T01:57:08.675125+00:00",
+        "http_date": "Tue, 08 Sep 2026 01:57:08 GMT",
+        "stop_code": "259",
+        "stop_name": "St Charles Ave at Poydras St",
+        "direction": "OUTBOUND",
+        "no_prediction_message": null,
+        "predictions": [
+          {
+            "pt": "17 MIN",
+            "fd": "S. Carrollton at S. Claiborne",
+            "v": "972",
+            "scheduled": "false",
+            "rn": "12"
+          }
+        ]
+      }
+    },
+    {
+      "round": 2,
+      "at": "2026-09-08T01:57:27.713634+00:00",
+      "map": {
+        "started_at": "2026-09-08T01:57:27.713715+00:00",
+        "received_at": "2026-09-08T01:57:27.900748+00:00",
+        "http_date": "Tue, 08 Sep 2026 01:57:27 GMT",
+        "vehicles": [
+          {
+            "id": "933",
+            "rt": "12",
+            "lat": "29.946300521412642",
+            "lon": "-90.07160203501832",
+            "dn": "S",
+            "pid": "558",
+            "pd": "OUTBOUND",
+            "fs": "S. Carrollton at S. Claiborne"
+          },
+          {
+            "id": "953",
+            "rt": "12",
+            "lat": "29.92673256783314",
+            "lon": "-90.09764119919726",
+            "dn": "E",
+            "pid": "588",
+            "pd": "INBOUND",
+            "fs": "Canal St. via Garden District"
+          },
+          {
+            "id": "972",
+            "rt": "12",
+            "lat": "29.936338203268573",
+            "lon": "-90.07742747641831",
+            "dn": "NNE",
+            "pid": "588",
+            "pd": "INBOUND",
+            "fs": "Canal St. via Garden District"
+          },
+          {
+            "id": "459",
+            "rt": "12",
+            "lat": "29.92854",
+            "lon": "-90.11279",
+            "dn": "SSW",
+            "pid": "558",
+            "pd": "OUTBOUND",
+            "fs": "S. Carrollton at S. Claiborne"
+          },
+          {
+            "id": "460",
+            "rt": "12",
+            "lat": "29.940085125787068",
+            "lon": "-90.1302831633492",
+            "dn": "SE",
+            "pid": "588",
+            "pd": "INBOUND",
+            "fs": "Canal St. via Garden District"
+          }
+        ]
+      },
+      "predictions": {
+        "started_at": "2026-09-08T01:57:27.713876+00:00",
+        "received_at": "2026-09-08T01:57:27.859280+00:00",
+        "http_date": "Tue, 08 Sep 2026 01:57:27 GMT",
+        "stop_code": "259",
+        "stop_name": "St Charles Ave at Poydras St",
+        "direction": "OUTBOUND",
+        "no_prediction_message": null,
+        "predictions": [
+          {
+            "pt": "17 MIN",
+            "fd": "S. Carrollton at S. Claiborne",
+            "v": "972",
+            "scheduled": "false",
+            "rn": "12"
+          }
+        ]
+      }
+    },
+    {
+      "round": 3,
+      "at": "2026-09-08T01:57:46.904956+00:00",
+      "map": {
+        "started_at": "2026-09-08T01:57:46.905051+00:00",
+        "received_at": "2026-09-08T01:57:47.098636+00:00",
+        "http_date": "Tue, 08 Sep 2026 01:57:46 GMT",
+        "vehicles": [
+          {
+            "id": "933",
+            "rt": "12",
+            "lat": "29.946061",
+            "lon": "-90.07171",
+            "dn": "E",
+            "pid": "558",
+            "pd": "OUTBOUND",
+            "fs": "S. Carrollton at S. Claiborne"
+          },
+          {
+            "id": "953",
+            "rt": "12",
+            "lat": "29.926878938956413",
+            "lon": "-90.09593075579562",
+            "dn": "E",
+            "pid": "588",
+            "pd": "INBOUND",
+            "fs": "Canal St. via Garden District"
+          },
+          {
+            "id": "972",
+            "rt": "12",
+            "lat": "29.93757",
+            "lon": "-90.0765",
+            "dn": "WNW",
+            "pid": "588",
+            "pd": "INBOUND",
+            "fs": "Canal St. via Garden District"
+          },
+          {
+            "id": "459",
+            "rt": "12",
+            "lat": "29.929404",
+            "lon": "-90.114768",
+            "dn": "NNE",
+            "pid": "558",
+            "pd": "OUTBOUND",
+            "fs": "S. Carrollton at S. Claiborne"
+          },
+          {
+            "id": "460",
+            "rt": "12",
+            "lat": "29.939841707161822",
+            "lon": "-90.13019336321656",
+            "dn": "SE",
+            "pid": "588",
+            "pd": "INBOUND",
+            "fs": "Canal St. via Garden District"
+          }
+        ]
+      },
+      "predictions": {
+        "started_at": "2026-09-08T01:57:46.905218+00:00",
+        "received_at": "2026-09-08T01:57:47.192863+00:00",
+        "http_date": "Tue, 08 Sep 2026 01:57:47 GMT",
+        "stop_code": "259",
+        "stop_name": "St Charles Ave at Poydras St",
+        "direction": "OUTBOUND",
+        "no_prediction_message": null,
+        "predictions": [
+          {
+            "pt": "16 MIN",
+            "fd": "S. Carrollton at S. Claiborne",
+            "v": "972",
+            "scheduled": "false",
+            "rn": "12"
+          }
+        ]
+      }
+    },
+    {
+      "round": 4,
+      "at": "2026-09-08T01:58:06.908264+00:00",
+      "map": {
+        "started_at": "2026-09-08T01:58:06.908360+00:00",
+        "received_at": "2026-09-08T01:58:07.099126+00:00",
+        "http_date": "Tue, 08 Sep 2026 01:58:06 GMT",
+        "vehicles": [
+          {
+            "id": "933",
+            "rt": "12",
+            "lat": "29.94467948545363",
+            "lon": "-90.0721163167994",
+            "dn": "SSW",
+            "pid": "558",
+            "pd": "OUTBOUND",
+            "fs": "S. Carrollton at S. Claiborne"
+          },
+          {
+            "id": "953",
+            "rt": "12",
+            "lat": "29.926947",
+            "lon": "-90.095675",
+            "dn": "S",
+            "pid": "588",
+            "pd": "INBOUND",
+            "fs": "Canal St. via Garden District"
+          },
+          {
+            "id": "972",
+            "rt": "12",
+            "lat": "29.938787089748864",
+            "lon": "-90.07547463762637",
+            "dn": "NNE",
+            "pid": "588",
+            "pd": "INBOUND",
+            "fs": "Canal St. via Garden District"
+          },
+          {
+            "id": "459",
+            "rt": "12",
+            "lat": "29.930111726935056",
+            "lon": "-90.11633246367107",
+            "dn": "WNW",
+            "pid": "558",
+            "pd": "OUTBOUND",
+            "fs": "S. Carrollton at S. Claiborne"
+          },
+          {
+            "id": "460",
+            "rt": "12",
+            "lat": "29.9383638237724",
+            "lon": "-90.12827374453637",
+            "dn": "SE",
+            "pid": "588",
+            "pd": "INBOUND",
+            "fs": "Canal St. via Garden District"
+          }
+        ]
+      },
+      "predictions": {
+        "started_at": "2026-09-08T01:58:06.908534+00:00",
+        "received_at": "2026-09-08T01:58:07.058796+00:00",
+        "http_date": "Tue, 08 Sep 2026 01:58:06 GMT",
+        "stop_code": "259",
+        "stop_name": "St Charles Ave at Poydras St",
+        "direction": "OUTBOUND",
+        "no_prediction_message": null,
+        "predictions": [
+          {
+            "pt": "16 MIN",
+            "fd": "S. Carrollton at S. Claiborne",
+            "v": "972",
+            "scheduled": "false",
+            "rn": "12"
+          }
+        ]
+      }
+    },
+    {
+      "round": 5,
+      "at": "2026-09-08T01:58:26.046400+00:00",
+      "map": {
+        "started_at": "2026-09-08T01:58:26.046535+00:00",
+        "received_at": "2026-09-08T01:58:26.301462+00:00",
+        "http_date": "Tue, 08 Sep 2026 01:58:25 GMT",
+        "vehicles": [
+          {
+            "id": "933",
+            "rt": "12",
+            "lat": "29.94457300091926",
+            "lon": "-90.07215257289002",
+            "dn": "SSW",
+            "pid": "558",
+            "pd": "OUTBOUND",
+            "fs": "S. Carrollton at S. Claiborne"
+          },
+          {
+            "id": "953",
+            "rt": "12",
+            "lat": "29.927374527081565",
+            "lon": "-90.09349214554884",
+            "dn": "ENE",
+            "pid": "588",
+            "pd": "INBOUND",
+            "fs": "Canal St. via Garden District"
+          },
+          {
+            "id": "972",
+            "rt": "12",
+            "lat": "29.93886966695238",
+            "lon": "-90.07540506875728",
+            "dn": "NNE",
+            "pid": "588",
+            "pd": "INBOUND",
+            "fs": "Canal St. via Garden District"
+          },
+          {
+            "id": "459",
+            "rt": "12",
+            "lat": "29.931066303459286",
+            "lon": "-90.11796686795402",
+            "dn": "NNE",
+            "pid": "558",
+            "pd": "OUTBOUND",
+            "fs": "S. Carrollton at S. Claiborne"
+          },
+          {
+            "id": "460",
+            "rt": "12",
+            "lat": "29.9383638237724",
+            "lon": "-90.12827374453637",
+            "dn": "SE",
+            "pid": "588",
+            "pd": "INBOUND",
+            "fs": "Canal St. via Garden District"
+          }
+        ]
+      },
+      "predictions": {
+        "started_at": "2026-09-08T01:58:26.046700+00:00",
+        "received_at": "2026-09-08T01:58:26.191583+00:00",
+        "http_date": "Tue, 08 Sep 2026 01:58:25 GMT",
+        "stop_code": "259",
+        "stop_name": "St Charles Ave at Poydras St",
+        "direction": "OUTBOUND",
+        "no_prediction_message": null,
+        "predictions": [
+          {
+            "pt": "16 MIN",
+            "fd": "S. Carrollton at S. Claiborne",
+            "v": "972",
+            "scheduled": "false",
+            "rn": "12"
+          }
+        ]
+      }
+    },
+    {
+      "round": 6,
+      "at": "2026-09-08T01:58:45.232955+00:00",
+      "map": {
+        "started_at": "2026-09-08T01:58:45.233057+00:00",
+        "received_at": "2026-09-08T01:58:45.422720+00:00",
+        "http_date": "Tue, 08 Sep 2026 01:58:45 GMT",
+        "vehicles": [
+          {
+            "id": "933",
+            "rt": "12",
+            "lat": "29.943877882527655",
+            "lon": "-90.07232424134584",
+            "dn": "SSW",
+            "pid": "558",
+            "pd": "OUTBOUND",
+            "fs": "S. Carrollton at S. Claiborne"
+          },
+          {
+            "id": "953",
+            "rt": "12",
+            "lat": "29.927531932160893",
+            "lon": "-90.09312431967044",
+            "dn": "ENE",
+            "pid": "588",
+            "pd": "INBOUND",
+            "fs": "Canal St. via Garden District"
+          },
+          {
+            "id": "972",
+            "rt": "12",
+            "lat": "29.939608334049755",
+            "lon": "-90.07492192699193",
+            "dn": "NNE",
+            "pid": "588",
+            "pd": "INBOUND",
+            "fs": "Canal St. via Garden District"
+          },
+          {
+            "id": "459",
+            "rt": "12",
+            "lat": "29.931756104153237",
+            "lon": "-90.1190163276884",
+            "dn": "NW",
+            "pid": "558",
+            "pd": "OUTBOUND",
+            "fs": "S. Carrollton at S. Claiborne"
+          },
+          {
+            "id": "460",
+            "rt": "12",
+            "lat": "29.937390310392953",
+            "lon": "-90.12700710601386",
+            "dn": "SE",
+            "pid": "588",
+            "pd": "INBOUND",
+            "fs": "Canal St. via Garden District"
+          }
+        ]
+      },
+      "predictions": {
+        "started_at": "2026-09-08T01:58:45.233228+00:00",
+        "received_at": "2026-09-08T01:58:45.381787+00:00",
+        "http_date": "Tue, 08 Sep 2026 01:58:45 GMT",
+        "stop_code": "259",
+        "stop_name": "St Charles Ave at Poydras St",
+        "direction": "OUTBOUND",
+        "no_prediction_message": null,
+        "predictions": [
+          {
+            "pt": "15 MIN",
+            "fd": "S. Carrollton at S. Claiborne",
+            "v": "972",
+            "scheduled": "false",
+            "rn": "12"
+          }
+        ]
+      }
+    }
+  ],
+  "relay_frames": [
+    {
+      "received_at": "2026-09-08T01:56:48.707329+00:00",
+      "vehicles": [
+        {
+          "vid": "933",
+          "rt": "12",
+          "lat": "29.94758424673268",
+          "lon": "-90.07122822650157",
+          "hdg": "195",
+          "tmstmp": "2026-09-07T20:56:00-05:00",
+          "srvtmstmp": "2026-09-07T20:56:00-05:00",
+          "pid": 558,
+          "spd": 6,
+          "des": "S. Carrollton at S. Claiborne",
+          "or": false
+        },
+        {
+          "vid": "459",
+          "rt": "12",
+          "lat": "29.926712911641523",
+          "lon": "-90.10901278744413",
+          "hdg": "297",
+          "tmstmp": "2026-09-07T20:56:00-05:00",
+          "srvtmstmp": "2026-09-07T20:56:00-05:00",
+          "pid": 558,
+          "spd": 0,
+          "des": "S. Carrollton at S. Claiborne",
+          "or": false
+        },
+        {
+          "vid": "460",
+          "rt": "12",
+          "lat": "29.941108386781163",
+          "lon": "-90.13174392710523",
+          "hdg": "132",
+          "tmstmp": "2026-09-07T20:56:00-05:00",
+          "srvtmstmp": "2026-09-07T20:56:00-05:00",
+          "pid": 588,
+          "spd": 15,
+          "des": "Canal St. via Garden District",
+          "or": false
+        },
+        {
+          "vid": "953",
+          "rt": "12",
+          "lat": "29.926602279418834",
+          "lon": "-90.09912096408806",
+          "hdg": "85",
+          "tmstmp": "2026-09-07T20:56:00-05:00",
+          "srvtmstmp": "2026-09-07T20:56:00-05:00",
+          "pid": 588,
+          "spd": 0,
+          "des": "Canal St. via Garden District",
+          "or": false
+        },
+        {
+          "vid": "972",
+          "rt": "12",
+          "lat": "29.936071822886944",
+          "lon": "-90.07754310567158",
+          "hdg": "47",
+          "tmstmp": "2026-09-07T20:56:00-05:00",
+          "srvtmstmp": "2026-09-07T20:56:00-05:00",
+          "pid": 588,
+          "spd": 0,
+          "des": "Canal St. via Garden District",
+          "or": false
+        }
+      ]
+    },
+    {
+      "received_at": "2026-09-08T01:56:55.646023+00:00",
+      "vehicles": [
+        {
+          "vid": "933",
+          "rt": "12",
+          "lat": "29.94753887327431",
+          "lon": "-90.07124501449422",
+          "hdg": "195",
+          "tmstmp": "2026-09-07T20:56:00-05:00",
+          "srvtmstmp": "2026-09-07T20:56:00-05:00",
+          "pid": 558,
+          "spd": 3,
+          "des": "S. Carrollton at S. Claiborne",
+          "or": false
+        },
+        {
+          "vid": "459",
+          "rt": "12",
+          "lat": "29.927252292295087",
+          "lon": "-90.11019239801469",
+          "hdg": "298",
+          "tmstmp": "2026-09-07T20:56:00-05:00",
+          "srvtmstmp": "2026-09-07T20:56:00-05:00",
+          "pid": 558,
+          "spd": 21,
+          "des": "S. Carrollton at S. Claiborne",
+          "or": false
+        },
+        {
+          "vid": "460",
+          "rt": "12",
+          "lat": "29.940199693879933",
+          "lon": "-90.13044671587258",
+          "hdg": "132",
+          "tmstmp": "2026-09-07T20:56:00-05:00",
+          "srvtmstmp": "2026-09-07T20:56:00-05:00",
+          "pid": 588,
+          "spd": 7,
+          "des": "Canal St. via Garden District",
+          "or": false
+        },
+        {
+          "vid": "953",
+          "rt": "12",
+          "lat": "29.92662145297502",
+          "lon": "-90.09939660265782",
+          "hdg": "149",
+          "tmstmp": "2026-09-07T20:56:00-05:00",
+          "srvtmstmp": "2026-09-07T20:56:00-05:00",
+          "pid": 588,
+          "spd": 9,
+          "des": "Canal St. via Garden District",
+          "or": false
+        },
+        {
+          "vid": "972",
+          "rt": "12",
+          "lat": "29.936071822886944",
+          "lon": "-90.07754310567158",
+          "hdg": "47",
+          "tmstmp": "2026-09-07T20:56:00-05:00",
+          "srvtmstmp": "2026-09-07T20:56:00-05:00",
+          "pid": 588,
+          "spd": 0,
+          "des": "Canal St. via Garden District",
+          "or": false
+        }
+      ]
+    },
+    {
+      "received_at": "2026-09-08T01:57:06.016519+00:00",
+      "vehicles": [
+        {
+          "vid": "933",
+          "rt": "12",
+          "lat": "29.947442809210585",
+          "lon": "-90.07128055780201",
+          "hdg": "195",
+          "tmstmp": "2026-09-07T20:57:00-05:00",
+          "srvtmstmp": "2026-09-07T20:57:00-05:00",
+          "pid": 558,
+          "spd": 6,
+          "des": "S. Carrollton at S. Claiborne",
+          "or": false
+        },
+        {
+          "vid": "459",
+          "rt": "12",
+          "lat": "29.92777936600093",
+          "lon": "-90.11144498351565",
+          "hdg": "298",
+          "tmstmp": "2026-09-07T20:56:00-05:00",
+          "srvtmstmp": "2026-09-07T20:56:00-05:00",
+          "pid": 558,
+          "spd": 22,
+          "des": "S. Carrollton at S. Claiborne",
+          "or": false
+        },
+        {
+          "vid": "460",
+          "rt": "12",
+          "lat": "29.940085125787068",
+          "lon": "-90.1302831633492",
+          "hdg": "132",
+          "tmstmp": "2026-09-07T20:56:00-05:00",
+          "srvtmstmp": "2026-09-07T20:56:00-05:00",
+          "pid": 588,
+          "spd": 3,
+          "des": "Canal St. via Garden District",
+          "or": false
+        },
+        {
+          "vid": "953",
+          "rt": "12",
+          "lat": "29.92662145297502",
+          "lon": "-90.09939660265782",
+          "hdg": "149",
+          "tmstmp": "2026-09-07T20:56:00-05:00",
+          "srvtmstmp": "2026-09-07T20:56:00-05:00",
+          "pid": 588,
+          "spd": 9,
+          "des": "Canal St. via Garden District",
+          "or": false
+        },
+        {
+          "vid": "972",
+          "rt": "12",
+          "lat": "29.936071822886944",
+          "lon": "-90.07754310567158",
+          "hdg": "47",
+          "tmstmp": "2026-09-07T20:56:00-05:00",
+          "srvtmstmp": "2026-09-07T20:56:00-05:00",
+          "pid": 588,
+          "spd": 0,
+          "des": "Canal St. via Garden District",
+          "or": false
+        }
+      ]
+    },
+    {
+      "received_at": "2026-09-08T01:57:15.572631+00:00",
+      "vehicles": [
+        {
+          "vid": "933",
+          "rt": "12",
+          "lat": "29.947248848062777",
+          "lon": "-90.07132245871138",
+          "hdg": "195",
+          "tmstmp": "2026-09-07T20:57:00-05:00",
+          "srvtmstmp": "2026-09-07T20:57:00-05:00",
+          "pid": 558,
+          "spd": 12,
+          "des": "S. Carrollton at S. Claiborne",
+          "or": false
+        },
+        {
+          "vid": "459",
+          "rt": "12",
+          "lat": "29.928419277366473",
+          "lon": "-90.1126837797693",
+          "hdg": "298",
+          "tmstmp": "2026-09-07T20:57:00-05:00",
+          "srvtmstmp": "2026-09-07T20:57:00-05:00",
+          "pid": 558,
+          "spd": 16,
+          "des": "S. Carrollton at S. Claiborne",
+          "or": false
+        },
+        {
+          "vid": "460",
+          "rt": "12",
+          "lat": "29.940085125787068",
+          "lon": "-90.1302831633492",
+          "hdg": "132",
+          "tmstmp": "2026-09-07T20:56:00-05:00",
+          "srvtmstmp": "2026-09-07T20:56:00-05:00",
+          "pid": 588,
+          "spd": 3,
+          "des": "Canal St. via Garden District",
+          "or": false
+        },
+        {
+          "vid": "953",
+          "rt": "12",
+          "lat": "29.92673256783314",
+          "lon": "-90.09764119919726",
+          "hdg": "84",
+          "tmstmp": "2026-09-07T20:57:00-05:00",
+          "srvtmstmp": "2026-09-07T20:57:00-05:00",
+          "pid": 588,
+          "spd": 11,
+          "des": "Canal St. via Garden District",
+          "or": false
+        },
+        {
+          "vid": "972",
+          "rt": "12",
+          "lat": "29.936338203268573",
+          "lon": "-90.07742747641831",
+          "hdg": "33",
+          "tmstmp": "2026-09-07T20:57:00-05:00",
+          "srvtmstmp": "2026-09-07T20:57:00-05:00",
+          "pid": 588,
+          "spd": 12,
+          "des": "Canal St. via Garden District",
+          "or": false
+        }
+      ]
+    },
+    {
+      "received_at": "2026-09-08T01:57:25.937079+00:00",
+      "vehicles": [
+        {
+          "vid": "933",
+          "rt": "12",
+          "lat": "29.946300521412642",
+          "lon": "-90.07160203501832",
+          "hdg": "189",
+          "tmstmp": "2026-09-07T20:57:00-05:00",
+          "srvtmstmp": "2026-09-07T20:57:00-05:00",
+          "pid": 558,
+          "spd": 11,
+          "des": "S. Carrollton at S. Claiborne",
+          "or": false
+        },
+        {
+          "vid": "459",
+          "rt": "12",
+          "lat": "29.92854",
+          "lon": "-90.11279",
+          "hdg": "201",
+          "tmstmp": "2026-09-07T20:57:00-05:00",
+          "srvtmstmp": "2026-09-07T20:57:00-05:00",
+          "pid": 558,
+          "spd": 21,
+          "des": "S. Carrollton at S. Claiborne",
+          "or": false
+        },
+        {
+          "vid": "460",
+          "rt": "12",
+          "lat": "29.940085125787068",
+          "lon": "-90.1302831633492",
+          "hdg": "132",
+          "tmstmp": "2026-09-07T20:56:00-05:00",
+          "srvtmstmp": "2026-09-07T20:56:00-05:00",
+          "pid": 588,
+          "spd": 3,
+          "des": "Canal St. via Garden District",
+          "or": false
+        },
+        {
+          "vid": "953",
+          "rt": "12",
+          "lat": "29.92673256783314",
+          "lon": "-90.09764119919726",
+          "hdg": "84",
+          "tmstmp": "2026-09-07T20:57:00-05:00",
+          "srvtmstmp": "2026-09-07T20:57:00-05:00",
+          "pid": 588,
+          "spd": 11,
+          "des": "Canal St. via Garden District",
+          "or": false
+        },
+        {
+          "vid": "972",
+          "rt": "12",
+          "lat": "29.936338203268573",
+          "lon": "-90.07742747641831",
+          "hdg": "33",
+          "tmstmp": "2026-09-07T20:57:00-05:00",
+          "srvtmstmp": "2026-09-07T20:57:00-05:00",
+          "pid": 588,
+          "spd": 12,
+          "des": "Canal St. via Garden District",
+          "or": false
+        }
+      ]
+    },
+    {
+      "received_at": "2026-09-08T01:57:36.308511+00:00",
+      "vehicles": [
+        {
+          "vid": "933",
+          "rt": "12",
+          "lat": "29.946061",
+          "lon": "-90.07171",
+          "hdg": "99",
+          "tmstmp": "2026-09-07T20:57:00-05:00",
+          "srvtmstmp": "2026-09-07T20:57:00-05:00",
+          "pid": 558,
+          "spd": 15,
+          "des": "S. Carrollton at S. Claiborne",
+          "or": false
+        },
+        {
+          "vid": "459",
+          "rt": "12",
+          "lat": "29.929331183366507",
+          "lon": "-90.1146535612591",
+          "hdg": "299",
+          "tmstmp": "2026-09-07T20:57:00-05:00",
+          "srvtmstmp": "2026-09-07T20:57:00-05:00",
+          "pid": 558,
+          "spd": 20,
+          "des": "S. Carrollton at S. Claiborne",
+          "or": false
+        },
+        {
+          "vid": "460",
+          "rt": "12",
+          "lat": "29.939841707161822",
+          "lon": "-90.13019336321656",
+          "hdg": "141",
+          "tmstmp": "2026-09-07T20:57:00-05:00",
+          "srvtmstmp": "2026-09-07T20:57:00-05:00",
+          "pid": 588,
+          "spd": 11,
+          "des": "Canal St. via Garden District",
+          "or": false
+        },
+        {
+          "vid": "953",
+          "rt": "12",
+          "lat": "29.926792",
+          "lon": "-90.097516",
+          "hdg": "172",
+          "tmstmp": "2026-09-07T20:57:00-05:00",
+          "srvtmstmp": "2026-09-07T20:57:00-05:00",
+          "pid": 588,
+          "spd": 12,
+          "des": "Canal St. via Garden District",
+          "or": false
+        },
+        {
+          "vid": "972",
+          "rt": "12",
+          "lat": "29.936338203268573",
+          "lon": "-90.07742747641831",
+          "hdg": "33",
+          "tmstmp": "2026-09-07T20:57:00-05:00",
+          "srvtmstmp": "2026-09-07T20:57:00-05:00",
+          "pid": 588,
+          "spd": 12,
+          "des": "Canal St. via Garden District",
+          "or": false
+        }
+      ]
+    },
+    {
+      "received_at": "2026-09-08T01:57:45.864848+00:00",
+      "vehicles": [
+        {
+          "vid": "933",
+          "rt": "12",
+          "lat": "29.946061",
+          "lon": "-90.07171",
+          "hdg": "99",
+          "tmstmp": "2026-09-07T20:57:00-05:00",
+          "srvtmstmp": "2026-09-07T20:57:00-05:00",
+          "pid": 558,
+          "spd": 15,
+          "des": "S. Carrollton at S. Claiborne",
+          "or": false
+        },
+        {
+          "vid": "459",
+          "rt": "12",
+          "lat": "29.929404",
+          "lon": "-90.114768",
+          "hdg": "27",
+          "tmstmp": "2026-09-07T20:57:00-05:00",
+          "srvtmstmp": "2026-09-07T20:57:00-05:00",
+          "pid": 558,
+          "spd": 20,
+          "des": "S. Carrollton at S. Claiborne",
+          "or": false
+        },
+        {
+          "vid": "460",
+          "rt": "12",
+          "lat": "29.939841707161822",
+          "lon": "-90.13019336321656",
+          "hdg": "141",
+          "tmstmp": "2026-09-07T20:57:00-05:00",
+          "srvtmstmp": "2026-09-07T20:57:00-05:00",
+          "pid": 588,
+          "spd": 11,
+          "des": "Canal St. via Garden District",
+          "or": false
+        },
+        {
+          "vid": "953",
+          "rt": "12",
+          "lat": "29.926878938956413",
+          "lon": "-90.09593075579562",
+          "hdg": "83",
+          "tmstmp": "2026-09-07T20:57:00-05:00",
+          "srvtmstmp": "2026-09-07T20:57:00-05:00",
+          "pid": 588,
+          "spd": 12,
+          "des": "Canal St. via Garden District",
+          "or": false
+        },
+        {
+          "vid": "972",
+          "rt": "12",
+          "lat": "29.93757",
+          "lon": "-90.0765",
+          "hdg": "297",
+          "tmstmp": "2026-09-07T20:57:00-05:00",
+          "srvtmstmp": "2026-09-07T20:57:00-05:00",
+          "pid": 588,
+          "spd": 16,
+          "des": "Canal St. via Garden District",
+          "or": false
+        }
+      ]
+    },
+    {
+      "received_at": "2026-09-08T01:57:56.248445+00:00",
+      "vehicles": [
+        {
+          "vid": "933",
+          "rt": "12",
+          "lat": "29.945003907721784",
+          "lon": "-90.07200585678538",
+          "hdg": "194",
+          "tmstmp": "2026-09-07T20:57:00-05:00",
+          "srvtmstmp": "2026-09-07T20:57:00-05:00",
+          "pid": 558,
+          "spd": 9,
+          "des": "S. Carrollton at S. Claiborne",
+          "or": false
+        },
+        {
+          "vid": "459",
+          "rt": "12",
+          "lat": "29.930111726935056",
+          "lon": "-90.11633246367107",
+          "hdg": "298",
+          "tmstmp": "2026-09-07T20:57:00-05:00",
+          "srvtmstmp": "2026-09-07T20:57:00-05:00",
+          "pid": 558,
+          "spd": 19,
+          "des": "S. Carrollton at S. Claiborne",
+          "or": false
+        },
+        {
+          "vid": "460",
+          "rt": "12",
+          "lat": "29.93878200263936",
+          "lon": "-90.12886296679386",
+          "hdg": "132",
+          "tmstmp": "2026-09-07T20:57:00-05:00",
+          "srvtmstmp": "2026-09-07T20:57:00-05:00",
+          "pid": 588,
+          "spd": 15,
+          "des": "Canal St. via Garden District",
+          "or": false
+        },
+        {
+          "vid": "953",
+          "rt": "12",
+          "lat": "29.926947",
+          "lon": "-90.095675",
+          "hdg": "174",
+          "tmstmp": "2026-09-07T20:57:00-05:00",
+          "srvtmstmp": "2026-09-07T20:57:00-05:00",
+          "pid": 588,
+          "spd": 15,
+          "des": "Canal St. via Garden District",
+          "or": false
+        },
+        {
+          "vid": "972",
+          "rt": "12",
+          "lat": "29.937589093965098",
+          "lon": "-90.07654029715832",
+          "hdg": "117",
+          "tmstmp": "2026-09-07T20:57:00-05:00",
+          "srvtmstmp": "2026-09-07T20:57:00-05:00",
+          "pid": 588,
+          "spd": 16,
+          "des": "Canal St. via Garden District",
+          "or": false
+        }
+      ]
+    },
+    {
+      "received_at": "2026-09-08T01:58:06.647235+00:00",
+      "vehicles": [
+        {
+          "vid": "933",
+          "rt": "12",
+          "lat": "29.944771410050098",
+          "lon": "-90.07208501810872",
+          "hdg": "194",
+          "tmstmp": "2026-09-07T20:57:00-05:00",
+          "srvtmstmp": "2026-09-07T20:57:00-05:00",
+          "pid": 558,
+          "spd": 5,
+          "des": "S. Carrollton at S. Claiborne",
+          "or": false
+        },
+        {
+          "vid": "459",
+          "rt": "12",
+          "lat": "29.930111726935056",
+          "lon": "-90.11633246367107",
+          "hdg": "298",
+          "tmstmp": "2026-09-07T20:57:00-05:00",
+          "srvtmstmp": "2026-09-07T20:57:00-05:00",
+          "pid": 558,
+          "spd": 19,
+          "des": "S. Carrollton at S. Claiborne",
+          "or": false
+        },
+        {
+          "vid": "460",
+          "rt": "12",
+          "lat": "29.93878200263936",
+          "lon": "-90.12886296679386",
+          "hdg": "132",
+          "tmstmp": "2026-09-07T20:57:00-05:00",
+          "srvtmstmp": "2026-09-07T20:57:00-05:00",
+          "pid": 588,
+          "spd": 15,
+          "des": "Canal St. via Garden District",
+          "or": false
+        },
+        {
+          "vid": "953",
+          "rt": "12",
+          "lat": "29.926947",
+          "lon": "-90.095675",
+          "hdg": "174",
+          "tmstmp": "2026-09-07T20:57:00-05:00",
+          "srvtmstmp": "2026-09-07T20:57:00-05:00",
+          "pid": 588,
+          "spd": 15,
+          "des": "Canal St. via Garden District",
+          "or": false
+        },
+        {
+          "vid": "972",
+          "rt": "12",
+          "lat": "29.937589093965098",
+          "lon": "-90.07654029715832",
+          "hdg": "117",
+          "tmstmp": "2026-09-07T20:57:00-05:00",
+          "srvtmstmp": "2026-09-07T20:57:00-05:00",
+          "pid": 588,
+          "spd": 16,
+          "des": "Canal St. via Garden District",
+          "or": false
+        }
+      ]
+    },
+    {
+      "received_at": "2026-09-08T01:58:16.161240+00:00",
+      "vehicles": [
+        {
+          "vid": "933",
+          "rt": "12",
+          "lat": "29.94467948545363",
+          "lon": "-90.0721163167994",
+          "hdg": "194",
+          "tmstmp": "2026-09-07T20:58:00-05:00",
+          "srvtmstmp": "2026-09-07T20:58:00-05:00",
+          "pid": 558,
+          "spd": 0,
+          "des": "S. Carrollton at S. Claiborne",
+          "or": false
+        },
+        {
+          "vid": "459",
+          "rt": "12",
+          "lat": "29.930922988460395",
+          "lon": "-90.11781120789534",
+          "hdg": "302",
+          "tmstmp": "2026-09-07T20:58:00-05:00",
+          "srvtmstmp": "2026-09-07T20:58:00-05:00",
+          "pid": 558,
+          "spd": 20,
+          "des": "S. Carrollton at S. Claiborne",
+          "or": false
+        },
+        {
+          "vid": "460",
+          "rt": "12",
+          "lat": "29.9383638237724",
+          "lon": "-90.12827374453637",
+          "hdg": "132",
+          "tmstmp": "2026-09-07T20:58:00-05:00",
+          "srvtmstmp": "2026-09-07T20:58:00-05:00",
+          "pid": 588,
+          "spd": 15,
+          "des": "Canal St. via Garden District",
+          "or": false
+        },
+        {
+          "vid": "953",
+          "rt": "12",
+          "lat": "29.927251775813666",
+          "lon": "-90.09396792472873",
+          "hdg": "71",
+          "tmstmp": "2026-09-07T20:58:00-05:00",
+          "srvtmstmp": "2026-09-07T20:58:00-05:00",
+          "pid": 588,
+          "spd": 15,
+          "des": "Canal St. via Garden District",
+          "or": false
+        },
+        {
+          "vid": "972",
+          "rt": "12",
+          "lat": "29.93886966695238",
+          "lon": "-90.07540506875728",
+          "hdg": "32",
+          "tmstmp": "2026-09-07T20:58:00-05:00",
+          "srvtmstmp": "2026-09-07T20:58:00-05:00",
+          "pid": 588,
+          "spd": 0,
+          "des": "Canal St. via Garden District",
+          "or": false
+        }
+      ]
+    },
+    {
+      "received_at": "2026-09-08T01:58:26.534871+00:00",
+      "vehicles": [
+        {
+          "vid": "933",
+          "rt": "12",
+          "lat": "29.94457300091926",
+          "lon": "-90.07215257289002",
+          "hdg": "194",
+          "tmstmp": "2026-09-07T20:58:00-05:00",
+          "srvtmstmp": "2026-09-07T20:58:00-05:00",
+          "pid": 558,
+          "spd": 8,
+          "des": "S. Carrollton at S. Claiborne",
+          "or": false
+        },
+        {
+          "vid": "459",
+          "rt": "12",
+          "lat": "29.931066303459286",
+          "lon": "-90.11796686795402",
+          "hdg": "32",
+          "tmstmp": "2026-09-07T20:58:00-05:00",
+          "srvtmstmp": "2026-09-07T20:58:00-05:00",
+          "pid": 558,
+          "spd": 20,
+          "des": "S. Carrollton at S. Claiborne",
+          "or": false
+        },
+        {
+          "vid": "460",
+          "rt": "12",
+          "lat": "29.9383638237724",
+          "lon": "-90.12827374453637",
+          "hdg": "132",
+          "tmstmp": "2026-09-07T20:58:00-05:00",
+          "srvtmstmp": "2026-09-07T20:58:00-05:00",
+          "pid": 588,
+          "spd": 15,
+          "des": "Canal St. via Garden District",
+          "or": false
+        },
+        {
+          "vid": "953",
+          "rt": "12",
+          "lat": "29.927374527081565",
+          "lon": "-90.09349214554884",
+          "hdg": "71",
+          "tmstmp": "2026-09-07T20:58:00-05:00",
+          "srvtmstmp": "2026-09-07T20:58:00-05:00",
+          "pid": 588,
+          "spd": 9,
+          "des": "Canal St. via Garden District",
+          "or": false
+        },
+        {
+          "vid": "972",
+          "rt": "12",
+          "lat": "29.93886966695238",
+          "lon": "-90.07540506875728",
+          "hdg": "32",
+          "tmstmp": "2026-09-07T20:58:00-05:00",
+          "srvtmstmp": "2026-09-07T20:58:00-05:00",
+          "pid": 588,
+          "spd": 0,
+          "des": "Canal St. via Garden District",
+          "or": false
+        }
+      ]
+    },
+    {
+      "received_at": "2026-09-08T01:58:36.903162+00:00",
+      "vehicles": [
+        {
+          "vid": "933",
+          "rt": "12",
+          "lat": "29.944524594395585",
+          "lon": "-90.07211952153999",
+          "hdg": "108",
+          "tmstmp": "2026-09-07T20:58:00-05:00",
+          "srvtmstmp": "2026-09-07T20:58:00-05:00",
+          "pid": 558,
+          "spd": 9,
+          "des": "S. Carrollton at S. Claiborne",
+          "or": false
+        },
+        {
+          "vid": "459",
+          "rt": "12",
+          "lat": "29.931756104153237",
+          "lon": "-90.1190163276884",
+          "hdg": "309",
+          "tmstmp": "2026-09-07T20:58:00-05:00",
+          "srvtmstmp": "2026-09-07T20:58:00-05:00",
+          "pid": 558,
+          "spd": 11,
+          "des": "S. Carrollton at S. Claiborne",
+          "or": false
+        },
+        {
+          "vid": "460",
+          "rt": "12",
+          "lat": "29.937605987931715",
+          "lon": "-90.12734231646739",
+          "hdg": "130",
+          "tmstmp": "2026-09-07T20:58:00-05:00",
+          "srvtmstmp": "2026-09-07T20:58:00-05:00",
+          "pid": 588,
+          "spd": 12,
+          "des": "Canal St. via Garden District",
+          "or": false
+        },
+        {
+          "vid": "953",
+          "rt": "12",
+          "lat": "29.927531932160893",
+          "lon": "-90.09312431967044",
+          "hdg": "67",
+          "tmstmp": "2026-09-07T20:58:00-05:00",
+          "srvtmstmp": "2026-09-07T20:58:00-05:00",
+          "pid": 588,
+          "spd": 10,
+          "des": "Canal St. via Garden District",
+          "or": false
+        },
+        {
+          "vid": "972",
+          "rt": "12",
+          "lat": "29.93886966695238",
+          "lon": "-90.07540506875728",
+          "hdg": "32",
+          "tmstmp": "2026-09-07T20:58:00-05:00",
+          "srvtmstmp": "2026-09-07T20:58:00-05:00",
+          "pid": 588,
+          "spd": 0,
+          "des": "Canal St. via Garden District",
+          "or": false
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "finished_at": "2026-09-08T01:58:45.426031+00:00",
+  "schema_version": 1,
+  "sources": {
+    "relay": "https://nolatransit.fly.dev/sse",
+    "map": "https://bustime.norta.com/bustime/map/getBusesForRouteAll.jsp",
+    "predictions": "https://bustime.norta.com/bustime/map/getStopPredictions.jsp?stop=259&route=12"
+  },
+  "selection": {
+    "gtfs_stop_id": "1067",
+    "stop_code": "259",
+    "route": "12",
+    "direction": "OUTBOUND"
+  },
+  "limits": {
+    "duration_seconds": 120,
+    "interval_seconds": 20,
+    "maximum_receipt_gap_seconds": 10
+  },
+  "notes": [
+    "Receipt and HTTP Date describe retrieval, not the time of a vehicle fix.",
+    "Relay provider timestamps have minute precision; their age is not an exact source latency.",
+    "Pairs use the latest preceding relay receipt aged between 0 and 10 seconds; future receipts are excluded.",
+    "Position agreement does not identify an arrival prediction algorithm or prove ETA accuracy.",
+    "Operator, run, block, trip, account and authentication fields are deliberately omitted.",
+    "Captured by the initial manual helper before the checked-in script; response payloads use the same field whitelist.",
+    "The initial helper scheduled rounds every 20 monotonic seconds, but wall-clock timestamps span about 117 seconds. Per-response monotonic clocks were not saved; wall-clock pairing here is approximate during possible host clock adjustment. The reusable script records both clocks."
+  ],
+  "pairs": [
+    {
+      "round": 0,
+      "vid": "933",
+      "route": "12",
+      "map_received_at": "2026-09-08T01:56:48.741396+00:00",
+      "relay_received_at": "2026-09-08T01:56:48.707329+00:00",
+      "receipt_gap_seconds": 0.034,
+      "receipt_pairing_clock": "wall",
+      "position_distance_meters": 5.298,
+      "same_pattern": true,
+      "relay_provider_at": "2026-09-07T20:56:00-05:00"
+    },
+    {
+      "round": 0,
+      "vid": "953",
+      "route": "12",
+      "map_received_at": "2026-09-08T01:56:48.741396+00:00",
+      "relay_received_at": "2026-09-08T01:56:48.707329+00:00",
+      "receipt_gap_seconds": 0.034,
+      "receipt_pairing_clock": "wall",
+      "position_distance_meters": 0.0,
+      "same_pattern": true,
+      "relay_provider_at": "2026-09-07T20:56:00-05:00"
+    },
+    {
+      "round": 0,
+      "vid": "972",
+      "route": "12",
+      "map_received_at": "2026-09-08T01:56:48.741396+00:00",
+      "relay_received_at": "2026-09-08T01:56:48.707329+00:00",
+      "receipt_gap_seconds": 0.034,
+      "receipt_pairing_clock": "wall",
+      "position_distance_meters": 0.0,
+      "same_pattern": true,
+      "relay_provider_at": "2026-09-07T20:56:00-05:00"
+    },
+    {
+      "round": 0,
+      "vid": "459",
+      "route": "12",
+      "map_received_at": "2026-09-08T01:56:48.741396+00:00",
+      "relay_received_at": "2026-09-08T01:56:48.707329+00:00",
+      "receipt_gap_seconds": 0.034,
+      "receipt_pairing_clock": "wall",
+      "position_distance_meters": 128.529,
+      "same_pattern": true,
+      "relay_provider_at": "2026-09-07T20:56:00-05:00"
+    },
+    {
+      "round": 0,
+      "vid": "460",
+      "route": "12",
+      "map_received_at": "2026-09-08T01:56:48.741396+00:00",
+      "relay_received_at": "2026-09-08T01:56:48.707329+00:00",
+      "receipt_gap_seconds": 0.034,
+      "receipt_pairing_clock": "wall",
+      "position_distance_meters": 0.0,
+      "same_pattern": true,
+      "relay_provider_at": "2026-09-07T20:56:00-05:00"
+    },
+    {
+      "round": 1,
+      "vid": "933",
+      "route": "12",
+      "map_received_at": "2026-09-08T01:57:08.719364+00:00",
+      "relay_received_at": "2026-09-08T01:57:06.016519+00:00",
+      "receipt_gap_seconds": 2.703,
+      "receipt_pairing_clock": "wall",
+      "position_distance_meters": 0.0,
+      "same_pattern": true,
+      "relay_provider_at": "2026-09-07T20:57:00-05:00"
+    },
+    {
+      "round": 1,
+      "vid": "953",
+      "route": "12",
+      "map_received_at": "2026-09-08T01:57:08.719364+00:00",
+      "relay_received_at": "2026-09-08T01:57:06.016519+00:00",
+      "receipt_gap_seconds": 2.703,
+      "receipt_pairing_clock": "wall",
+      "position_distance_meters": 0.0,
+      "same_pattern": true,
+      "relay_provider_at": "2026-09-07T20:56:00-05:00"
+    },
+    {
+      "round": 1,
+      "vid": "972",
+      "route": "12",
+      "map_received_at": "2026-09-08T01:57:08.719364+00:00",
+      "relay_received_at": "2026-09-08T01:57:06.016519+00:00",
+      "receipt_gap_seconds": 2.703,
+      "receipt_pairing_clock": "wall",
+      "position_distance_meters": 0.0,
+      "same_pattern": true,
+      "relay_provider_at": "2026-09-07T20:56:00-05:00"
+    },
+    {
+      "round": 1,
+      "vid": "459",
+      "route": "12",
+      "map_received_at": "2026-09-08T01:57:08.719364+00:00",
+      "relay_received_at": "2026-09-08T01:57:06.016519+00:00",
+      "receipt_gap_seconds": 2.703,
+      "receipt_pairing_clock": "wall",
+      "position_distance_meters": 0.0,
+      "same_pattern": true,
+      "relay_provider_at": "2026-09-07T20:56:00-05:00"
+    },
+    {
+      "round": 1,
+      "vid": "460",
+      "route": "12",
+      "map_received_at": "2026-09-08T01:57:08.719364+00:00",
+      "relay_received_at": "2026-09-08T01:57:06.016519+00:00",
+      "receipt_gap_seconds": 2.703,
+      "receipt_pairing_clock": "wall",
+      "position_distance_meters": 0.0,
+      "same_pattern": true,
+      "relay_provider_at": "2026-09-07T20:56:00-05:00"
+    },
+    {
+      "round": 2,
+      "vid": "933",
+      "route": "12",
+      "map_received_at": "2026-09-08T01:57:27.900748+00:00",
+      "relay_received_at": "2026-09-08T01:57:25.937079+00:00",
+      "receipt_gap_seconds": 1.964,
+      "receipt_pairing_clock": "wall",
+      "position_distance_meters": 0.0,
+      "same_pattern": true,
+      "relay_provider_at": "2026-09-07T20:57:00-05:00"
+    },
+    {
+      "round": 2,
+      "vid": "953",
+      "route": "12",
+      "map_received_at": "2026-09-08T01:57:27.900748+00:00",
+      "relay_received_at": "2026-09-08T01:57:25.937079+00:00",
+      "receipt_gap_seconds": 1.964,
+      "receipt_pairing_clock": "wall",
+      "position_distance_meters": 0.0,
+      "same_pattern": true,
+      "relay_provider_at": "2026-09-07T20:57:00-05:00"
+    },
+    {
+      "round": 2,
+      "vid": "972",
+      "route": "12",
+      "map_received_at": "2026-09-08T01:57:27.900748+00:00",
+      "relay_received_at": "2026-09-08T01:57:25.937079+00:00",
+      "receipt_gap_seconds": 1.964,
+      "receipt_pairing_clock": "wall",
+      "position_distance_meters": 0.0,
+      "same_pattern": true,
+      "relay_provider_at": "2026-09-07T20:57:00-05:00"
+    },
+    {
+      "round": 2,
+      "vid": "459",
+      "route": "12",
+      "map_received_at": "2026-09-08T01:57:27.900748+00:00",
+      "relay_received_at": "2026-09-08T01:57:25.937079+00:00",
+      "receipt_gap_seconds": 1.964,
+      "receipt_pairing_clock": "wall",
+      "position_distance_meters": 0.0,
+      "same_pattern": true,
+      "relay_provider_at": "2026-09-07T20:57:00-05:00"
+    },
+    {
+      "round": 2,
+      "vid": "460",
+      "route": "12",
+      "map_received_at": "2026-09-08T01:57:27.900748+00:00",
+      "relay_received_at": "2026-09-08T01:57:25.937079+00:00",
+      "receipt_gap_seconds": 1.964,
+      "receipt_pairing_clock": "wall",
+      "position_distance_meters": 0.0,
+      "same_pattern": true,
+      "relay_provider_at": "2026-09-07T20:56:00-05:00"
+    },
+    {
+      "round": 3,
+      "vid": "933",
+      "route": "12",
+      "map_received_at": "2026-09-08T01:57:47.098636+00:00",
+      "relay_received_at": "2026-09-08T01:57:45.864848+00:00",
+      "receipt_gap_seconds": 1.234,
+      "receipt_pairing_clock": "wall",
+      "position_distance_meters": 0.0,
+      "same_pattern": true,
+      "relay_provider_at": "2026-09-07T20:57:00-05:00"
+    },
+    {
+      "round": 3,
+      "vid": "953",
+      "route": "12",
+      "map_received_at": "2026-09-08T01:57:47.098636+00:00",
+      "relay_received_at": "2026-09-08T01:57:45.864848+00:00",
+      "receipt_gap_seconds": 1.234,
+      "receipt_pairing_clock": "wall",
+      "position_distance_meters": 0.0,
+      "same_pattern": true,
+      "relay_provider_at": "2026-09-07T20:57:00-05:00"
+    },
+    {
+      "round": 3,
+      "vid": "972",
+      "route": "12",
+      "map_received_at": "2026-09-08T01:57:47.098636+00:00",
+      "relay_received_at": "2026-09-08T01:57:45.864848+00:00",
+      "receipt_gap_seconds": 1.234,
+      "receipt_pairing_clock": "wall",
+      "position_distance_meters": 0.0,
+      "same_pattern": true,
+      "relay_provider_at": "2026-09-07T20:57:00-05:00"
+    },
+    {
+      "round": 3,
+      "vid": "459",
+      "route": "12",
+      "map_received_at": "2026-09-08T01:57:47.098636+00:00",
+      "relay_received_at": "2026-09-08T01:57:45.864848+00:00",
+      "receipt_gap_seconds": 1.234,
+      "receipt_pairing_clock": "wall",
+      "position_distance_meters": 0.0,
+      "same_pattern": true,
+      "relay_provider_at": "2026-09-07T20:57:00-05:00"
+    },
+    {
+      "round": 3,
+      "vid": "460",
+      "route": "12",
+      "map_received_at": "2026-09-08T01:57:47.098636+00:00",
+      "relay_received_at": "2026-09-08T01:57:45.864848+00:00",
+      "receipt_gap_seconds": 1.234,
+      "receipt_pairing_clock": "wall",
+      "position_distance_meters": 0.0,
+      "same_pattern": true,
+      "relay_provider_at": "2026-09-07T20:57:00-05:00"
+    },
+    {
+      "round": 4,
+      "vid": "933",
+      "route": "12",
+      "map_received_at": "2026-09-08T01:58:07.099126+00:00",
+      "relay_received_at": "2026-09-08T01:58:06.647235+00:00",
+      "receipt_gap_seconds": 0.452,
+      "receipt_pairing_clock": "wall",
+      "position_distance_meters": 10.657,
+      "same_pattern": true,
+      "relay_provider_at": "2026-09-07T20:57:00-05:00"
+    },
+    {
+      "round": 4,
+      "vid": "953",
+      "route": "12",
+      "map_received_at": "2026-09-08T01:58:07.099126+00:00",
+      "relay_received_at": "2026-09-08T01:58:06.647235+00:00",
+      "receipt_gap_seconds": 0.452,
+      "receipt_pairing_clock": "wall",
+      "position_distance_meters": 0.0,
+      "same_pattern": true,
+      "relay_provider_at": "2026-09-07T20:57:00-05:00"
+    },
+    {
+      "round": 4,
+      "vid": "972",
+      "route": "12",
+      "map_received_at": "2026-09-08T01:58:07.099126+00:00",
+      "relay_received_at": "2026-09-08T01:58:06.647235+00:00",
+      "receipt_gap_seconds": 0.452,
+      "receipt_pairing_clock": "wall",
+      "position_distance_meters": 168.194,
+      "same_pattern": true,
+      "relay_provider_at": "2026-09-07T20:57:00-05:00"
+    },
+    {
+      "round": 4,
+      "vid": "459",
+      "route": "12",
+      "map_received_at": "2026-09-08T01:58:07.099126+00:00",
+      "relay_received_at": "2026-09-08T01:58:06.647235+00:00",
+      "receipt_gap_seconds": 0.452,
+      "receipt_pairing_clock": "wall",
+      "position_distance_meters": 0.0,
+      "same_pattern": true,
+      "relay_provider_at": "2026-09-07T20:57:00-05:00"
+    },
+    {
+      "round": 4,
+      "vid": "460",
+      "route": "12",
+      "map_received_at": "2026-09-08T01:58:07.099126+00:00",
+      "relay_received_at": "2026-09-08T01:58:06.647235+00:00",
+      "receipt_gap_seconds": 0.452,
+      "receipt_pairing_clock": "wall",
+      "position_distance_meters": 73.387,
+      "same_pattern": true,
+      "relay_provider_at": "2026-09-07T20:57:00-05:00"
+    },
+    {
+      "round": 6,
+      "vid": "933",
+      "route": "12",
+      "map_received_at": "2026-09-08T01:58:45.422720+00:00",
+      "relay_received_at": "2026-09-08T01:58:36.903162+00:00",
+      "receipt_gap_seconds": 8.52,
+      "receipt_pairing_clock": "wall",
+      "position_distance_meters": 74.567,
+      "same_pattern": true,
+      "relay_provider_at": "2026-09-07T20:58:00-05:00"
+    },
+    {
+      "round": 6,
+      "vid": "953",
+      "route": "12",
+      "map_received_at": "2026-09-08T01:58:45.422720+00:00",
+      "relay_received_at": "2026-09-08T01:58:36.903162+00:00",
+      "receipt_gap_seconds": 8.52,
+      "receipt_pairing_clock": "wall",
+      "position_distance_meters": 0.0,
+      "same_pattern": true,
+      "relay_provider_at": "2026-09-07T20:58:00-05:00"
+    },
+    {
+      "round": 6,
+      "vid": "972",
+      "route": "12",
+      "map_received_at": "2026-09-08T01:58:45.422720+00:00",
+      "relay_received_at": "2026-09-08T01:58:36.903162+00:00",
+      "receipt_gap_seconds": 8.52,
+      "receipt_pairing_clock": "wall",
+      "position_distance_meters": 94.412,
+      "same_pattern": true,
+      "relay_provider_at": "2026-09-07T20:58:00-05:00"
+    },
+    {
+      "round": 6,
+      "vid": "459",
+      "route": "12",
+      "map_received_at": "2026-09-08T01:58:45.422720+00:00",
+      "relay_received_at": "2026-09-08T01:58:36.903162+00:00",
+      "receipt_gap_seconds": 8.52,
+      "receipt_pairing_clock": "wall",
+      "position_distance_meters": 0.0,
+      "same_pattern": true,
+      "relay_provider_at": "2026-09-07T20:58:00-05:00"
+    },
+    {
+      "round": 6,
+      "vid": "460",
+      "route": "12",
+      "map_received_at": "2026-09-08T01:58:45.422720+00:00",
+      "relay_received_at": "2026-09-08T01:58:36.903162+00:00",
+      "receipt_gap_seconds": 8.52,
+      "receipt_pairing_clock": "wall",
+      "position_distance_meters": 40.23,
+      "same_pattern": true,
+      "relay_provider_at": "2026-09-07T20:58:00-05:00"
+    }
+  ],
+  "summary": {
+    "map_rounds": 7,
+    "relay_frames": 12,
+    "unpaired_map_rounds": 1,
+    "paired_vehicle_observations": 30,
+    "within_one_meter": 22,
+    "median_position_difference_meters": 0.0,
+    "maximum_position_difference_meters": 168.194,
+    "pattern_mismatches": 0,
+    "unknown_pattern_pairs": 0
+  }
+}

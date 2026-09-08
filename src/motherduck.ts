@@ -29,6 +29,13 @@ export async function initMotherDuck(): Promise<void> {
   );
   connection = await instance.connect();
 
+  await initializeTransitSchema(connection, DATABASE_NAME);
+  console.log('MotherDuck initialized successfully');
+}
+
+/** Shared schema for the persistent local database and legacy command-line tools. */
+export async function initializeTransitSchema(connection: DuckDBConnection, DATABASE_NAME: string): Promise<void> {
+
   // Create table if it doesn't exist. Column order here matches INSERT_COLUMNS
   // and the order ALTER TABLE appends new columns, so fresh and migrated
   // tables end up identical.
@@ -74,7 +81,6 @@ export async function initMotherDuck(): Promise<void> {
   }
 
   await initializeStreetcarSnapshots(connection, DATABASE_NAME);
-  console.log('MotherDuck initialized successfully');
 }
 
 // Explicit insert column list — keeps inserts correct regardless of the

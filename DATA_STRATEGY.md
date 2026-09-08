@@ -1,5 +1,7 @@
 # Data Strategy: Measuring What Delays New Orleans Transit
 
+The current collection, storage, cost controls and deployment configuration are documented in [LOCAL_DATA_PIPELINE.md](LOCAL_DATA_PIPELINE.md). It supersedes the direct-to-MotherDuck runtime described in older sections below.
+
 Analysis of the current pipeline, the NORTA data source landscape, and the plan to
 turn raw vehicle pings into **measured schedule adherence** — without needing an API key.
 
@@ -10,6 +12,14 @@ matches the public GTFS `trips.trip_id`. The earlier proposed join and suggestio
 below to skip `tripid` were incorrect. The collector now stores `gtfs_trip_id`
 from `tripid`; `rid` is also not assumed to be the GTFS route ID. See [OTP.md](OTP.md)
 for the implemented independent calculation and its coverage limitations.
+
+**Live-feed investigation (2026-09-07):** The source assessment below is an older
+plan. Simultaneous reads found position differences between the relay and RTA's
+public map, and the relay deliberately requests minute-resolution timestamps.
+RTA's website also exposes anonymous stop predictions, separately from its
+credentialed developer API. See [LIVE_FEED_COMPARISON.md](LIVE_FEED_COMPARISON.md)
+for verified endpoints, stop-code mapping, measured differences and the limits of
+comparison with Le Pass and Google Maps.
 
 ---
 

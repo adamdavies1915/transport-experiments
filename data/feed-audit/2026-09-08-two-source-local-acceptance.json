@@ -1,0 +1,35 @@
+{
+  "captured_at": "2026-09-08T06:01:09.975Z",
+  "generated_at": "2026-09-08T05:53:16.141Z",
+  "summary_bytes": 10193355,
+  "sources": [
+    {
+      "id": "sse",
+      "label": "RTA relay",
+      "status": "ready",
+      "observations": 6808,
+      "last_received_at": "2026-09-08T05:53:10.815Z",
+      "last_provider_at": "2026-09-08T05:52:00.000Z",
+      "from": "2026-09-08T05:10:57.716Z",
+      "to": "2026-09-08T05:53:10.815Z"
+    },
+    {
+      "id": "lepass",
+      "label": "LePass",
+      "status": "ready",
+      "observations": 125,
+      "last_received_at": "2026-09-08T05:53:07.863Z",
+      "last_provider_at": "2026-09-08T05:52:43.107Z",
+      "from": "2026-09-08T05:51:04.453Z",
+      "to": "2026-09-08T05:53:07.863Z"
+    }
+  ],
+  "row_coverage": {
+    "passages": 1465,
+    "classified_passages": 7,
+    "unknown_passages": 1458
+  },
+  "signal_status": "collecting",
+  "cloud_writes_enabled": false,
+  "location": "local_acceptance_only"
+}

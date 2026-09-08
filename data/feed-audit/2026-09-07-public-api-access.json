@@ -1,0 +1,265 @@
+{
+  "checked_on_local_date": "2026-09-07",
+  "timezone": "America/Chicago",
+  "purpose": "Check whether the observed Le Pass arrival endpoint supports credential-free requests; compare with the public RTA website endpoint.",
+  "tests": [
+    {
+      "name": "moovit-empty-struct",
+      "url": "https://app5.moovitapp.com/services-app/services/V4/StopsArrivals",
+      "method": "POST",
+      "at": "2026-09-08T03:02:37.940626+00:00",
+      "status": 401,
+      "content_type": null,
+      "http_date": "Tue, 08 Sep 2026 03:02:37 GMT",
+      "request_header_names": [
+        "Accept",
+        "Content-Type"
+      ],
+      "request_bytes": 1,
+      "response_bytes": 0,
+      "response_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "credentials_supplied": false
+    },
+    {
+      "name": "rta-public-control",
+      "url": "https://bustime.norta.com/bustime/map/getStopPredictions.jsp?stop=259&route=12",
+      "method": "GET",
+      "at": "2026-09-08T03:02:38.216404+00:00",
+      "status": 200,
+      "content_type": "text/xml;charset=UTF-8",
+      "http_date": "Tue, 08 Sep 2026 03:02:37 GMT",
+      "request_header_names": [],
+      "request_bytes": 0,
+      "response_bytes": 724,
+      "response_sha256": "2d47754c66d033ff7e8ce0241ba9d0cf53f7e39e8e1209e935ffa5df579fd338",
+      "credentials_supplied": false,
+      "response_summary": {
+        "stop_code": "259",
+        "stop_name": "St Charles Ave at Poydras St",
+        "route": "12",
+        "direction": "OUTBOUND",
+        "predictions": [
+          {
+            "displayed_time": "10:25 PM SCH",
+            "vehicle_or_status": "CNCL",
+            "destination": "S. Carrollton at S. Claiborne"
+          }
+        ]
+      }
+    },
+    {
+      "name": "moovit-model-formed-stop-request",
+      "url": "https://app5.moovitapp.com/services-app/services/V4/StopsArrivals",
+      "method": "POST",
+      "at": "2026-09-08T03:07:29.012013+00:00",
+      "status": 401,
+      "content_type": null,
+      "http_date": "Tue, 08 Sep 2026 03:07:28 GMT",
+      "request_header_names": [
+        "Accept",
+        "Content-Type"
+      ],
+      "credentials_supplied": false,
+      "request_bytes": 33,
+      "request_sha256": "f951eada9c8ad5a79daa411c247d6d2192927f3bfae794838784d8e3086c50db",
+      "request_body_hex": "0f00010800000001004543c80c0002020002000200030002000401020005000000",
+      "request_model": {
+        "stopIds": [
+          4539336
+        ],
+        "conf": {
+          "intrestingInLastArrivals": false,
+          "includeOnlyLastArrivals": false,
+          "includeStaticSchedule": true,
+          "includeShapeSegments": false
+        }
+      },
+      "response_bytes": 0,
+      "response_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "guest_bootstrap_observed_in_app": [
+    {
+      "event": "request",
+      "flow_id": "ffe3a711-b81a-4a63-b92e-5bffabc2856c",
+      "host": "app4.moovitapp.com",
+      "method": "POST",
+      "path": "/services-app/services/UserAuth/CreateUser",
+      "query_keys": [],
+      "header_names": [
+        "accept",
+        "accept-encoding",
+        "api_key",
+        "client_version",
+        "content-type",
+        "phone_type",
+        "user-agent"
+      ],
+      "body_bytes": 306,
+      "body_shape": null,
+      "at": "2026-09-08T02:35:10.776092+00:00"
+    },
+    {
+      "event": "response",
+      "flow_id": "ffe3a711-b81a-4a63-b92e-5bffabc2856c",
+      "host": "app4.moovitapp.com",
+      "path": "/services-app/services/UserAuth/CreateUser",
+      "status": 200,
+      "content_type": "application/json;charset=UTF-8",
+      "body_bytes": 1317,
+      "transit_response_file": null,
+      "body_shape": {
+        "1": {
+          "rec": {
+            "1": {
+              "str": "str"
+            },
+            "2": {
+              "i16": "int"
+            },
+            "3": {
+              "i16": "int"
+            },
+            "4": {
+              "tf": "int"
+            },
+            "5": {
+              "i32": "int"
+            },
+            "6": {
+              "str": "str"
+            },
+            "7": {
+              "rec": {
+                "1": "dict"
+              }
+            },
+            "8": {
+              "str": "str"
+            }
+          }
+        }
+      },
+      "at": "2026-09-08T02:35:10.944852+00:00"
+    }
+  ],
+  "conclusions": [
+    "Two credential-free POSTs to the observed StopsArrivals endpoint returned HTTP 401 with empty bodies.",
+    "The second body was constructed and round-trip checked against the installed app request DTO: stopIds list and all default arrival-configuration fields, with optional time fields omitted.",
+    "This demonstrates rejection of these anonymous requests; it does not isolate which header is required or establish the behavior of every Moovit endpoint.",
+    "The normal app first launch called UserAuth/CreateUser with an API_KEY and without USER_KEY, receiving HTTP 200; later arrival requests carried API_KEY and USER_KEY without interactive Le Pass sign-in. This supports automatic guest credential setup.",
+    "RTA public stop predictions returned HTTP 200 and XML without credentials. The late-evening response contained a cancelled scheduled departure, not a new live-vehicle prediction.",
+    "No app credential values, cookies, account response values or access tokens were retained or replayed; the credential-free check did not call CreateUser."
+  ],
+  "supported_moovit_api_documentation": "https://api-docs.moovit.com/api-docs/5.1/MoovitPublicTransitAPIs.html",
+  "initial_credential_lifetime_check": {
+    "user_key_lifetime": null,
+    "access_token_lifetime": null,
+    "refresh_token_lifetime": null,
+    "reason": "Only types and header names were retained, not issued token timestamps or credential values. Model schemas alone do not establish lifetimes.",
+    "static_auth_model_schema": {
+      "Lcom/tranzmate/moovit/protocol/commonauth/MVAccessToken;": {
+        "1": {
+          "name": "issueTime",
+          "type": 10
+        },
+        "2": {
+          "name": "expirationTime",
+          "type": 10
+        },
+        "3": {
+          "name": "token",
+          "type": 11
+        }
+      },
+      "Lcom/tranzmate/moovit/protocol/commonauth/MVAuthenticationInfo;": {
+        "1": {
+          "name": "validationTokens",
+          "type": 12
+        }
+      },
+      "Lcom/tranzmate/moovit/protocol/commonauth/MVCreateUser;": {
+        "1": {
+          "name": "userKey",
+          "type": 11
+        },
+        "2": {
+          "name": "langId",
+          "type": 6
+        },
+        "3": {
+          "name": "currentMetroAreaId",
+          "type": 6
+        },
+        "4": {
+          "name": "isReinstall",
+          "type": 2
+        },
+        "5": {
+          "name": "userBucket",
+          "type": 8
+        },
+        "6": {
+          "name": "firstUserKey",
+          "type": 11
+        },
+        "7": {
+          "name": "authenticationInfo",
+          "type": 12
+        },
+        "8": {
+          "name": "userToken",
+          "type": 11
+        }
+      },
+      "Lcom/tranzmate/moovit/protocol/commonauth/MVRefreshToken;": {
+        "1": {
+          "name": "issueTime",
+          "type": 10
+        },
+        "2": {
+          "name": "expirationTime",
+          "type": 10
+        },
+        "3": {
+          "name": "token",
+          "type": 11
+        }
+      },
+      "Lcom/tranzmate/moovit/protocol/commonauth/MVValidationTokens;": {
+        "1": {
+          "name": "accessToken",
+          "type": 12
+        },
+        "2": {
+          "name": "refreshToken",
+          "type": 12
+        }
+      },
+      "Lcom/tranzmate/moovit/protocol/commonauth/MVValidationTokensRefreshRequest;": {
+        "1": {
+          "name": "refreshToken",
+          "type": 11
+        }
+      },
+      "Lcom/tranzmate/moovit/protocol/users/MVCreateUserResponse;": {
+        "1": {
+          "name": "user",
+          "type": 12
+        },
+        "2": {
+          "name": "countries",
+          "type": 12
+        }
+      }
+    },
+    "source_dex_sha256": "0b86baf0178a3135c8fae4575f072294c4381089401721a5e29ff2cdfbe43c6f",
+    "successful_arrival_response_count": 19,
+    "arrival_request_access_token_header_count": 0,
+    "arrival_request_user_key_header_count": 19,
+    "seconds_between_guest_creation_and_last_arrival_response": 501.162189,
+    "refresh_request_observed": false,
+    "unchanged_credential_across_requests_verified": false
+  },
+  "fresh_credential_lifetime_check": "2026-09-07-lepass-token-lifetime.json"
+}

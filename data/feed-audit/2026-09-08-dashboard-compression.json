@@ -1,0 +1,37 @@
+[
+  {
+    "path": "/api/row-study",
+    "uncompressed_bytes": 4263935,
+    "transferred_bytes": 777514,
+    "reduction_pct": 82,
+    "encoding": "gzip"
+  },
+  {
+    "path": "/api/signal-study",
+    "uncompressed_bytes": 4407340,
+    "transferred_bytes": 782537,
+    "reduction_pct": 82,
+    "encoding": "gzip"
+  },
+  {
+    "path": "/api/row-study?mode=bus",
+    "uncompressed_bytes": 5097480,
+    "transferred_bytes": 828085,
+    "reduction_pct": 84,
+    "encoding": "gzip"
+  },
+  {
+    "path": "/api/otp",
+    "uncompressed_bytes": 491369,
+    "transferred_bytes": 71532,
+    "reduction_pct": 85,
+    "encoding": "gzip"
+  },
+  {
+    "path": "/api/health",
+    "uncompressed_bytes": 183,
+    "transferred_bytes": 183,
+    "reduction_pct": 0,
+    "encoding": "identity"
+  }
+]

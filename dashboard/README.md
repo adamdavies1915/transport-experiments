@@ -1,16 +1,26 @@
-# React + Vite
+# NOLA transit dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+The public server serves collector-produced JSON summaries from memory and a durable local snapshot. It has no MotherDuck connection, database token, or request-triggered query path. A background refresh requests the private collector endpoint once a minute; the collector computes summaries every 15 minutes. A snapshot older than 35 minutes, or a failed refresh, is marked stale without discarding usable data.
 
-Currently, two official plugins are available:
+Configure only server-side environment variables:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+| Variable | Purpose |
+| --- | --- |
+| `TRANSIT_SUMMARY_URL` | Private collector URL, e.g. `http://collector:3100/internal/summary` |
+| `TRANSIT_SUMMARY_TOKEN` | Shared bearer secret; never use a `VITE_` prefix |
+| `TRANSIT_SUMMARY_CACHE_FILE` | Durable last-successful snapshot; Docker default `/app/data/transit-summary.json` |
+| `PORT` | Public HTTP port, default `3000` |
 
-## React Compiler
+Mount a persistent volume at `/app/data` in Coolify. A container restart then restores the last successful snapshot even while the collector is unavailable. The private collector must be reachable on the internal network. Remove old MotherDuck credentials from the dashboard deployment. Credentials are not required in browser configuration.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+For development, run `npm run dev:server` and `npm run dev` from this directory. Vite proxies `/api` to the local server on port 3000. `npm run build` creates the frontend; `npm start` serves it and the public API. The historical entry filename `server-motherduck.ts` is retained for deployment compatibility, but its implementation only starts the saved-summary server.
 
-## Expanding the ESLint configuration
+The new **Roadway time** and **Signals** views filter 28 days of additive summaries by source, service, route, direction, dates, day type and hour. SSE and Le Pass data are never pooled. ROW comparisons use only same-date matches with equal date weights, at least 30 passages per roadway class and seven common dates. Unreviewed roadway remains unknown. Signal encounters include insufficiently sampled encounters in the denominator, show evaluable coverage separately, require 30 evaluable encounters over seven dates for headline estimates, and withhold priority scenarios for passenger-stop overlaps or entirely unevaluable samples. Recovery percentages are illustrative assumptions, not measured effects.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Overview and OTP remain independent historical views. `buildLegacySummary(query, database)` is a pure helper for the collector's local DuckDB worker; it never opens a connection. Earlier streetcar priority scenarios use a fixed 28-day snapshot because saved quantiles cannot be truthfully re-filtered. The older speed diagnostics retain seven days of site bins to bound payload size. Their available date controls reflect that limit.
+
+The private envelope is documented by `src/summary-data.ts`; the study event contracts live in `../src/transit-study-types.ts`. Public responses expose summary provenance and readable collecting states. Private fetches have a 10-second timeout, no redirects, a 64 MiB payload bound, and atomic snapshot replacement. A malformed, older or failed response keeps the last valid snapshot. Public requests do not trigger upstream fetches.
+
+Verification: `npm run typecheck`, `npm run lint`, `npm test`, `npm run build`. Summary/API tests run entirely offline with synthetic responses and in-process HTTP requests; they need no ports, credentials or live collectors.
+
+The collector's optional cloud archive requires a fresh usage record with `plan: "lite"` **and** `billing_mode: "free"`, within its storage and compute operating limits. Lite free-tier transient databases support zero historical snapshot retention and retain failsafe bytes for one day. Paid Lite requires one day of historical retention, so paid or unknown billing modes are rejected. This is verified against the [MotherDuck storage lifecycle documentation](https://motherduck.com/docs/concepts/storage-lifecycle/). The dashboard itself never enables cloud writes.

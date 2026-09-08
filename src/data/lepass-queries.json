@@ -1,0 +1,1304 @@
+[
+  {
+    "id": "rta-3-line-6505271-stop-46132645",
+    "stopId": 46132645,
+    "lineId": 6505271,
+    "routeId": "3",
+    "directionId": null,
+    "gtfsStopId": "2716",
+    "mappingConfidence": "candidate",
+    "patterns": [
+      {
+        "patternId": 17096306,
+        "directionId": null,
+        "mappingConfidence": "candidate"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-3-line-9893886-stop-35667622",
+    "stopId": 35667622,
+    "lineId": 9893886,
+    "routeId": "3",
+    "directionId": "1",
+    "gtfsStopId": "1843",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17097834,
+        "directionId": "1",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-3-line-10369755-stop-37677017",
+    "stopId": 37677017,
+    "lineId": 10369755,
+    "routeId": "3",
+    "directionId": null,
+    "gtfsStopId": "2711",
+    "mappingConfidence": "candidate",
+    "patterns": [
+      {
+        "patternId": 17096335,
+        "directionId": null,
+        "mappingConfidence": "candidate"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-3-line-10992438-stop-35667622",
+    "stopId": 35667622,
+    "lineId": 10992438,
+    "routeId": "3",
+    "directionId": "1",
+    "gtfsStopId": "1843",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 18024133,
+        "directionId": "1",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-8-line-6505258-stop-1838039",
+    "stopId": 1838039,
+    "lineId": 6505258,
+    "routeId": "8",
+    "directionId": "0",
+    "gtfsStopId": "779",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17096274,
+        "directionId": "0",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-8-line-6505263-stop-4540113",
+    "stopId": 4540113,
+    "lineId": 6505263,
+    "routeId": "8",
+    "directionId": "1",
+    "gtfsStopId": "2422",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17096314,
+        "directionId": "1",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-9-line-6505241-stop-4540276",
+    "stopId": 4540276,
+    "lineId": 6505241,
+    "routeId": "9",
+    "directionId": "1",
+    "gtfsStopId": "2632",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17096312,
+        "directionId": "1",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-9-line-6505269-stop-4540320",
+    "stopId": 4540320,
+    "lineId": 6505269,
+    "routeId": "9",
+    "directionId": "0",
+    "gtfsStopId": "2690",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17096288,
+        "directionId": "0",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-11-line-6711844-stop-4539638",
+    "stopId": 4539638,
+    "lineId": 6711844,
+    "routeId": "11",
+    "directionId": "0",
+    "gtfsStopId": "198",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17096277,
+        "directionId": "0",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-11-line-7171579-stop-35668053",
+    "stopId": 35668053,
+    "lineId": 7171579,
+    "routeId": "11",
+    "directionId": "1",
+    "gtfsStopId": "2098",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17096290,
+        "directionId": "1",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-12-line-7171595-stop-4539313",
+    "stopId": 4539313,
+    "lineId": 7171595,
+    "routeId": "12",
+    "directionId": "1",
+    "gtfsStopId": "1039",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17096268,
+        "directionId": "1",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-12-line-8697788-stop-4539150",
+    "stopId": 4539150,
+    "lineId": 8697788,
+    "routeId": "12",
+    "directionId": "0",
+    "gtfsStopId": "1269",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17096284,
+        "directionId": "0",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-27-line-3237613-stop-4538626",
+    "stopId": 4538626,
+    "lineId": 3237613,
+    "routeId": "27",
+    "directionId": "0",
+    "gtfsStopId": "4",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17096298,
+        "directionId": "0",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-27-line-3237614-stop-35667691",
+    "stopId": 35667691,
+    "lineId": 3237614,
+    "routeId": "27",
+    "directionId": "1",
+    "gtfsStopId": "1270",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17096301,
+        "directionId": "1",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-31-line-6505253-stop-4539638",
+    "stopId": 4539638,
+    "lineId": 6505253,
+    "routeId": "31",
+    "directionId": "0",
+    "gtfsStopId": "198",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17096333,
+        "directionId": "0",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-31-line-6505273-stop-4538869",
+    "stopId": 4538869,
+    "lineId": 6505273,
+    "routeId": "31",
+    "directionId": "1",
+    "gtfsStopId": "1407",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17096322,
+        "directionId": "1",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-32-line-3237617-stop-4539638",
+    "stopId": 4539638,
+    "lineId": 3237617,
+    "routeId": "32",
+    "directionId": "0",
+    "gtfsStopId": "198",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17096336,
+        "directionId": "0",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-32-line-3237618-stop-4540113",
+    "stopId": 4540113,
+    "lineId": 3237618,
+    "routeId": "32",
+    "directionId": "1",
+    "gtfsStopId": "2422",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17096320,
+        "directionId": "1",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-45-line-3237621-stop-35667774",
+    "stopId": 35667774,
+    "lineId": 3237621,
+    "routeId": "45",
+    "directionId": "1",
+    "gtfsStopId": "2118",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17096318,
+        "directionId": "1",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-46-line-8364817-stop-4540882",
+    "stopId": 4540882,
+    "lineId": 8364817,
+    "routeId": "46",
+    "directionId": "0",
+    "gtfsStopId": "2138",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17096279,
+        "directionId": "0",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-46-line-9140137-stop-814273037",
+    "stopId": 814273037,
+    "lineId": 9140137,
+    "routeId": "46",
+    "directionId": "1",
+    "mappingConfidence": "candidate",
+    "patterns": [
+      {
+        "patternId": 17096317,
+        "directionId": "1",
+        "mappingConfidence": "candidate"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-47-line-6435066-stop-35668317",
+    "stopId": 35668317,
+    "lineId": 6435066,
+    "routeId": "47",
+    "directionId": "0",
+    "gtfsStopId": "1963",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17096269,
+        "directionId": "0",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-47-line-10731058-stop-4539758",
+    "stopId": 4539758,
+    "lineId": 10731058,
+    "routeId": "47",
+    "directionId": "1",
+    "gtfsStopId": "1964",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17096321,
+        "directionId": "1",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-48-line-6435050-stop-4539758",
+    "stopId": 4539758,
+    "lineId": 6435050,
+    "routeId": "48",
+    "directionId": "1",
+    "gtfsStopId": "1964",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17096307,
+        "directionId": "1",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-48-line-6939631-stop-1837982",
+    "stopId": 1837982,
+    "lineId": 6939631,
+    "routeId": "48",
+    "directionId": "0",
+    "gtfsStopId": "1236",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17096285,
+        "directionId": "0",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-49-line-9140151-stop-37650363",
+    "stopId": 37650363,
+    "lineId": 9140151,
+    "routeId": "49",
+    "directionId": null,
+    "mappingConfidence": "candidate",
+    "patterns": [
+      {
+        "patternId": 13947590,
+        "directionId": null,
+        "mappingConfidence": "candidate"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-49-line-10732026-stop-4540595",
+    "stopId": 4540595,
+    "lineId": 10732026,
+    "routeId": "49",
+    "directionId": "0",
+    "gtfsStopId": "1625",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 13947588,
+        "directionId": "0",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-51-line-3237622-stop-4538704",
+    "stopId": 4538704,
+    "lineId": 3237622,
+    "routeId": "51",
+    "directionId": "0",
+    "gtfsStopId": "126",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17096300,
+        "directionId": "0",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-51-line-3237623-stop-4539658",
+    "stopId": 4539658,
+    "lineId": 3237623,
+    "routeId": "51",
+    "directionId": "1",
+    "gtfsStopId": "1551",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17096325,
+        "directionId": "1",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-52-line-3237626-stop-4539484",
+    "stopId": 4539484,
+    "lineId": 3237626,
+    "routeId": "52",
+    "directionId": "1",
+    "gtfsStopId": "1291",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17096283,
+        "directionId": "1",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-52-line-10967837-stop-4538798",
+    "stopId": 4538798,
+    "lineId": 10967837,
+    "routeId": "52",
+    "directionId": "0",
+    "gtfsStopId": "229",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17937525,
+        "directionId": "0",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-53-O-line-6505242-stop-4538798",
+    "stopId": 4538798,
+    "lineId": 6505242,
+    "routeId": "53-O",
+    "directionId": "0",
+    "gtfsStopId": "229",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17096344,
+        "directionId": "0",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-53-O-line-6505255-stop-4539658",
+    "stopId": 4539658,
+    "lineId": 6505255,
+    "routeId": "53-O",
+    "directionId": "1",
+    "gtfsStopId": "1551",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17096341,
+        "directionId": "1",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-55-line-6711845-stop-4540113",
+    "stopId": 4540113,
+    "lineId": 6711845,
+    "routeId": "55",
+    "directionId": "1",
+    "gtfsStopId": "2422",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17096286,
+        "directionId": "1",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-55-line-9140136-stop-4539577",
+    "stopId": 4539577,
+    "lineId": 9140136,
+    "routeId": "55",
+    "directionId": "0",
+    "gtfsStopId": "312",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17096272,
+        "directionId": "0",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-55-line-10369762-stop-4540113",
+    "stopId": 4540113,
+    "lineId": 10369762,
+    "routeId": "55",
+    "directionId": "1",
+    "gtfsStopId": "2422",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17096323,
+        "directionId": "1",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-55-line-10369763-stop-4538798",
+    "stopId": 4538798,
+    "lineId": 10369763,
+    "routeId": "55",
+    "directionId": "0",
+    "gtfsStopId": "229",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17096275,
+        "directionId": "0",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-57-line-3237629-stop-35668051",
+    "stopId": 35668051,
+    "lineId": 3237629,
+    "routeId": "57",
+    "directionId": "0",
+    "gtfsStopId": "2069",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17096289,
+        "directionId": "0",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-57-line-3237630-stop-35667823",
+    "stopId": 35667823,
+    "lineId": 3237630,
+    "routeId": "57",
+    "directionId": "1",
+    "gtfsStopId": "1603",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17096278,
+        "directionId": "1",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-61-line-6505268-stop-4540113",
+    "stopId": 4540113,
+    "lineId": 6505268,
+    "routeId": "61",
+    "directionId": "1",
+    "gtfsStopId": "2422",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17096313,
+        "directionId": "1",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-61-line-10369757-stop-4540709",
+    "stopId": 4540709,
+    "lineId": 10369757,
+    "routeId": "61",
+    "directionId": "0",
+    "gtfsStopId": "1953",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17096346,
+        "directionId": "0",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-61-line-10376367-stop-4540709",
+    "stopId": 4540709,
+    "lineId": 10376367,
+    "routeId": "61",
+    "directionId": "0",
+    "gtfsStopId": "1953",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17937524,
+        "directionId": "0",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-62-line-6505248-stop-4540113",
+    "stopId": 4540113,
+    "lineId": 6505248,
+    "routeId": "62",
+    "directionId": "1",
+    "gtfsStopId": "2422",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17096302,
+        "directionId": "1",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-62-line-6505259-stop-1838016",
+    "stopId": 1838016,
+    "lineId": 6505259,
+    "routeId": "62",
+    "directionId": "0",
+    "gtfsStopId": "2739",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17096309,
+        "directionId": "0",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-62-O-line-6505274-stop-35667754",
+    "stopId": 35667754,
+    "lineId": 6505274,
+    "routeId": "62-O",
+    "directionId": "0",
+    "gtfsStopId": "2283",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17096339,
+        "directionId": "0",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-62-O-line-6505279-stop-1838011",
+    "stopId": 1838011,
+    "lineId": 6505279,
+    "routeId": "62-O",
+    "directionId": "1",
+    "gtfsStopId": "2420",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17096303,
+        "directionId": "1",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-66-line-6505278-stop-1838016",
+    "stopId": 1838016,
+    "lineId": 6505278,
+    "routeId": "66",
+    "directionId": "1",
+    "gtfsStopId": "2739",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17096270,
+        "directionId": "1",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-66-line-9140142-stop-4540599",
+    "stopId": 4540599,
+    "lineId": 9140142,
+    "routeId": "66",
+    "directionId": "0",
+    "gtfsStopId": "1627",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17096295,
+        "directionId": "0",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-67-line-6505265-stop-4539216",
+    "stopId": 4539216,
+    "lineId": 6505265,
+    "routeId": "67",
+    "directionId": "0",
+    "gtfsStopId": "805",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17096329,
+        "directionId": "0",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-67-line-9140144-stop-1838016",
+    "stopId": 1838016,
+    "lineId": 9140144,
+    "routeId": "67",
+    "directionId": "1",
+    "gtfsStopId": "2739",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17096273,
+        "directionId": "1",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-68-line-6505277-stop-1838016",
+    "stopId": 1838016,
+    "lineId": 6505277,
+    "routeId": "68",
+    "directionId": "1",
+    "gtfsStopId": "2739",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17096297,
+        "directionId": "1",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-80-line-3237642-stop-4539577",
+    "stopId": 4539577,
+    "lineId": 3237642,
+    "routeId": "80",
+    "directionId": "0",
+    "gtfsStopId": "312",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17096291,
+        "directionId": "0",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-80-line-3237643-stop-4538763",
+    "stopId": 4538763,
+    "lineId": 3237643,
+    "routeId": "80",
+    "directionId": "1",
+    "gtfsStopId": "189",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17096304,
+        "directionId": "1",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-84-line-3237644-stop-1838039",
+    "stopId": 1838039,
+    "lineId": 3237644,
+    "routeId": "84",
+    "directionId": "0",
+    "gtfsStopId": "779",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17096287,
+        "directionId": "0",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-84-line-3237645-stop-46011098",
+    "stopId": 46011098,
+    "lineId": 3237645,
+    "routeId": "84",
+    "directionId": "1",
+    "mappingConfidence": "candidate",
+    "patterns": [
+      {
+        "patternId": 17096276,
+        "directionId": "1",
+        "mappingConfidence": "candidate"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-86-line-7957132-stop-1838039",
+    "stopId": 1838039,
+    "lineId": 7957132,
+    "routeId": "86",
+    "directionId": "1",
+    "gtfsStopId": "779",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17096330,
+        "directionId": "1",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-86-line-8364815-stop-212698695",
+    "stopId": 212698695,
+    "lineId": 8364815,
+    "routeId": "86",
+    "directionId": "0",
+    "gtfsStopId": "2787",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17096299,
+        "directionId": "0",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-91-line-3237650-stop-4538648",
+    "stopId": 4538648,
+    "lineId": 3237650,
+    "routeId": "91",
+    "directionId": "0",
+    "gtfsStopId": "53",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17096271,
+        "directionId": "0",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-91-line-3237651-stop-35668243",
+    "stopId": 35668243,
+    "lineId": 3237651,
+    "routeId": "91",
+    "directionId": "1",
+    "gtfsStopId": "31",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17096267,
+        "directionId": "1",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-103-line-10369759-stop-4540120",
+    "stopId": 4540120,
+    "lineId": 10369759,
+    "routeId": "103",
+    "directionId": "0",
+    "gtfsStopId": "937",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17096326,
+        "directionId": "0",
+        "mappingConfidence": "verified"
+      },
+      {
+        "patternId": 17096345,
+        "directionId": "0",
+        "mappingConfidence": "verified"
+      },
+      {
+        "patternId": 17096294,
+        "directionId": "0",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-103-line-10369760-stop-4540120",
+    "stopId": 4540120,
+    "lineId": 10369760,
+    "routeId": "103",
+    "directionId": "0",
+    "gtfsStopId": "937",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17096347,
+        "directionId": "0",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-103-line-10369764-stop-37650349",
+    "stopId": 37650349,
+    "lineId": 10369764,
+    "routeId": "103",
+    "directionId": "1",
+    "gtfsStopId": "1436",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17096337,
+        "directionId": "1",
+        "mappingConfidence": "verified"
+      },
+      {
+        "patternId": 17096328,
+        "directionId": "1",
+        "mappingConfidence": "verified"
+      },
+      {
+        "patternId": 17096281,
+        "directionId": "1",
+        "mappingConfidence": "verified"
+      },
+      {
+        "patternId": 17096334,
+        "directionId": "1",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-105-line-6505247-stop-4540285",
+    "stopId": 4540285,
+    "lineId": 6505247,
+    "routeId": "105",
+    "directionId": "1",
+    "gtfsStopId": "2648",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17096324,
+        "directionId": "1",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-105-line-6505282-stop-4539937",
+    "stopId": 4539937,
+    "lineId": 6505282,
+    "routeId": "105",
+    "directionId": "0",
+    "gtfsStopId": "2034",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17096282,
+        "directionId": "0",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-114A-line-9140140-stop-37650349",
+    "stopId": 37650349,
+    "lineId": 9140140,
+    "routeId": "114A",
+    "directionId": "1",
+    "gtfsStopId": "1436",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17096293,
+        "directionId": "1",
+        "mappingConfidence": "verified"
+      },
+      {
+        "patternId": 17096315,
+        "directionId": "1",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-114A-line-10369761-stop-4540122",
+    "stopId": 4540122,
+    "lineId": 10369761,
+    "routeId": "114A",
+    "directionId": "0",
+    "gtfsStopId": "939",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17096311,
+        "directionId": "0",
+        "mappingConfidence": "verified"
+      },
+      {
+        "patternId": 17096319,
+        "directionId": "0",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-114B-line-6505252-stop-37650349",
+    "stopId": 37650349,
+    "lineId": 6505252,
+    "routeId": "114B",
+    "directionId": "1",
+    "gtfsStopId": "1436",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17096292,
+        "directionId": "1",
+        "mappingConfidence": "verified"
+      },
+      {
+        "patternId": 17096332,
+        "directionId": "1",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-114B-line-9140152-stop-4539931",
+    "stopId": 4539931,
+    "lineId": 9140152,
+    "routeId": "114B",
+    "directionId": "0",
+    "gtfsStopId": "2028",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17096331,
+        "directionId": "0",
+        "mappingConfidence": "verified"
+      },
+      {
+        "patternId": 17096310,
+        "directionId": "0",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-202-line-3237670-stop-4540051",
+    "stopId": 4540051,
+    "lineId": 3237670,
+    "routeId": "202",
+    "directionId": "0",
+    "gtfsStopId": "2316",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 17096296,
+        "directionId": "0",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  },
+  {
+    "id": "rta-202-line-3237671-stop-35668172",
+    "stopId": 35668172,
+    "lineId": 3237671,
+    "routeId": "202",
+    "directionId": "1",
+    "gtfsStopId": "906",
+    "mappingConfidence": "verified",
+    "patterns": [
+      {
+        "patternId": 16039641,
+        "directionId": "1",
+        "mappingConfidence": "verified"
+      }
+    ],
+    "metroRevision": "1788154710566",
+    "mappingEvidence": "App RTA agency and line number match GTFS; stop code plus <=80m location; >=80% ordered stop-sequence match and >=20 percentage-point direction margin when verified."
+  }
+]

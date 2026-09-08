@@ -1,139 +1,85 @@
-# NOLA Transit Scraper
+# NOLA Transit Observations
 
-Independent third-party collection of New Orleans RTA real-time transit data. Captures vehicle positions via SSE and stores as Parquet files in Cloudflare R2 for long-term analysis.
+Independent observations of New Orleans RTA buses and streetcars, using the RTA
+relay SSE feed and Le Pass. The dashboard studies roadway travel time and
+candidate signal waits, alongside independently calculated schedule-based OTP.
 
-## Why?
+## How it works
 
-To analyze streetcar delays in mixed traffic vs dedicated right-of-way segments, and provide independent data to verify or challenge RTA performance claims.
+The collector preserves source identities, raw responses, provider sample times
+and exact receipt times in a durable local journal. A separate worker ingests
+local DuckDB, analyses observations and publishes a saved dashboard summary.
+Le Pass predictions remain separate from measured positions. Missing speed
+remains unknown, and the two feeds are analysed separately because they may
+share an upstream source.
 
-The dashboard's OTP now uses independently observed scheduled timepoint events,
-with direct or reconstructed GTFS trip IDs, early/late classifications, and coverage reporting.
-Historical trip-order inference is labelled and can be excluded with the trip-matching filter.
-See [OTP methodology and operation](OTP.md). The real-time `dly` flag is not OTP.
+MotherDuck is an optional, guarded cloud archive. The public dashboard serves
+cached local summaries and makes no MotherDuck queries. R2 is retired from the
+new pipeline; its unique historical files have been preserved and verified.
 
-The [streetcar signal study](STREETCAR_ANALYSIS.md) compares complete 200 m track
-passages on St. Charles, Canal, and Rampart–Loyola, separating passenger stops,
-traffic signals, and their overlap. An interactive map shows OSM locations and
-Mapillary evidence; travel-time ranges make sampling and timestamp precision limits visible.
+## Research questions
 
-The dashboard opens on [Signal priority](STREETCAR_PRIORITY.md): candidate stationary
-waits, extra time relative to faster passages through the same location, and explicit
-priority scenarios for the covered portion of each route. Overview and OTP have
-separate pages. Detailed diagnostics remain available under Advanced analysis.
+- **Roadway time:** compare complete 200 m passages on reviewed shared and
+  reserved streetcar sections, matching service date, direction, time band and
+  mapped stop/signal exposure. Unreviewed sections and historical periods remain
+  unknown. This is an observational comparison, with remaining confounders.
+- **Signals:** examine complete directional encounters for all mapped RTA bus
+  and streetcar routes. Detected stationary time, mixed boarding waits, no
+  detected wait and insufficient sampling remain distinct. Hypothetical
+  25/50/75% recovery scenarios do not claim measured signal-priority effects.
+- **OTP:** match our observed scheduled timepoint events to archived GTFS,
+  classify early/on-time/late, and report coverage and matching provenance.
+  RTA's realtime delay flag is not OTP. See [OTP.md](OTP.md).
 
-## Architecture
+Headlines require 30 eligible observations across seven dates. Sampling bounds
+and service-day bootstrap confidence intervals are shown separately. Independent
+traffic/congestion data for buses is deferred to a later version.
 
-```
-┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│ nolatransit.fly │────▶│    Scraper      │────▶│  Cloudflare R2  │
-│   (SSE feed)    │     │  (this app)     │     │ (parquet files) │
-└─────────────────┘     └─────────────────┘     └─────────────────┘
-                                                        │
-                                                        ▼
-                                                ┌─────────────────┐
-                                                │    DuckDB       │
-                                                │ (query anywhere)│
-                                                └─────────────────┘
-```
+## Run locally
 
-## Data Collected
-
-Each vehicle position includes:
-- `vid` - Vehicle ID
-- `timestamp` - Reading time
-- `lat`, `lon` - GPS coordinates
-- `route` - Route number (e.g., "12" for St. Charles streetcar)
-- `speed` - Current speed
-- `is_delayed` - RTA delay flag
-- `segment_id`, `segment_name`, `segment_type` - Geographic classification
-
-### Streetcar Segments (Route 12)
-
-| Segment | Type |
-|---------|------|
-| Canal Street (CBD) | Mixed Traffic |
-| Lee Circle / Downtown | Mixed Traffic |
-| St. Charles - Lower Garden District | Dedicated ROW |
-| St. Charles - Garden District | Dedicated ROW |
-| St. Charles - Uptown | Dedicated ROW |
-| Carrollton - Riverbend | Dedicated ROW |
-| S. Carrollton Ave | Dedicated ROW |
-
-## Setup
-
-### Prerequisites
-
-- Node.js 18+
-- Cloudflare account with R2 enabled
-- Docker (for deployment)
-
-### 1. Create R2 Bucket
-
-1. Go to [Cloudflare Dashboard](https://dash.cloudflare.com) → R2
-2. Create a bucket named `nola-transit`
-3. Create an API token with "Object Read & Write" permission
-
-### 2. Configure Environment
-
-Copy `.env.example` to `.env` and fill in:
+Use Node.js 20 or later. Copy `.env.example` to `.env`, set a random server-only
+`TRANSIT_SUMMARY_TOKEN`, and choose a persistent `TRANSIT_DATA_DIR`. MotherDuck and
+Le Pass can be disabled while SSE collection continues.
 
 ```bash
-R2_ACCOUNT_ID=your_cloudflare_account_id
-R2_ACCESS_KEY_ID=your_r2_access_key
-R2_SECRET_ACCESS_KEY=your_r2_secret_key
-R2_BUCKET=nola-transit
-```
-
-### 3. Run Locally
-
-```bash
-npm install
+npm ci
 npm start
 ```
 
-### 4. Deploy with Docker
+Le Pass requires the verified API credential, a separate encryption key and an
+existing encrypted guest session. The checked-in query catalog covers all 33
+passenger routes. Automatic guest creation defaults off. See
+[LOCAL_DATA_PIPELINE.md](LOCAL_DATA_PIPELINE.md) for configuration and catalog
+provenance, and [LIVE_FEED_COMPARISON.md](LIVE_FEED_COMPARISON.md) for the live audit.
+
+Run the dashboard from its directory using its own server-only summary endpoint
+and token configuration; see [dashboard/README.md](dashboard/README.md).
+
+## Storage and deployment
+
+The operating ceilings are 80% local filesystem use with at least 10 GB free,
+and 8 GB / 8 CU-hours for the optional MotherDuck archive. Cloud writes default
+off and require a fresh verified free-tier usage checkpoint. The application
+never upgrades a service plan. These guards cannot guarantee a provider invoice.
+
+Daily Parquet archives are verified before hot detail is removed. Full research
+events and daily results remain local; the browser receives a smaller filtered
+summary. Local archives still need protection against loss of the server.
+
+See [DEPLOYMENT.md](DEPLOYMENT.md) for the two persistent Coolify services and
+[LOCAL_DATA_PIPELINE.md](LOCAL_DATA_PIPELINE.md) for restart, backfill and retention
+requirements. Legacy streetcar diagnostics remain documented in
+[STREETCAR_ANALYSIS.md](STREETCAR_ANALYSIS.md) and
+[STREETCAR_PRIORITY.md](STREETCAR_PRIORITY.md).
+
+## Validation
 
 ```bash
-docker compose up -d
+npm test
+npm run typecheck
 ```
 
-## Querying Data
-
-Query the Parquet files directly from R2 using DuckDB:
-
-```bash
-npm run query
-```
-
-Or use DuckDB directly:
-
-```sql
--- Mixed traffic vs dedicated ROW comparison
-SELECT
-  segment_type,
-  COUNT(*) as readings,
-  ROUND(100.0 * SUM(CASE WHEN is_delayed THEN 1 ELSE 0 END) / COUNT(*), 2) as delay_pct,
-  ROUND(AVG(speed), 1) as avg_speed
-FROM read_parquet('s3://nola-transit/**/*.parquet')
-WHERE route = '12' AND segment_type IS NOT NULL
-GROUP BY segment_type;
-```
-
-## Storage Costs
-
-| Timeframe | Data Size | Cost |
-|-----------|-----------|------|
-| Year 1 | ~10 GB | Free |
-| Year 2+ | +10 GB/year | ~$2/year |
-| 5 years | ~50 GB | ~$8/year |
-
-## Configuration
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `SSE_URL` | nolatransit.fly.dev/sse | Transit data source |
-| `UPLOAD_INTERVAL` | 3600000 (1 hour) | How often to upload to R2 |
-| `R2_BUCKET` | nola-transit | R2 bucket name |
+The dashboard has its own tests, typecheck, lint and production build commands.
 
 ## License
 

@@ -1,0 +1,69 @@
+{
+  "app_package": "com.norta.lepass",
+  "app_version": "5.197.0.1799",
+  "android_api": 36,
+  "stop_name": "St Charles Ave at Poydras St",
+  "stop_code": "259",
+  "route": "12",
+  "destination": "S. Carrollton at S. Claiborne",
+  "board_screenshot_completed_at": "2026-09-08T02:26:42.127766+00:00",
+  "details_screenshot_completed_at": "2026-09-08T02:27:36.419764+00:00",
+  "details_relevant_local_time": "2026-09-07T21:27:00-05:00",
+  "arrivals": [
+    {
+      "display": "2 min",
+      "live_icon": true,
+      "update_text": "Updated 30 sec. ago",
+      "scheduled_local_time": "21:29"
+    },
+    {
+      "display": "18 min",
+      "live_icon": true,
+      "scheduled_local_time": "21:45"
+    },
+    {
+      "display": "33 min",
+      "live_icon": false,
+      "label": "Scheduled time",
+      "scheduled_local_time": "22:00"
+    }
+  ],
+  "rta_public_comparison": {
+    "started_at": "2026-09-08T02:27:02.106715+00:00",
+    "received_at": "2026-09-08T02:27:02.304414+00:00",
+    "http_date": "Tue, 08 Sep 2026 02:27:01 GMT",
+    "url": "https://bustime.norta.com/bustime/map/getStopPredictions.jsp?stop=259&route=12",
+    "stop_code": "259",
+    "stop_name": "St Charles Ave at Poydras St",
+    "direction": "OUTBOUND",
+    "predictions": [
+      {
+        "pt": "2 MIN",
+        "fd": "S. Carrollton at S. Claiborne",
+        "v": "953",
+        "scheduled": "false",
+        "rn": "12"
+      },
+      {
+        "pt": "18 MIN",
+        "fd": "S. Carrollton at S. Claiborne",
+        "v": "460",
+        "scheduled": "false",
+        "rn": "12"
+      },
+      {
+        "pt": "10:25 PM SCH",
+        "fd": "S. Carrollton at S. Claiborne",
+        "v": "CNCL",
+        "scheduled": null,
+        "rn": "12"
+      }
+    ]
+  },
+  "notes": [
+    "Screenshots and RTA request were close in time, not simultaneous; individual timestamps retained.",
+    "Emulator automatic time was temporarily disabled and the clock synchronized to Windows/WSL before this board capture; the earlier unsynchronized home-screen capture is not used for ETA comparison.",
+    "A displayed live icon does not establish the exact API backend or accuracy against a physical arrival.",
+    "First two RTA predictions matched displayed Le Pass minutes in this sample."
+  ]
+}

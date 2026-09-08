@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto';
 import { Temporal } from '@js-temporal/polyfill';
 import type { DuckDBConnection } from '@duckdb/node-api';
 
-export const STREETCAR_SNAPSHOT_ROUTES = new Set(['12', '46', '47', '48']);
+export const STREETCAR_SNAPSHOT_ROUTES = new Set(['12', '46', '47', '48', '49']);
 
 /** One vehicle entry in one received SSE frame. Receipt time is not GPS fix time. */
 export interface StreetcarSnapshot {
@@ -67,7 +67,7 @@ export function snapshotSourceUrl(value: string): string | null {
 }
 
 /** Capture before the legacy provider-minute dedup. Never dedup across receipts. */
-export function captureStreetcarSnapshots(payload: unknown, receipt: SnapshotReceipt): StreetcarSnapshot[] {
+export function captureStreetcarSnapshots(payload: unknown, receipt: SnapshotReceipt, routes = STREETCAR_SNAPSHOT_ROUTES): StreetcarSnapshot[] {
   if (!Array.isArray(payload)) throw new Error('Expected an SSE vehicle array');
   const receivedAt = instant(receipt.received_at);
   if (!receivedAt) throw new Error('Snapshot receipt must have a valid timestamp with timezone');
@@ -79,7 +79,7 @@ export function captureStreetcarSnapshots(payload: unknown, receipt: SnapshotRec
     if (entry === null || typeof entry !== 'object' || Array.isArray(entry)) continue;
     const v = entry as Record<string, unknown>;
     const route = text(v.rt)?.trim();
-    if (!route || !STREETCAR_SNAPSHOT_ROUTES.has(route)) continue;
+    if (!route || !routes.has(route)) continue;
     let lat = numeric(v.lat), lon = numeric(v.lon);
     if (lat !== null && Math.abs(lat) > 90) lat = null;
     if (lon !== null && Math.abs(lon) > 180) lon = null;

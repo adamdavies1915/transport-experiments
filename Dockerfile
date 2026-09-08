@@ -19,9 +19,13 @@ RUN npm ci --omit=dev
 # Copy source code
 COPY --chown=node:node tsconfig.json ./
 COPY --chown=node:node src ./src
+COPY --chown=node:node dashboard/src ./dashboard/src
+RUN mkdir -p /app/data && chown node:node /app/data
+ENV TRANSIT_DATA_DIR=/app/data PORT=3100
+EXPOSE 3100
 
 # Run as the built-in non-root node user
 USER node
 
 # Run the TypeScript entrypoint directly via tsx (bundled in dependencies)
-CMD ["npm", "start"]
+CMD ["node", "--import", "tsx", "src/index.ts"]

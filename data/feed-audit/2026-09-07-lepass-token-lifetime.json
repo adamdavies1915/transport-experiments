@@ -1,0 +1,77 @@
+{
+  "package": "com.norta.lepass",
+  "version": "5.197.0.1799",
+  "capture_local_date": "2026-09-07",
+  "timezone": "America/Chicago",
+  "method": "Normal first launch of unmodified official app in disposable guest emulator, with timestamp-only HTTPS proxy addon.",
+  "allowed_response_hosts": [
+    "app4.moovitapp.com",
+    "app5.moovitapp.com"
+  ],
+  "response_method": "POST",
+  "response_path": "/services-app/services/UserAuth/CreateUser",
+  "sanitized_response": {
+    "event": "lepass_token_timestamps",
+    "captured_at": "2026-09-08T03:25:53.601377Z",
+    "server_date_utc": "2026-09-08T03:25:53Z",
+    "http_status": 200,
+    "encoding": "thrift-json",
+    "parse_status": "complete",
+    "access_token": {
+      "issue_time": 1788837953443,
+      "expiration_time": 1788924353443
+    },
+    "refresh_token": {
+      "issue_time": 1788837953443,
+      "expiration_time": 4944533153443
+    }
+  },
+  "timestamp_units": "Unix milliseconds, checked against server HTTP Date and receipt time",
+  "calculations": {
+    "access_token": {
+      "issue_utc": "2026-09-08T03:25:53.443000Z",
+      "expiry_utc": "2026-09-09T03:25:53.443000Z",
+      "lifetime_milliseconds": 86400000,
+      "lifetime_seconds": 86400.0,
+      "lifetime_days": 1.0,
+      "issue_minus_http_date_seconds": 0.443,
+      "receipt_minus_issue_seconds": 0.158377
+    },
+    "refresh_token": {
+      "issue_utc": "2026-09-08T03:25:53.443000Z",
+      "expiry_utc": "2126-09-08T09:25:53.443000Z",
+      "lifetime_milliseconds": 3155695200000,
+      "lifetime_seconds": 3155695200.0,
+      "lifetime_days": 36524.25,
+      "issue_minus_http_date_seconds": 0.443,
+      "receipt_minus_issue_seconds": 0.158377
+    }
+  },
+  "user_key_lifetime": null,
+  "limitations": [
+    "These are declared lifetimes issued to this single fresh guest session, not observed lifetimes or guarantees against earlier invalidation.",
+    "USER_KEY is separate; its lifetime was not established. The previous successful arrival requests did not send Access-Token.",
+    "No access-token or refresh-token values, user identifiers, request headers, cookies or complete auth responses were retained."
+  ],
+  "validation": {
+    "synthetic_timestamp_extraction_tests_passed": 9,
+    "secret_sentinel_exclusion_test_passed": true,
+    "independent_arithmetic_review_passed": true
+  },
+  "cleanup": {
+    "temporary_emulator_stopped": true,
+    "original_emulator_settings": {
+      "emulator-5554": {
+        "http_proxy": "null",
+        "auto_time": "1"
+      },
+      "emulator-5556": {
+        "http_proxy": "null",
+        "auto_time": "1"
+      }
+    },
+    "temporary_emulator_files_removed": true,
+    "temporary_proxy_stopped": true,
+    "temporary_proxy_ca_removed": true
+  }
+}

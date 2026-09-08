@@ -1,0 +1,46 @@
+{
+  "package": "com.norta.lepass",
+  "version": "5.197.0.1799",
+  "installed_from": "Google Play",
+  "api_level_for_inspection": 32,
+  "original_app_api_level": 36,
+  "app_modified": false,
+  "inspection": "Isolated emulator with locally trusted system CA; app requests passed through local proxy.",
+  "methods": [
+    {
+      "method": "POST",
+      "url": "https://app5.moovitapp.com/services-app/services/V4/StopsArrivals"
+    },
+    {
+      "method": "POST",
+      "url": "https://app5.moovitapp.com/services-app/services/V4/LineArrivals"
+    }
+  ],
+  "response_encoding": "unframed Apache Thrift binary",
+  "observed_header_names": [
+    "API_KEY",
+    "USER_KEY",
+    "CLIENT_VERSION"
+  ],
+  "header_values_retained": false,
+  "nextPollingIntervalSecs": 20,
+  "clock_units": "UTC Unix milliseconds; latitude/longitude integer millionths of a degree",
+  "stop_identifiers": {
+    "name": "St Charles Ave at Poydras St",
+    "gtfs_stop_id": "1067",
+    "public_stop_code": "259",
+    "moovit_stop_id": 4539336
+  },
+  "line_identifiers": {
+    "route": "12",
+    "moovit_line_id": 8697788,
+    "moovit_pattern_id": 17096284
+  },
+  "notes": [
+    "No captured credential-bearing app requests were replayed. A subsequent credential-free access check is recorded separately.",
+    "Packaged V4/StopMapItems exists but was not observed in this capture.",
+    "Milliseconds describe timestamp representation; source fix accuracy and true GPS sampling cadence remain unverified.",
+    "App vehicle IDs are composite; matching prefix460 and coordinates is verified for this sample only."
+  ],
+  "anonymous_access_check": "2026-09-07-public-api-access.json"
+}

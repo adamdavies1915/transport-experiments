@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "reviewed_at": "2026-09-08T05:22:27.991Z",
+  "streetcar_network_version": "streetcar-network-v1-e86d4e96c961-review-39c2c7a4",
+  "schedule_hash": "3b32471680f5736301fdcaa2ae98bf62ba6e108ea51589febb1d66114ee567f9",
+  "sections": [
+    {
+      "id": "shp-12-05|12|1:row:osm-way-24008477",
+      "path_id": "shp-12-05|12|1",
+      "from_meters": 9968.57182980898,
+      "to_meters": 10636.611381893525,
+      "row_class": "shared",
+      "reviewed_at": "2026-09-08T05:22:27.991Z",
+      "evidence_urls": [
+        "https://www.openstreetmap.org/way/24008477",
+        "https://api.openstreetmap.org/api/0.6/way/24008477/full.json"
+      ],
+      "valid_from": "2026-09-08",
+      "valid_to": null,
+      "notes": "Reviewed current OSM way 24008477 version 28: highway=residential, embedded_rails=tram, surface=asphalt. GTFS follows the mapped general-traffic carriageway. Bounds are endpoint projections inset 10m to avoid transitions. Map-derived classification; no legal exclusivity claim or retrospective August validity."
+    },
+    {
+      "id": "shp-12-05|12|1:row:median-jackson",
+      "path_id": "shp-12-05|12|1",
+      "from_meters": 8200,
+      "to_meters": 8400,
+      "row_class": "reserved",
+      "reviewed_at": "2026-09-08T05:22:27.991Z",
+      "evidence_urls": [
+        "https://www.openstreetmap.org/way/24016723",
+        "https://www.mapillary.com/app/?pKey=1385364082531392",
+        "https://www.norta.com/RTA/media/Event-documents/Operations_Committee/2026/02-12-26-O-A-Agenda.pdf"
+      ],
+      "valid_from": "2026-09-08",
+      "valid_to": null,
+      "notes": "Bounded 200m median-track section containing the Jackson imagery anchor. Images captured 2016-02-27 show tracks on a separate median beside general traffic; current OSM railway geometry corroborates alignment. Reserved means separated from routine longitudinal road traffic, with at-grade crossing conflicts retained. Applied prospectively from review; older images do not establish uninterrupted historical/current operation. This is a map/imagery inference, not a field survey."
+    },
+    {
+      "id": "shp-12-05|12|1:row:median-pleasant",
+      "path_id": "shp-12-05|12|1",
+      "from_meters": 7000,
+      "to_meters": 7200,
+      "row_class": "reserved",
+      "reviewed_at": "2026-09-08T05:22:27.991Z",
+      "evidence_urls": [
+        "https://www.openstreetmap.org/way/24016723",
+        "https://www.mapillary.com/app/?pKey=1767558977145940",
+        "https://www.mapillary.com/app/?pKey=1305697227584402",
+        "https://www.mapillary.com/app/?pKey=1027238802586705",
+        "https://www.norta.com/RTA/media/Event-documents/Operations_Committee/2026/02-12-26-O-A-Agenda.pdf"
+      ],
+      "valid_from": "2026-09-08",
+      "valid_to": null,
+      "notes": "Bounded 200m median-track section containing the Pleasant imagery anchor. Images captured 2022-10-06 show tracks on a separate median beside general traffic; current OSM railway geometry corroborates alignment. Reserved means separated from routine longitudinal road traffic, with at-grade crossing conflicts retained. Applied prospectively from review; older images do not establish uninterrupted historical/current operation. This is a map/imagery inference, not a field survey."
+    },
+    {
+      "id": "shp-12-55|12|0:row:osm-way-329181616",
+      "path_id": "shp-12-55|12|0",
+      "from_meters": 764.6718670121329,
+      "to_meters": 1062.2965487999895,
+      "row_class": "shared",
+      "reviewed_at": "2026-09-08T05:22:27.991Z",
+      "evidence_urls": [
+        "https://www.openstreetmap.org/way/329181616",
+        "https://api.openstreetmap.org/api/0.6/way/329181616/full.json"
+      ],
+      "valid_from": "2026-09-08",
+      "valid_to": null,
+      "notes": "Reviewed current OSM way 329181616 version 19: highway=tertiary, embedded_rails=tram, surface=asphalt. GTFS follows the mapped general-traffic carriageway. Bounds are endpoint projections inset 10m to avoid transitions. Map-derived classification; no legal exclusivity claim or retrospective August validity."
+    },
+    {
+      "id": "shp-12-55|12|0:row:median-jackson",
+      "path_id": "shp-12-55|12|0",
+      "from_meters": 2800,
+      "to_meters": 3000,
+      "row_class": "reserved",
+      "reviewed_at": "2026-09-08T05:22:27.991Z",
+      "evidence_urls": [
+        "https://www.openstreetmap.org/way/24016723",
+        "https://www.mapillary.com/app/?pKey=1385364082531392",
+        "https://www.norta.com/RTA/media/Event-documents/Operations_Committee/2026/02-12-26-O-A-Agenda.pdf"
+      ],
+      "valid_from": "2026-09-08",
+      "valid_to": null,
+      "notes": "Bounded 200m median-track section containing the Jackson imagery anchor. Images captured 2016-02-27 show tracks on a separate median beside general traffic; current OSM railway geometry corroborates alignment. Reserved means separated from routine longitudinal road traffic, with at-grade crossing conflicts retained. Applied prospectively from review; older images do not establish uninterrupted historical/current operation. This is a map/imagery inference, not a field survey."
+    },
+    {
+      "id": "shp-12-55|12|0:row:median-pleasant",
+      "path_id": "shp-12-55|12|0",
+      "from_meters": 3800,
+      "to_meters": 4000,
+      "row_class": "reserved",
+      "reviewed_at": "2026-09-08T05:22:27.991Z",
+      "evidence_urls": [
+        "https://www.openstreetmap.org/way/24016723",
+        "https://www.mapillary.com/app/?pKey=1767558977145940",
+        "https://www.mapillary.com/app/?pKey=1305697227584402",
+        "https://www.mapillary.com/app/?pKey=1027238802586705",
+        "https://www.norta.com/RTA/media/Event-documents/Operations_Committee/2026/02-12-26-O-A-Agenda.pdf"
+      ],
+      "valid_from": "2026-09-08",
+      "valid_to": null,
+      "notes": "Bounded 200m median-track section containing the Pleasant imagery anchor. Images captured 2022-10-06 show tracks on a separate median beside general traffic; current OSM railway geometry corroborates alignment. Reserved means separated from routine longitudinal road traffic, with at-grade crossing conflicts retained. Applied prospectively from review; older images do not establish uninterrupted historical/current operation. This is a map/imagery inference, not a field survey."
+    }
+  ],
+  "sources": [
+    {
+      "name": "Bounded ROW geometry review",
+      "url": "https://www.openstreetmap.org/copyright",
+      "fetched_at": "2026-09-08T05:22:27.991Z",
+      "attribution": "© OpenStreetMap contributors; Mapillary imagery contributors; NORTA"
+    }
+  ],
+  "notes": [
+    "Only route12 selected sections are reviewed; all other sections remain unknown.",
+    "Current map evidence and older street-level views support a bounded prospective classification, not proof of uninterrupted operating conditions.",
+    "Reserved median is not grade-separated or signal-free.",
+    "Window selection uses geography and image anchors, never measured speeds."
+  ]
+}

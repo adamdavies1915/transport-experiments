@@ -1,0 +1,217 @@
+[
+  {
+    "flow_id": "48f350dd-0d07-43ae-88df-8c737c6fcddc",
+    "received_at": "2026-09-08T02:38:48.745757+00:00",
+    "stopId": 4539336,
+    "poll_seconds": 20,
+    "count": 101,
+    "locations": 0,
+    "first_arrivals": [
+      {
+        "patternId": 17096284,
+        "staticEtdUTC": 1788835537000,
+        "rtEtdUTC": 1788835537000,
+        "status": 1
+      },
+      {
+        "patternId": 17096284,
+        "staticEtdUTC": 1788836437000
+      },
+      {
+        "patternId": 17096284,
+        "staticEtdUTC": 1788837937000,
+        "status": 3
+      }
+    ]
+  },
+  {
+    "flow_id": "ff5d6f56-2a1e-48d8-b141-269b51c9fe8e",
+    "received_at": "2026-09-08T02:39:09.394574+00:00",
+    "stopId": 4539336,
+    "poll_seconds": 20,
+    "count": 101,
+    "locations": 0,
+    "first_arrivals": [
+      {
+        "patternId": 17096284,
+        "staticEtdUTC": 1788835537000,
+        "rtEtdUTC": 1788835537000,
+        "status": 1
+      },
+      {
+        "patternId": 17096284,
+        "staticEtdUTC": 1788836437000
+      },
+      {
+        "patternId": 17096284,
+        "staticEtdUTC": 1788837937000,
+        "status": 3
+      }
+    ]
+  },
+  {
+    "flow_id": "504c64f3-ddc1-424a-9784-ede17e3ae561",
+    "received_at": "2026-09-08T02:39:29.268275+00:00",
+    "stopId": 4539336,
+    "poll_seconds": 20,
+    "count": 101,
+    "locations": 0,
+    "first_arrivals": [
+      {
+        "patternId": 17096284,
+        "staticEtdUTC": 1788835537000,
+        "rtEtdUTC": 1788835537000,
+        "status": 1
+      },
+      {
+        "patternId": 17096284,
+        "staticEtdUTC": 1788836437000
+      },
+      {
+        "patternId": 17096284,
+        "staticEtdUTC": 1788837937000,
+        "status": 3
+      }
+    ]
+  },
+  {
+    "flow_id": "8302e981-1e2c-4148-9a4c-2bc8537ee117",
+    "received_at": "2026-09-08T02:39:50.133924+00:00",
+    "stopId": 4539336,
+    "poll_seconds": 20,
+    "count": 101,
+    "locations": 1,
+    "first_arrivals": [
+      {
+        "patternId": 17096284,
+        "staticEtdUTC": 1788835537000,
+        "rtEtdUTC": 1788835537000,
+        "status": 1,
+        "vehicleLocation": {
+          "vehicleId": "460::1705629903",
+          "vehicleSampleTimeUtc": 1788835173563,
+          "vehicleStatus": 1,
+          "locationSource": 1,
+          "coordinateFieldsRaw": {
+            "1": 29953527,
+            "2": -90070130
+          }
+        }
+      },
+      {
+        "patternId": 17096284,
+        "staticEtdUTC": 1788836437000
+      },
+      {
+        "patternId": 17096284,
+        "staticEtdUTC": 1788837937000,
+        "status": 3
+      }
+    ]
+  },
+  {
+    "flow_id": "96b9d362-0f35-4e7a-a0d7-1fb7f241b634",
+    "received_at": "2026-09-08T02:40:09.933668+00:00",
+    "stopId": 4539336,
+    "poll_seconds": 20,
+    "count": 101,
+    "locations": 1,
+    "first_arrivals": [
+      {
+        "patternId": 17096284,
+        "staticEtdUTC": 1788835537000,
+        "rtEtdUTC": 1788835537000,
+        "status": 1,
+        "vehicleLocation": {
+          "vehicleId": "460::1705629903",
+          "vehicleSampleTimeUtc": 1788835203405,
+          "vehicleStatus": 1,
+          "locationSource": 1,
+          "coordinateFieldsRaw": {
+            "1": 29953527,
+            "2": -90070130
+          }
+        }
+      },
+      {
+        "patternId": 17096284,
+        "staticEtdUTC": 1788836437000
+      },
+      {
+        "patternId": 17096284,
+        "staticEtdUTC": 1788837937000,
+        "status": 3
+      }
+    ]
+  },
+  {
+    "flow_id": "04d8f69a-e28a-452a-b401-9ebda93805a4",
+    "received_at": "2026-09-08T02:40:29.806893+00:00",
+    "stopId": 4539336,
+    "poll_seconds": 20,
+    "count": 101,
+    "locations": 1,
+    "first_arrivals": [
+      {
+        "patternId": 17096284,
+        "staticEtdUTC": 1788835537000,
+        "rtEtdUTC": 1788835537000,
+        "status": 1,
+        "vehicleLocation": {
+          "vehicleId": "460::1705629903",
+          "vehicleSampleTimeUtc": 1788835203405,
+          "vehicleStatus": 1,
+          "locationSource": 1,
+          "coordinateFieldsRaw": {
+            "1": 29953527,
+            "2": -90070130
+          }
+        }
+      },
+      {
+        "patternId": 17096284,
+        "staticEtdUTC": 1788836437000
+      },
+      {
+        "patternId": 17096284,
+        "staticEtdUTC": 1788837937000,
+        "status": 3
+      }
+    ]
+  },
+  {
+    "flow_id": "1efa32c7-14fb-4c34-9cc7-0cfcb104f5e5",
+    "received_at": "2026-09-08T02:40:50.596989+00:00",
+    "stopId": 4539336,
+    "poll_seconds": 20,
+    "count": 101,
+    "locations": 1,
+    "first_arrivals": [
+      {
+        "patternId": 17096284,
+        "staticEtdUTC": 1788835537000,
+        "rtEtdUTC": 1788835537000,
+        "status": 1,
+        "vehicleLocation": {
+          "vehicleId": "460::1705629903",
+          "vehicleSampleTimeUtc": 1788835232064,
+          "vehicleStatus": 1,
+          "locationSource": 1,
+          "coordinateFieldsRaw": {
+            "1": 29953527,
+            "2": -90070140
+          }
+        }
+      },
+      {
+        "patternId": 17096284,
+        "staticEtdUTC": 1788836437000
+      },
+      {
+        "patternId": 17096284,
+        "staticEtdUTC": 1788837937000,
+        "status": 3
+      }
+    ]
+  }
+]
