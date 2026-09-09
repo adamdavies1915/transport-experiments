@@ -1,0 +1,32 @@
+{
+  "verified_at": "2026-09-08T06:39:33.539Z",
+  "before": [
+    {
+      "rows": 7789622
+    }
+  ],
+  "after": [
+    {
+      "rows": 7791596
+    }
+  ],
+  "result": {
+    "source_batches": 9842,
+    "source_payloads": 7203,
+    "source_receipts": 14492,
+    "inserted_batches": 9842,
+    "skipped_batches": 0
+  },
+  "sources": [
+    {
+      "source": "lepass",
+      "batches": 9336,
+      "observations": 2203
+    },
+    {
+      "source": "sse",
+      "batches": 506,
+      "observations": 12289
+    }
+  ]
+}

@@ -121,8 +121,25 @@ For offline maintenance, restart the collector with `LOCAL_ANALYSIS_ENABLED=fals
 to keep both feeds writing their journal while its database worker is stopped.
 Return that setting to true after maintenance; pending frames replay idempotently.
 New study APIs are `/api/row-study`, `/api/signal-study` and `/api/source-quality`.
-The public study snapshot covers up to 90 days with a 28-day default; older
-observations and results remain in the local/cloud archives for research.
+The public study snapshot covers up to 90 calendar days with a 28-day default.
+Publication reads one daily result at a time, immediately removes identity lists
+from public cells and compacts unknown-ROW coverage. Retained compact cells have
+a byte ceiling; the final UTF-8 envelope, including legacy metrics and catalog
+copies, must fit within **60 MiB**. This leaves room below the dashboard's 64 MiB
+input limit. If needed, publication removes whole oldest study dates, recomputes
+totals, matching, uncertainty and quality for the retained dates, and explains
+the shortened window and stored date range. No source, route or signal denominator
+is selectively dropped within a retained date. If even the newest date and fixed
+envelope are too large, publication fails before replacing the previous snapshot.
+Full observations and detailed daily results remain stored for research.
+
+DuckDB's `LOCAL_DB_MEMORY` default is **1 GB**. A 512 MB native limit failed an
+actual combined study cycle; it is not a validated deployment setting. This
+limit excludes the JavaScript heap and other process allocations. The full
+historical backfill peaked at **3.50 GiB RSS**. Reading, parsing and serializing
+the saved 31.25 MB summary alone peaked at **291 MiB** and preserved it byte for
+byte. That publication benchmark excludes DuckDB queries and analysis, so it
+must not be used to size the whole worker.
 
 ## Deployment acceptance
 

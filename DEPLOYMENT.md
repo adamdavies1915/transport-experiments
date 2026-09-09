@@ -17,6 +17,7 @@ Required configuration:
 TRANSIT_DATA_DIR=/app/data
 PORT=3100
 TRANSIT_SUMMARY_TOKEN=<long server-only random value>
+LOCAL_DB_MEMORY=1GB
 MOTHERDUCK_CLOUD_WRITES=false
 LEPASS_ENABLED=true
 LEPASS_API_KEY=<verified app credential>
@@ -36,6 +37,17 @@ before the new one starts. Concurrent containers must not write the same DuckDB
 file or rotating session. The installed 4.0.0-beta.455 supports persistent
 storage, aliases and this setting in its UI, although its application PATCH API
 omits those fields.
+
+`LOCAL_DB_MEMORY` limits DuckDB's native allocation; it is not a limit on the
+whole collector or analysis process. A 512 MB setting failed the actual combined
+study cycle with an out-of-memory error, so the default remains 1 GB. Verify the
+combined processes against the memory available on the deployment host.
+
+The completed historical backfill peaked at **3.50 GiB RSS**. A separate benchmark
+that read, parsed and serialized its saved 31.25 MB summary peaked at **291 MiB**;
+that smaller figure excludes DuckDB queries and study analysis. Daily publication
+reads and compacts one stored date at a time, but its benchmark does not establish
+the full worker's memory requirement.
 
 ## Dashboard
 
@@ -78,5 +90,10 @@ TRANSIT_DATA_DIR=/app/data MOTHERDUCK_BOOTSTRAP=false npm run study:backfill
 ```
 
 The normal supervised worker also performs bounded background backfill. The
-public snapshot covers up to 90 days with a 28-day default; full local archives
-and results remain available for further research.
+public study snapshot covers up to 90 calendar days with a 28-day default. The
+entire summary envelope, including legacy metrics and catalogs, must fit within
+**60 MiB**, below the dashboard's 64 MiB input limit. Publication drops only whole
+oldest study dates, recomputes retained metrics and states the published and
+stored date ranges. If the newest date and fixed envelope cannot fit, publication
+fails before replacing the previous snapshot. Full local archives and results
+remain available for further research.

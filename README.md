@@ -64,7 +64,10 @@ never upgrades a service plan. These guards cannot guarantee a provider invoice.
 
 Daily Parquet archives are verified before hot detail is removed. Full research
 events and daily results remain local; the browser receives a smaller filtered
-summary. Local archives still need protection against loss of the server.
+summary. Public studies cover up to 90 calendar days within a 60 MiB snapshot
+limit. When necessary, publication removes whole oldest study dates and explains
+the shortened window; stored research results remain intact. Local archives
+still need protection against loss of the server.
 
 See [DEPLOYMENT.md](DEPLOYMENT.md) for the two persistent Coolify services and
 [LOCAL_DATA_PIPELINE.md](LOCAL_DATA_PIPELINE.md) for restart, backfill and retention

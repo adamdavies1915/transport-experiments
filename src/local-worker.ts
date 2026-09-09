@@ -1,9 +1,9 @@
 import 'dotenv/config';
-import { readFile, mkdir } from 'node:fs/promises';
+import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { DuckDBConnection } from '@duckdb/node-api';
-import { LocalJournal, DATA_DIR, atomicFile, diskBudget } from './local-journal';
+import { LocalJournal, DATA_DIR, diskBudget } from './local-journal';
 import { openLocalStore, ingestBatch, query, sql, state, setState, loadObservations } from './local-store';
 import { bootstrapMotherDuck, cloudUpload, archiveDay, type CloudHealth } from './cloud-archive';
 import { refreshSchedule, processRecentDays, pendingOtpBackfillCount } from './otp-worker';
@@ -12,10 +12,10 @@ import { TRANSIT_STUDY_METHOD } from './transit-study';
 import { analyzeStudyDay, legacyStudyObservation, LEGACY_STUDY_DATE_SQL, SNAPSHOT_STUDY_DATE_SQL, pendingStudyDaysSql, type LegacyStudyRow } from './local-worker-logic';
 import { safeError } from './log-safety';
 import { summarizeRowStudy, summarizeSignalStudy, rowStudyCells, signalStudyCells, compareRowCells, summarizeSignalCells } from './transit-study-summary';
-import type { StudyCatalog, StudyPassage, StudyEncounter, StudyQuality, StudyRowCell, StudySignalCell, StudyRowCoverageCell } from './transit-study-types';
+import type { StudyCatalog, StudyPassage, StudyEncounter, StudyQuality } from './transit-study-types';
 import { compactLocalHistory } from './local-retention';
 import { restoreImportedStudyKeys } from './local-schema-repair';
-import { compactStudyPublication } from './local-publication';
+import { compactStudyPublication, collectCompactStudyDays, writeBoundedStudyPublication, type PublicationDay } from './local-publication';
 import { prepareDerivedStage, replaceDerivedDay } from './derived-replacement';
 import { initializeLegacyBackfillState, pendingLegacyStudyDays, finishLegacyStudyDay, failedLegacyStudyDays } from './local-backfill-state';
 import { METHOD as LEGACY_METHOD } from './streetcar-analysis';
@@ -93,15 +93,15 @@ async function publish(c:DuckDBConnection,catalog:StudyCatalog){
   // Read one daily body at a time and compact before retaining it. Loading all
   // detailed identity lists first would make historical publication memory grow
   // with the number of runs rather than the number of public coverage cells.
-  const saved=await query<{date:string}>(c,`SELECT date::VARCHAR AS date FROM study_daily_results WHERE date>=timezone('America/Chicago',now())::DATE-90 AND method_revision=${sql(catalog.version+':'+methodRevision)} ORDER BY date`);
-  const rowCells:StudyRowCell[]=[],signalCells:StudySignalCell[]=[],coverageCells:StudyRowCoverageCell[]=[],quality:StudyQuality[]=[];
+  const stored=await query<{date:string}>(c,`SELECT date::VARCHAR AS date FROM study_daily_results WHERE method_revision=${sql(catalog.version+':'+methodRevision)} ORDER BY date DESC`);
+  const firstPublishedDay=addDays(localDay(Date.now()/1000,'America/Chicago'),-89);
+  const saved=stored.filter(d=>d.date>=firstPublishedDay).slice(0,90);
   const rowBase=summarizeRowStudy(catalog,[]),signalBase=summarizeSignalStudy(catalog,[]);
-  for(const savedDay of saved){
-    const [r]=await query<{body:string}>(c,`SELECT body::VARCHAR AS body FROM study_daily_results WHERE date=${sql(savedDay.date)}::DATE`);
-    const d=json<{row_cells:StudyRowCell[];signal_cells:StudySignalCell[];quality:StudyQuality[]}>(r.body);
-    const compact=compactStudyPublication({...rowBase,cells:d.row_cells},{...signalBase,cells:d.signal_cells});
-    rowCells.push(...compact.row.cells);coverageCells.push(...compact.row.coverage_cells??[]);signalCells.push(...compact.signal.cells);quality.push(...d.quality);
-  }
+  const days=await collectCompactStudyDays(saved.map(d=>d.date),async date=>{
+    const [r]=await query<{body:string}>(c,`SELECT body::VARCHAR AS body FROM study_daily_results WHERE date=${sql(date)}::DATE`);
+    return json<PublicationDay>(r.body);
+  },rowBase,signalBase);
+  const {row_cells:rowCells,coverage_cells:coverageCells,signal_cells:signalCells,quality}=days;
   const row=summarizeRowStudy(catalog,[],quality),signals=summarizeSignalStudy(catalog,[],quality);
   row.coverage_cells=coverageCells;
   row.cells=rowCells;row.comparisons=compareRowCells(rowCells);row.status=row.comparisons.some(c=>c.status==='ready')?'ready':'collecting';
@@ -109,8 +109,8 @@ async function publish(c:DuckDBConnection,catalog:StudyCatalog){
   signals.cells=signalCells;signals.signals=summarizeSignalCells(signalCells);signals.status=signals.signals.some(s=>s.status==='ready')?'ready':'collecting';
   const compact=compactStudyPublication(row,signals);
   const envelope:TransitSummaryEnvelope={schema_version:1,generated_at:new Date().toISOString(),source_quality:await sourceQuality(c),row_study:compact.row,signal_study:compact.signal,legacy:await buildLegacySummary(statement=>query(c,statement),'transit')};
-  await atomicFile(join(DATA_DIR,'summary.json'),JSON.stringify(envelope));
-  await setState(c,'last_summary',{generated_at:envelope.generated_at});
+  const publication=await writeBoundedStudyPublication(join(DATA_DIR,'summary.json'),envelope,{available_dates:stored.map(d=>d.date),included_dates:days.retained_dates});
+  await setState(c,'last_summary',{generated_at:envelope.generated_at,bytes:publication.bytes,omitted_dates:publication.omitted_dates});
 }
 async function main(){
   await journal.init();

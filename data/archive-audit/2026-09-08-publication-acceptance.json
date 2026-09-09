@@ -1,0 +1,16 @@
+{
+  "checked_at": "2026-09-09T02:02:34.903Z",
+  "bytes": 31245387,
+  "retained_dates": 39,
+  "omitted_dates": 0,
+  "exact_bytes_equal": true,
+  "sha256": "18c07c600a3ec9f4d37c9119721305c87c05055d8cf7d65bf137058d47d54c69",
+  "elapsed_ms": 384.06535599999995,
+  "max_resident_kib": 297768,
+  "envelope_limit_bytes": 62914560,
+  "public_max_calendar_days": 90,
+  "notes": [
+    "Reads saved summary only; no database access or backfill rerun.",
+    "Publication memory benchmark includes reading, parsing, serializing and hashing the actual 31.25 MB historical summary."
+  ]
+}
