@@ -1,0 +1,29 @@
+{
+  "checked_at": "2026-09-09T02:18:12.428977+00:00",
+  "scope": "existing Coolify server, read-only checks",
+  "filesystem": {
+    "capacity_bytes": 39973924864,
+    "used_bytes": 30869680128,
+    "available_bytes": 7420051456,
+    "reported_usage_percent": 81
+  },
+  "docker": {
+    "images_reclaimable_bytes_approx": 1602000000,
+    "build_cache_reclaimable_bytes_approx": 204100000,
+    "notes": [
+      "Docker totals include all shared applications. Age-filtered reclaimable capacity can be lower.",
+      "No cleanup was performed."
+    ]
+  },
+  "collector_database_bytes": 3435409408,
+  "guard": {
+    "maximum_used_fraction": 0.8,
+    "minimum_free_bytes": 10000000000
+  },
+  "decision": "Existing server cannot hold the combined history and configured reserve. Local collection and review preview continue; production storage choice is pending.",
+  "automatic_review": {
+    "action": "Delete shared Docker build cache older than 24 hours and unused images older than seven days",
+    "result": "rejected before execution",
+    "reason": "Shared cleanup could remove other applications rollback images."
+  }
+}

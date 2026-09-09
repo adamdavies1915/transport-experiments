@@ -1,0 +1,119 @@
+{
+  "checked_at": "2026-09-09T02:25:33.754022+00:00",
+  "location": "local preview, not production",
+  "collector": {
+    "paused": false,
+    "frames": 959,
+    "pending": 0,
+    "errors": 0,
+    "analysis": {
+      "enabled": true,
+      "running": true
+    }
+  },
+  "lepass": {
+    "status": "collecting",
+    "queries": 70,
+    "successful_queries": 70,
+    "verified_queries": 65,
+    "candidate_queries": 5,
+    "consecutive_failures": 0,
+    "mapping_revision_errors": 0
+  },
+  "summary": {
+    "generated_at": "2026-09-09T02:23:55.354Z",
+    "bytes": 33379370,
+    "from": "2026-08-01",
+    "to": "2026-09-08",
+    "coverage": {
+      "passages": 3730218,
+      "classified_passages": 27,
+      "unknown_passages": 3730191
+    },
+    "lepass_passages": 1265,
+    "lepass_complete_encounters": 447
+  },
+  "public_source_quality": {
+    "status": "ready",
+    "sources": [
+      {
+        "id": "sse",
+        "label": "RTA relay",
+        "status": "ready",
+        "observations": 26540,
+        "last_received_at": "2026-09-09T02:24:54.181Z",
+        "last_provider_at": "2026-09-09T02:24:00.000Z",
+        "from": "2026-09-08T05:10:57.716Z",
+        "to": "2026-09-09T02:22:54.104Z"
+      },
+      {
+        "id": "lepass",
+        "label": "LePass",
+        "status": "ready",
+        "observations": 7941,
+        "last_received_at": "2026-09-09T02:24:59.068Z",
+        "last_provider_at": "2026-09-09T02:24:32.907Z",
+        "from": "2026-09-08T05:51:04.453Z",
+        "to": "2026-09-09T02:23:02.000Z"
+      }
+    ],
+    "archive": {
+      "last_uploaded_at": null,
+      "pending_records": 33483,
+      "budget_bytes": 8000000000
+    },
+    "limitations": [
+      "Receipt time is not GPS fix time.",
+      "LePass and the relay may share an upstream vehicle feed; they are not independent samples.",
+      "Cloud writes are disabled until usage is verified"
+    ],
+    "collection": {
+      "paused": false,
+      "pending_frames": 0,
+      "last_received_at": "2026-09-09T02:24:54.181Z"
+    },
+    "snapshot": {
+      "generated_at": "2026-09-09T02:23:55.354Z",
+      "received_at": "2026-09-09T02:25:00.719Z",
+      "origin": "collector",
+      "stale": false,
+      "refresh_error": null
+    }
+  },
+  "dashboard_health": {
+    "status": "ok",
+    "summary": {
+      "generated_at": "2026-09-09T02:23:55.354Z",
+      "received_at": "2026-09-09T02:25:00.719Z",
+      "origin": "collector",
+      "stale": false,
+      "refresh_error": null
+    }
+  },
+  "private_summary_without_token_status": 401,
+  "journal_backlog_files": 112,
+  "memory": [
+    {
+      "role": "collector",
+      "peak_resident_kib": 524088,
+      "resident_kib": 490452
+    },
+    {
+      "role": "analysis_worker",
+      "peak_resident_kib": 2808388,
+      "resident_kib": 2022308
+    }
+  ],
+  "settings": {
+    "native_db_memory": "1GB",
+    "javascript_heap_limit_mib": 1536,
+    "temporary_analysis_interval_ms": 60000,
+    "cloud_writes_enabled": false
+  },
+  "notes": [
+    "Two current-data analysis cycles completed without worker failure. Normal 15-minute analysis interval is restored after this acceptance.",
+    "Source clocks describe persisted live batches; counts and coverage dates describe the saved analysis snapshot.",
+    "Historical receipt gaps and candidate mappings remain explicit; missing observations are not manufactured.",
+    "Process peak RSS figures are individual high-water marks, not simultaneous total memory usage."
+  ]
+}

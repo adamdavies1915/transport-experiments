@@ -93,6 +93,31 @@ test('catalog verifies RTA identity and ordered stop geography; ambiguous direct
   assert.equal(buildLePassQueryCatalog({ ...input, lineEntities: [{ 1: { 8: { 1: 740760, 2: '12', 3: 1167076, 6: [{ 1: 8697788, 3: 'Other agency' }] } } }] }).queries.length, 0);
 });
 
+test('published query revisions and pattern confidence match their independently fetched catalog evidence', async () => {
+  const queries = JSON.parse(await readFile(new URL('./data/lepass-queries.json', import.meta.url), 'utf8')) as Array<{
+    id: string; stopId: number; lineId: number; routeId: string; metroRevision: string;
+    patterns: Array<{ patternId: number; directionId: string | null; mappingConfidence: string }>;
+  }>;
+  const metadata = JSON.parse(await readFile(new URL('./data/lepass-catalog-metadata.json', import.meta.url), 'utf8')) as {
+    query_count: number; metro_revision: string; routes: string[]; candidate_patterns: number;
+    patterns: Array<{ lineId: number; queryStopId: number; patternId: number; routeId: string; directionId: string | null; confidence: string }>;
+  };
+  assert.equal(queries.length, metadata.query_count);
+  assert.deepEqual([...new Set(queries.map(q => q.routeId))].sort(), [...metadata.routes].sort());
+  let candidates = 0;
+  for (const q of queries) {
+    assert.equal(q.metroRevision, metadata.metro_revision, q.id);
+    for (const p of q.patterns) {
+      const evidence = metadata.patterns.find(e => e.lineId === q.lineId && e.queryStopId === q.stopId && e.patternId === p.patternId);
+      assert.ok(evidence, `${q.id} pattern ${p.patternId} lacks validation evidence`);
+      assert.equal(q.routeId, evidence.routeId); assert.equal(p.directionId, evidence.directionId);
+      assert.equal(p.mappingConfidence, evidence.confidence);
+      if (p.mappingConfidence === 'candidate') candidates++;
+    }
+  }
+  assert.equal(candidates, metadata.candidate_patterns, 'a revision refresh must not promote ambiguous patterns');
+});
+
 test('credential encryption authenticates state, replaces atomically and reloads both rotated tokens', async () => {
   const directory = await mkdtemp(join(tmpdir(), 'lepass-auth-test-'));
   try {

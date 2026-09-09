@@ -13,6 +13,7 @@ import { captureStreetcarSnapshots, snapshotSourceUrl } from './streetcar-snapsh
 import type { CollectionBatch, StudyObservation } from './observation-types';
 import { safeError } from './log-safety';
 import type { LePassHealth } from './lepass-collector';
+import { mergeSourceQuality, PersistedSourceClocks } from './source-quality';
 
 const SSE_URL=process.env.SSE_URL||'https://nolatransit.fly.dev/sse';
 const journal=new LocalJournal(DATA_DIR);
@@ -20,7 +21,7 @@ const STALE_MS=Number(process.env.STALE_FEED_THRESHOLD)||300_000;
 const token=process.env.TRANSIT_SUMMARY_TOKEN;
 let es:EventSource|undefined, worker:ChildProcess|undefined, stopping=false, paused=false;
 let lastReceived=0,lastPersisted=0,frames=0,errors=0,pending=0;
-const sourcePersisted={sse:0,lepass:0};
+const sourceClocks=new PersistedSourceClocks();
 let restartTimer:NodeJS.Timeout|undefined, reconnectTimer:NodeJS.Timeout|undefined;
 let lepassStop:(()=>void)|undefined;
 let lepassHealth:LePassHealth|{status:'unavailable';message:string}={status:'unavailable',message:'LePass is starting'};
@@ -47,7 +48,7 @@ async function persist(batch:CollectionBatch){
   // Backpressure disconnects the source rather than claiming unsaved observations.
   if(paused||pending>=100){pause('Collection queue reached its ceiling');throw new Error('Collection is paused');}
   pending++;
-  try{await journal.append(batch);frames++;lastPersisted=Date.now();sourcePersisted[batch.source]=lastPersisted;}
+  try{await sourceClocks.persist(batch,value=>journal.append(value));frames++;lastPersisted=Date.now();}
   catch(e){errors++;pause(safeError(e));throw e;}
   finally{pending--;}
 }
@@ -92,18 +93,7 @@ const server=createServer(async(req,res)=>{
   if(req.url!=='/internal/summary'){res.statusCode=404;res.end('{"error":"Not found"}');return;}
   try{
     const saved=JSON.parse(await readFile(join(DATA_DIR,'summary.json'),'utf8'));
-    saved.source_quality??={status:'collecting',sources:[]};
-    for(const source of saved.source_quality.sources){
-      if(source.id!=='sse'&&source.id!=='lepass')continue;
-      const received=sourcePersisted[source.id as keyof typeof sourcePersisted];
-      if(received)source.last_received_at=new Date(received).toISOString();
-      const recent=received||Date.parse(source.last_received_at||'')||0;
-      source.status=paused?'degraded':recent&&Date.now()-recent<STALE_MS?'ready':recent?'degraded':'collecting';
-      if(source.id==='lepass'&&['unavailable','disabled','authentication_required'].includes(lepassHealth.status)){
-        source.status='degraded';source.message='LePass collection requires configuration or a valid session.';
-      }
-    }
-    saved.source_quality.status=paused?'degraded':saved.source_quality.sources.some((s:{status:string})=>s.status==='ready')?'ready':'collecting';
+    saved.source_quality=mergeSourceQuality(saved.source_quality,{clocks:sourceClocks.values,paused,lepass:lepassHealth,stale_ms:STALE_MS});
     saved.source_quality.collection={paused,pending_frames:pending,last_received_at:lastReceived?new Date(lastReceived).toISOString():null};
     res.end(JSON.stringify(saved));
   }catch{res.statusCode=503;res.end('{"error":"The first local analysis snapshot is being prepared"}');}

@@ -8,8 +8,10 @@ export interface SourceQualityEntry {
   id: string;
   label: string;
   status: 'ready' | 'collecting' | 'degraded' | 'unavailable';
+  /** Latest durable receipt/provider high-water marks; may be newer than the saved analysis. */
   last_received_at?: string | null;
   last_provider_at?: string | null;
+  /** Inventory at summary publication, not live receipt counts or current study sample size. */
   observations?: number;
   from?: string | null;
   to?: string | null;

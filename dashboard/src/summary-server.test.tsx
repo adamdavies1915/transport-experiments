@@ -6,6 +6,8 @@ import {join} from 'node:path';
 import {Socket} from 'node:net';
 import {IncomingMessage,ServerResponse} from 'node:http';
 import {gunzipSync} from 'node:zlib';
+import {renderToStaticMarkup} from 'react-dom/server';
+import SourceQuality from './SourceQuality';
 import {SummaryStore,parseSummary} from '../server/summary-store';
 import {createSummaryApp} from '../server/summary-server';
 import type {TransitSummaryEnvelope} from './summary-data';
@@ -62,4 +64,10 @@ test('large saved JSON negotiates lossless gzip while health and clients declini
   assert.deepEqual(gunzipSync(compressed.body),plain.body);assert.ok(compressed.body.length<plain.body.length/5);
   const declined=await request('/api/row-study','gzip;q=0, identity');assert.equal(declined.encoding,undefined);assert.deepEqual(declined.body,plain.body);
   const health=await request('/api/health','gzip');assert.equal(health.encoding,undefined);assert.equal(JSON.parse(health.body.toString()).status,'ok');
+});
+test('source coverage keeps live clocks separate from the saved analysis inventory',()=>{
+  const html=renderToStaticMarkup(<SourceQuality data={{status:'degraded',sources:[{id:'lepass',label:'LePass',status:'degraded',observations:45,from:'2026-09-01T00:00:00Z',to:'2026-09-08T07:00:00Z',last_received_at:'2026-09-08T07:15:00Z',last_provider_at:'2026-09-08T07:14:58Z',message:'Raw responses are retained; mappings require revalidation.'}]}}/>);
+  assert.match(html,/Data coverage and clocks/);assert.match(html,/Latest provider timestamp/);assert.match(html,/Saved analysis snapshot: 45 observation receipts/);
+  assert.match(html,/not live counters or the sample size of the selected study/);assert.match(html,/Raw responses are retained/);
+  assert.doesNotMatch(html,/<details open/);
 });

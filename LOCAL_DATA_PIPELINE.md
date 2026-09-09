@@ -104,6 +104,25 @@ up to eight queries. The current catalog covers all 33 passenger routes using
 70 queries; live validation measured roughly 20–22 seconds per query. Actual
 coverage and response cadence remain visible in private source health.
 
+A new provider metadata revision downgrades affected mappings until they are
+revalidated; raw responses continue to be retained. Refresh the catalog from a
+checkout using the running collector's existing credentials and GTFS file:
+
+```bash
+node --import tsx scripts/lepass-discover.ts --gtfs /path/to/data/current-gtfs.zip --state-dir /path/to/data/lepass --output /tmp/lepass-review/lepass-queries.json
+```
+
+The command reads the committed encrypted session without rotating it or creating
+an account. Review the generated queries and metadata against the checked-in
+catalog, retain candidate confidence, then replace both catalog files and restart
+the collector. The September 8 provider release was checked against all 33 route
+groups: all 70 query mappings were unchanged, including five candidate queries.
+The comparison is recorded in `src/data/lepass-catalog-revalidation.json`.
+
+Public feed status keeps mapping warnings visible even when responses arrive.
+Live provider and receipt clocks advance only after a batch is durably saved;
+the observation counts and coverage dates still describe the analysis snapshot.
+
 On first startup, historical MotherDuck tables are copied to verified local
 Parquet and imported without remote changes. The import is resumable; incomplete
 cloud access must not interrupt new journal ingestion. Existing OTP schedule
