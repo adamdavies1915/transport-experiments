@@ -1,169 +1,99 @@
-# Transit Data System Deployment Guide
+# Transit pipeline deployment
 
-## Architecture Overview
+Deploy the collector and dashboard from the same revision. The collector owns
+local DuckDB and a durable journal; the dashboard serves saved summaries. R2 is
+not required. The full storage and research contract is in
+[LOCAL_DATA_PIPELINE.md](LOCAL_DATA_PIPELINE.md).
 
-Two services, both backed by MotherDuck. The dashboard queries the raw
-`transit_data` table directly and aggregates on the fly (results cached in
-memory for 1 hour) for speed and feed-flag statistics. For schedule-based OTP,
-an hourly child process of the scraper matches our GPS observations to archived
-GTFS schedules and writes `otp_events` and `otp_coverage`. No third service is
-required. See [OTP.md](OTP.md) for the definition, limitations, and backfills.
+## Collector
 
-The scraper also starts an hourly streetcar-analysis child process, first run
-90 seconds after startup. It writes derived passage and quality tables used by
-`/api/streetcars`. Deploy both existing services for this feature; no third
-application is needed. The endpoint caches for one minute and supports gzip.
-See [STREETCAR_ANALYSIS.md](STREETCAR_ANALYSIS.md) for backfill, source refresh,
-and the distinction between GPS intervals and fixed-distance passages.
-The collector also retains streetcar SSE receipts in an additive snapshot ledger.
-The same worker supplies `/api/streetcar-priority` with per-location benchmarks and
-candidate stationary waits. See [STREETCAR_PRIORITY.md](STREETCAR_PRIORITY.md).
+Use the repository root Dockerfile, port 3100, and persistent storage mounted at
+`/app/data` owned by the container's `node` user (UID 1000). Set a stable internal
+network alias, `transit-collector`.
 
-```
-┌─────────────┐      ┌──────────────┐      ┌──────────────┐
-│   Scraper   │─────▶│  MotherDuck  │◀─────│  Dashboard   │
-│  (Raw Data) │      │ transit_data │      │   (React)    │
-└─────────────┘      └──────────────┘      └──────────────┘
-```
+Required configuration:
 
-### Components
-
-1. **Scraper** — collects real-time transit data every minute → MotherDuck.
-   Also archives public schedules daily and runs the independent OTP calculation
-   hourly in a separate process so raw collection can continue.
-2. **MotherDuck** — cloud DuckDB storing raw transit readings (millions of rows).
-3. **Dashboard** — React front end + Express API (`server-motherduck.ts`) that
-   queries MotherDuck directly and caches aggregates in memory.
-
-### Why this architecture?
-
-- **MotherDuck** is a columnar analytics engine — the dashboard's `GROUP BY`
-  aggregates over millions of rows run fast without pre-computation.
-- **In-memory caching** (1 hour TTL) keeps repeated dashboard loads cheap and
-  well under MotherDuck's free-tier row-scan limits.
-- **No extra moving parts** — no cron job, no Postgres to provision, back up, or
-  keep in sync. Raw data stays in one place for ad-hoc analysis.
-
-## Services to Deploy
-
-For the OTP rollout, redeploy **both** services from this revision, scraper first.
-Its migrations add `gtfs_trip_id` and `observed_at` and create the OTP tables without
-changing existing raw readings. Verify the scraper logs show `[OTP]` calculations,
-then check the dashboard's `/api/otp` and schedule coverage. A successful initial
-calculation can contain zero classified events; allow new matched observations to
-accumulate. Historic readings can be reconstructed with the observed ID mapping backfill documented in OTP.md; the dashboard labels that provenance. Without usable schedules or observations the UI
-shows unavailable. The dashboard displays the calculation timestamp.
-
-### 1. Scraper
-
-**Location**: `/` (root)
-**Dockerfile**: `Dockerfile` (root)
-**Environment Variables**:
-```bash
-MOTHER_DUCK_API_KEY=your_key
-MOTHERDUCK_DATABASE=my_db
-UPLOAD_INTERVAL=60000
+```text
+TRANSIT_DATA_DIR=/app/data
+PORT=3100
+TRANSIT_SUMMARY_TOKEN=<long server-only random value>
+LOCAL_DB_MEMORY=1GB
+MOTHERDUCK_CLOUD_WRITES=false
+LEPASS_ENABLED=true
+LEPASS_API_KEY=<verified app credential>
+LEPASS_ENCRYPTION_KEY=<separate encryption key>
+LEPASS_ALLOW_GUEST_BOOTSTRAP=false
 ```
 
-**Coolify Setup**:
-- Base directory `/`.
-- Set the environment variables above.
+Copy the verified encrypted session to `/app/data/lepass/lepass-credentials.enc`.
+Keep its encryption key separate in environment configuration. Use
+`MOTHERDUCK_BOOTSTRAP=false` if the preserved history has already been transferred;
+otherwise configure the source database and token for its read-only migration.
+Cloud writes need a separate, fresh free-tier billing checkpoint and remain off
+until the guard passes. Do not set an invented usage value to enable uploads.
 
-### 2. Dashboard
+In Coolify, enable **Consistent Container Name** so the old collector stops
+before the new one starts. Concurrent containers must not write the same DuckDB
+file or rotating session. The installed 4.0.0-beta.455 supports persistent
+storage, aliases and this setting in its UI, although its application PATCH API
+omits those fields.
 
-**Location**: `/dashboard`
-**Dockerfile**: `dashboard/Dockerfile`
-**Environment Variables**:
-```bash
-MOTHER_DUCK_API_KEY=your_key
-MOTHERDUCK_DATABASE=my_db
+`LOCAL_DB_MEMORY` limits DuckDB's native allocation; it is not a limit on the
+whole collector or analysis process. A 512 MB setting failed the actual combined
+study cycle with an out-of-memory error, so the default remains 1 GB. Verify the
+combined processes against the memory available on the deployment host.
+
+The completed historical backfill peaked at **3.50 GiB RSS**. A separate benchmark
+that read, parsed and serialized its saved 31.25 MB summary peaked at **291 MiB**;
+that smaller figure excludes DuckDB queries and study analysis. Daily publication
+reads and compacts one stored date at a time, but its benchmark does not establish
+the full worker's memory requirement.
+
+## Dashboard
+
+Use base directory `/dashboard`, its Dockerfile and port 3000. Put it on the
+collector's internal Docker network and mount a separate persistent `/app/data`
+cache. Configure:
+
+```text
 PORT=3000
+TRANSIT_SUMMARY_URL=http://transit-collector:3100/internal/summary
+TRANSIT_SUMMARY_TOKEN=<same server-only value as collector>
+TRANSIT_SUMMARY_CACHE_FILE=/app/data/transit-summary.json
 ```
 
-**Coolify Setup**:
-1. Base directory `/dashboard`.
-2. Set the environment variables above (same MotherDuck token as the scraper).
-3. Deploy.
+Remove the dashboard's old MotherDuck credentials. It no longer needs database
+access. No API or encryption credentials belong in Vite/browser variables.
 
-> **Note:** both images are `node:20-slim` with `ca-certificates` installed and
-> `GRPC_DEFAULT_SSL_ROOTS_FILE_PATH` set — required because the MotherDuck
-> client talks to the service over gRPC/TLS and `slim` ships no CA bundle.
+## Migration and acceptance
 
-## Testing
+1. Ensure the filesystem satisfies the 80% usage ceiling and 10 GB free-space
+   reserve after accounting for the history transfer and Docker build.
+2. Preserve existing source history before retiring jobs. The old R2 files are
+   inventoried and verified in `data/archive-audit`; the archive job is stopped
+   and automatic redeployment is disabled. Existing R2 objects remain intact.
+3. Transfer local DuckDB and archives while their writer is stopped. Checkpoint
+   the database first and never pair it with a stale WAL from an earlier copy.
+   Archive catalog paths must refer to the mounted destination.
+4. Deploy the collector, confirm both feeds in authenticated `/internal/health`,
+   and verify that `/internal/summary` returns 401 without its bearer token.
+5. Deploy the dashboard and verify `/api/source-quality`, `/api/row-study`,
+   `/api/signal-study` and `/api/otp`. Restart it to confirm cache recovery.
+6. Keep collecting long enough for date and sample thresholds. A valid backfill
+   can honestly report insufficient evidence; missing historical Le Pass data,
+   receipt times or dated ROW classifications must not be invented.
 
-### Test the Dashboard locally
+Run the full local study backfill only when no collector worker holds its database:
 
 ```bash
-cd dashboard
-npm install
-# Terminal 1: API server (reads MotherDuck)
-MOTHER_DUCK_API_KEY=your_key npm run dev:server
-# Terminal 2: Vite dev server
-npm run dev
+TRANSIT_DATA_DIR=/app/data MOTHERDUCK_BOOTSTRAP=false npm run study:backfill
 ```
 
-Visit the Vite URL and verify data loads. Or build and run the production
-server (serves the built front end + API on one port):
-
-```bash
-npm run build
-MOTHER_DUCK_API_KEY=your_key npm start   # http://localhost:3000
-```
-
-### Test API Endpoints
-
-```bash
-curl http://localhost:3000/api/health
-curl http://localhost:3000/api/summary
-curl http://localhost:3000/api/segment-types
-curl http://localhost:3000/api/daily
-```
-
-## Monitoring
-
-### Dashboard / MotherDuck usage
-
-- The dashboard caches every aggregate for 1 hour, so a busy day still results
-  in only a handful of full-table scans per endpoint.
-- Check the MotherDuck dashboard for row-scan and storage usage.
-
-### Scraper
-
-- Watch Coolify logs for `Inserted N records into MotherDuck` and a low error
-  count in the periodic `[Stats]` line.
-
-## Troubleshooting
-
-### Dashboard shows no data / 503
-
-1. Verify `MOTHER_DUCK_API_KEY` is set and valid.
-2. Check the container logs for `MotherDuck connected - ready to query`.
-3. Confirm the table has rows: query `my_db.transit_data` from the MotherDuck UI.
-4. Hit `curl http://localhost:3000/api/summary` and read any `error` field.
-
-### "Could not get default pem root certs"
-
-The gRPC/TLS CA bundle is missing. Ensure the image installed `ca-certificates`
-and set `GRPC_DEFAULT_SSL_ROOTS_FILE_PATH=/etc/ssl/certs/ca-certificates.crt`
-(both Dockerfiles already do this).
-
-### Scraper not uploading to MotherDuck
-
-1. Verify `MOTHER_DUCK_API_KEY` is set.
-2. Check scraper logs for insert errors.
-3. Test the MotherDuck connection locally.
-
-## Cost Analysis
-
-### MotherDuck (Free Tier)
-- Storage: 10GB limit.
-- Row scans: 50M/month limit.
-- The dashboard caches results for one hour. The OTP worker also scans observations for recent days and up to two requested historical dates per hourly run.
-
-## Future Improvements
-
-1. **Archive old raw data**: move data older than 1 year to cold storage.
-2. **Precise delay metric**: join pings to the static GTFS schedule to compute
-   real delay-in-seconds (see `DATA_STRATEGY.md`).
-3. **Dashboard caching**: swap the in-memory cache for Redis if horizontally
-   scaled.
+The normal supervised worker also performs bounded background backfill. The
+public study snapshot covers up to 90 calendar days with a 28-day default. The
+entire summary envelope, including legacy metrics and catalogs, must fit within
+**60 MiB**, below the dashboard's 64 MiB input limit. Publication drops only whole
+oldest study dates, recomputes retained metrics and states the published and
+stored date ranges. If the newest date and fixed envelope cannot fit, publication
+fails before replacing the previous snapshot. Full local archives and results
+remain available for further research.

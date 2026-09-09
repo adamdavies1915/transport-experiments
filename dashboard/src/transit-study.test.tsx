@@ -1,0 +1,102 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {renderToStaticMarkup} from 'react-dom/server';
+import {rowStudyFromCells,signalStudyFromCells,serviceDateBootstrap} from './transit-study-filter';
+import {rowCell,rowData,signalCell,signalData} from './study-fixtures';
+import StudyPanel from './StudyPanel';
+import {compactStudyPublication} from '../../src/local-publication';
+import type {StudyFilters} from '../../src/transit-study-types';
+
+const pairs=['2026-09-01','2026-09-02','2026-09-03','2026-09-04','2026-09-07','2026-09-08','2026-09-09'].flatMap((date,index)=>[
+  rowCell({date,passages:index===0?100:10,distance_meters:index===0?20000:2000,duration_seconds:index===0?2000:200,duration_lower_seconds:0,duration_upper_seconds:index===0?4000:400}),
+  rowCell({date,row_class:'shared',duration_seconds:index===0?600:400,duration_lower_seconds:0,duration_upper_seconds:index===0?800:600})]);
+test('ROW compares same-date matched strata with equal date weights and never pools sources',()=>{
+  const data=rowData([...pairs,rowCell({source:'lepass',duration_seconds:999999}),rowCell({date:'2026-09-10',duration_seconds:999999}),rowCell({row_class:'unknown',passages:17})]);
+  const result=rowStudyFromCells(data,{source:'sse'}),row=result.comparisons[0];
+  assert.equal(result.comparisons.length,1);assert.equal(row.matched_dates,7);assert.equal(row.reserved_passages,160);
+  assert.equal(row.reserved_seconds_per_km,100);assert.ok(Math.abs(row.shared_seconds_per_km!-1500/7)<1e-10);
+  assert.ok(Math.abs(row.shared_extra_seconds_per_km!-800/7)<1e-10);assert.equal(row.shared_extra_lower_seconds_per_km,-200);
+  assert.equal(result.coverage.unknown_passages,17);
+  const sparse=rowStudyFromCells(data,{source:'sse',to:'2026-09-02'});assert.equal(sparse.comparisons[0].status,'insufficient_data');assert.equal(sparse.comparisons[0].shared_extra_seconds_per_km,null);
+  assert.equal(rowStudyFromCells(data,{source:'lepass'}).comparisons[0].status,'insufficient_data');
+});
+test('compacted unknown ROW coverage preserves every public filter and never enters comparisons',()=>{
+  const unknown = [
+    rowCell({row_class:'unknown',passages:11}),
+    rowCell({row_class:'unknown',path_id:'other-path',context:'both',passages:13}),
+    rowCell({row_class:'unknown',source:'lepass',passages:17}),
+    rowCell({row_class:'unknown',mode:'bus',route_id:'51',passages:19}),
+    rowCell({row_class:'unknown',direction_id:'1',hour:17,time_band:4,passages:23}),
+    rowCell({row_class:'unknown',date:'2026-09-06',day_type:'weekend',passages:29}),
+  ];
+  const full=rowData([...pairs,...unknown]);
+  const compact=compactStudyPublication(full,signalData()).row;
+  assert.equal(compact.coverage_cells?.length,5);
+  assert.ok(compact.cells.every(cell=>cell.row_class!=='unknown'));
+  const filters:StudyFilters[]=[{}, {source:'sse'}, {source:'lepass'}, {mode:'bus',route_id:'51'},
+    {direction_id:'1'}, {day_type:'weekend'}, {hour_from:9,hour_to:18},
+    {from:'2026-09-02',to:'2026-09-07'}, {source:'sse',mode:'streetcar',route_id:'12',direction_id:'0',day_type:'weekday',hour_from:8,hour_to:8}];
+  for(const filter of filters){
+    const expected=rowStudyFromCells(full,filter),actual=rowStudyFromCells(compact,filter);
+    assert.deepEqual(actual.coverage,expected.coverage,JSON.stringify(filter));
+    assert.deepEqual(actual.comparisons,expected.comparisons,JSON.stringify(filter));
+    assert.equal(actual.status,expected.status);
+  }
+  const mixed={...compact,cells:[...compact.cells,rowCell({row_class:'unknown',passages:31})]};
+  assert.equal(rowStudyFromCells(mixed,{}).coverage.unknown_passages,compact.coverage.unknown_passages+31);
+});
+test('signal probabilities include unsampled complete encounters; mean is per wait event; overlap has no priority scenario',()=>{
+  const result=signalStudyFromCells(signalData([signalCell(),signalCell({source:'lepass',wait_seconds:9999}),signalCell({context:'both'})]),{source:'sse'});
+  assert.equal(result.signals.length,2);const isolated=result.signals.find(row=>row.context==='signal_only')!;
+  assert.equal(isolated.detected_wait_probability,0.2);assert.equal(isolated.mean_detected_wait_seconds,30);assert.equal(isolated.detected_wait_seconds_per_encounter,9);
+  assert.equal(isolated.evaluable_encounters,6);assert.deepEqual(isolated.recovery_seconds_per_encounter.map(row=>row.seconds),[2.25,4.5,6.75]);
+  assert.ok(result.signals.find(row=>row.context==='both')!.recovery_seconds_per_encounter.every(row=>row.seconds===null));
+  const noWait=signalStudyFromCells(signalData([signalCell({wait_events:0,wait_seconds:0,detected_wait_encounters:0})]),{}).signals[0];assert.equal(noWait.mean_detected_wait_seconds,null);assert.equal(noWait.detected_wait_seconds_per_encounter,0);
+});
+test('new panels expose evidence gaps without fabricating a zero-cost result',()=>{
+  const row=renderToStaticMarkup(<StudyPanel kind="row" data={rowData([rowCell({row_class:'unknown'})])}/>);
+  assert.match(row,/Collecting Our SSE collection roadway comparisons/);assert.match(row,/Unknown roadway/);assert.doesNotMatch(row,/Shared minus reserved|0\.0 min/);
+  const signal=renderToStaticMarkup(<StudyPanel kind="signals" data={signalData([signalCell({context:'both'})])}/>);
+  assert.match(signal,/4 encounters had insufficient sampling/);assert.match(signal,/Boarding and signal delay cannot be separated/);assert.doesNotMatch(signal,/25% recovered/);
+});
+test('ROW detail shows timing range and does not mix direction or interpret a difference as causal',()=>{
+  const html=renderToStaticMarkup(<StudyPanel kind="row" data={rowData(pairs)}/>);
+  assert.match(html,/Time to travel one kilometre/);assert.match(html,/08:00–11:59/);assert.match(html,/Timing range for the difference/);assert.match(html,/does not isolate the causal effect/);
+  const filtered=renderToStaticMarkup(<StudyPanel kind="row" data={rowData(pairs)} initialFilters={{source:'lepass'}}/>);assert.match(filtered,/Collecting Le Pass roadway comparisons/);assert.doesNotMatch(filtered,/Shared minus reserved/);
+});
+
+test('an entirely unevaluable signal sample cannot appear as measured zero delay',()=>{
+  const data=signalData([signalCell({evaluable_encounters:0,detected_wait_encounters:0,wait_events:0,wait_seconds:0})]);
+  assert.equal(signalStudyFromCells(data,{}).status,'collecting');
+  const html=renderToStaticMarkup(<StudyPanel kind="signals" data={data}/>);
+  assert.match(html,/No encounter had enough sampling/);
+  assert.doesNotMatch(html,/25% recovered|0\.0 min/);
+});
+
+
+test('service-date bootstrap measures day variation independently of GPS clock bounds',()=>{
+  const days=Array.from({length:7},(_,i)=>({numerator:i*10,denominator:1}));
+  const ci=serviceDateBootstrap(days)!;
+  assert.ok(ci[0]<30&&ci[1]>30); assert.deepEqual(serviceDateBootstrap(days),ci);
+  assert.equal(serviceDateBootstrap(days.slice(1)),null);
+  const result=rowStudyFromCells(rowData(pairs),{}).comparisons[0];
+  assert.ok(result.shared_extra_ci_lower_seconds_per_km!>0);
+  assert.ok(result.shared_extra_lower_seconds_per_km!<0);
+});
+test('signal readiness requires thirty evaluable encounters across seven dates per directional site',()=>{
+  const days=Array.from({length:7},(_,i)=>signalCell({date:`2026-09-${String(i+1).padStart(2,'0')}`,wait_seconds:i*30}));
+  const ready=signalStudyFromCells(signalData(days),{});
+  assert.equal(ready.status,'ready');assert.equal(ready.signals[0].evaluable_dates,7);
+  assert.ok(ready.signals[0].detected_wait_seconds_per_encounter_ci_upper!>ready.signals[0].detected_wait_seconds_per_encounter_ci_lower!);
+  assert.equal(signalStudyFromCells(signalData(days.slice(1)),{}).status,'collecting');
+  assert.equal(signalStudyFromCells(signalData(days.map(d=>({...d,evaluable_encounters:4}))),{}).status,'collecting');
+  assert.equal(signalStudyFromCells(signalData(days.map(d=>({...d,evaluable_encounters:0,wait_events:0,wait_seconds:0,detected_wait_encounters:0}))),{}).signals[0].detected_wait_seconds_per_encounter,null);
+});
+
+test('signal headline and priority scenarios wait for readiness and label service-date uncertainty',()=>{
+  const sparse=renderToStaticMarkup(<StudyPanel kind="signals" data={signalData([signalCell()])}/>);
+  assert.match(sparse,/Collecting a headline sample/);assert.match(sparse,/Preliminary observations/);assert.doesNotMatch(sparse,/25% recovered/);
+  const cells=Array.from({length:7},(_,i)=>signalCell({date:`2026-09-${String(i+1).padStart(2,'0')}`,wait_seconds:i*30}));
+  const ready=renderToStaticMarkup(<StudyPanel kind="signals" data={signalData(cells)}/>);
+  assert.match(ready,/25% recovered/);assert.match(ready,/95% interval across service dates/);assert.doesNotMatch(ready,/Collecting a headline sample/);
+});

@@ -36,6 +36,7 @@ export async function initializeOtp(connection: DuckDBConnection): Promise<void>
     schedule_hash VARCHAR, method VARCHAR, updated_at TIMESTAMPTZ,
     PRIMARY KEY(service_date, route)
   )`);
+  await connection.run('CREATE TABLE IF NOT EXISTS otp_processing_days (service_date DATE PRIMARY KEY, signature VARCHAR)');
 }
 
 async function rows<T>(connection: DuckDBConnection, sql: string): Promise<T[]> {
@@ -126,20 +127,31 @@ export async function calculateDay(connection: DuckDBConnection, day: string, sc
 }
 
 export async function processRecentDays(connection: DuckDBConnection): Promise<void> {
-  const snapshots = await rows<{ zip_base64: string; usable_from: string; valid_to: string; hash: string }>(connection,
-    `SELECT zip_base64, CAST(usable_from AS VARCHAR) AS usable_from,
+  const snapshots = await rows<{ usable_from: string; valid_to: string; hash: string }>(connection,
+    `SELECT CAST(usable_from AS VARCHAR) AS usable_from,
       CAST(valid_to AS VARCHAR) AS valid_to, hash FROM otp_schedules ORDER BY usable_from DESC, fetched_at DESC`);
   const parsed = new Map<string, Schedule>();
+  const load = async(hash: string) => {
+    if (parsed.has(hash)) return parsed.get(hash)!;
+    const [saved] = await rows<{zip_base64:string}>(connection,`SELECT zip_base64 FROM otp_schedules WHERE hash=${quote(hash)}`);
+    const schedule = readSchedule(Buffer.from(saved.zip_base64,'base64'));
+    parsed.set(hash,schedule); return schedule;
+  };
   const today = localDay(Date.now() / 1000, 'America/Chicago');
   for (let offset = -2; offset <= 0; offset++) {
     const day = addDays(today, offset);
     const snapshot = snapshots.find(s => s.usable_from <= day && s.valid_to >= day);
     if (!snapshot) continue;
-    const schedule = parsed.get(snapshot.hash) ?? readSchedule(Buffer.from(snapshot.zip_base64, 'base64'));
-    parsed.set(snapshot.hash, schedule);
+    const schedule = await load(snapshot.hash);
     await learnCrosswalk(connection, schedule, day);
     await validateSequences(connection, schedule, day);
+    const [source] = await rows<{revision:string}>(connection,`SELECT COUNT(*) || ':' || COALESCE(MAX(timestamp)::VARCHAR,'') || ':' || COUNT(gtfs_trip_id) AS revision FROM transit_data
+      WHERE timestamp>=${quote(addDays(day,-1))}::DATE AND timestamp<${quote(addDays(day,2))}::DATE`);
+    const signature = `${snapshot.hash}:${await crosswalkRevision(connection,snapshot.hash)}:${source.revision}:${day===today?Math.floor(Date.now()/3600000):'closed'}`;
+    const saved = await rows(connection,`SELECT 1 FROM otp_processing_days WHERE service_date=${quote(day)}::DATE AND signature=${quote(signature)}`);
+    if (saved.length) continue;
     await calculateDay(connection, day, schedule);
+    await connection.run(`INSERT INTO otp_processing_days VALUES (${quote(day)},${quote(signature)}) ON CONFLICT(service_date) DO UPDATE SET signature=excluded.signature`);
   }
   // Only explicitly requested historical dates are revisited. Bound each hourly
   // run to two dates and rotate oldest results first as the mapping grows.
@@ -150,7 +162,7 @@ export async function processRecentDays(connection: DuckDBConnection): Promise<v
         AND (applied_revision IS NULL OR applied_revision <> ${quote(revision)})
       ORDER BY last_completed_at ASC NULLS FIRST, service_date LIMIT 2`);
     if (!pending.length) continue;
-    const schedule = parsed.get(snapshot.hash) ?? readSchedule(Buffer.from(snapshot.zip_base64, 'base64'));
+    const schedule = await load(snapshot.hash);
     for (const { day } of pending) {
       await calculateDay(connection, day, schedule);
       await finishBackfillDay(connection, day, revision);
@@ -166,6 +178,18 @@ async function crosswalkRevision(connection: DuckDBConnection, hash: string): Pr
       UNION ALL SELECT route, legacy_id, gtfs_id || ':' || evidence_count AS gtfs_id
       FROM otp_sequence_mappings WHERE schedule_hash = ${quote(hash)}) mappings`);
   return `${OTP_METHOD}:${result[0].revision}`;
+}
+
+/** Read-only completion gate for the combined local historical backfill. */
+export async function pendingOtpBackfillCount(connection: DuckDBConnection): Promise<number> {
+  let count = 0;
+  for (const { hash } of await rows<{ hash: string }>(connection, 'SELECT hash FROM otp_schedules')) {
+    const revision = await crosswalkRevision(connection, hash);
+    const [pending] = await rows<{ n: number | string }>(connection, `SELECT COUNT(*) AS n FROM otp_backfill_days
+      WHERE schedule_hash=${quote(hash)} AND (applied_revision IS NULL OR applied_revision<>${quote(revision)})`);
+    count += Number(pending.n);
+  }
+  return count;
 }
 async function finishBackfillDay(connection: DuckDBConnection, day: string, revision: string): Promise<void> {
   await connection.run(`UPDATE otp_backfill_days SET applied_revision = ${quote(revision)},

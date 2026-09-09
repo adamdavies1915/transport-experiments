@@ -51,8 +51,8 @@ test('snapshots preserve absent values as null, explicit zero/false, raw fields 
   const selected = captureStreetcarSnapshots([null, vehicle, { ...vehicle, rt: '46' }, { ...vehicle, rt: '47' },
     { ...vehicle, rt: '48' }, { ...vehicle, rt: '49' }, { ...vehicle, rt: '3' }], {
     receipt_id: 'frame', received_at: '2026-09-07T18:02:00Z', source_url: 'https://example.org/sse' });
-  assert.deepEqual(selected.map(row => row.route), ['12', '46', '47', '48']);
-  assert.deepEqual(selected.map(row => row.snapshot_id), ['frame:1', 'frame:2', 'frame:3', 'frame:4']);
+  assert.deepEqual(selected.map(row => row.route), ['12', '46', '47', '48', '49']);
+  assert.deepEqual(selected.map(row => row.snapshot_id), ['frame:1', 'frame:2', 'frame:3', 'frame:4', 'frame:5']);
 });
 
 test('snapshot table is additive, keeps repeated receipts and retries a partly committed batch idempotently', async () => {

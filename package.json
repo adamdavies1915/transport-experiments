@@ -1,7 +1,7 @@
 {
   "name": "nola-transit-scraper",
   "version": "2.0.0",
-  "description": "Scrapes NOLA transit real-time data via SSE and stores it in MotherDuck",
+  "description": "Collects RTA relay and LePass observations with local analysis and a guarded MotherDuck archive",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {
@@ -11,7 +11,8 @@
     "test": "tsx --test src/*.test.ts",
     "otp:backfill": "tsx src/otp-worker.ts",
     "otp:validate": "tsx src/otp-validation.ts",
-    "streetcars:backfill": "tsx src/streetcar-worker.ts"
+    "streetcars:backfill": "tsx src/streetcar-worker.ts",
+    "study:backfill": "node --import tsx src/local-worker.ts --backfill"
   },
   "dependencies": {
     "@duckdb/node-api": "^1.5.4-r.1",
@@ -28,6 +29,6 @@
     "typescript": "^5.7.2"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=20.0.0"
   }
 }

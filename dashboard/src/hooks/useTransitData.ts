@@ -3,7 +3,6 @@ import type {
   TransitData, Summary, SegmentTypeRow, SegmentRow, RouteRow,
   HourlyRow, DailyRow, DailySegmentRow
 } from '../types';
-import type { OtpData } from '../otp-data';
 
 const API_BASE = '/api';
 
@@ -27,21 +26,19 @@ export function useTransitData(): UseTransitDataResult {
   useEffect(() => {
     async function fetchData(): Promise<void> {
       try {
-        const [summary, segmentTypes, segments, routes, hourly, daily, dailySegments, otp] = await Promise.all([
+        const [summary, segmentTypes, segments, routes, hourly, daily, dailySegments] = await Promise.all([
           getJSON<Summary & { error?: string }>('/summary'),
           getJSON<SegmentTypeRow[]>('/segment-types'),
           getJSON<SegmentRow[]>('/segments'),
           getJSON<RouteRow[]>('/routes'),
           getJSON<HourlyRow[]>('/hourly'),
           getJSON<DailyRow[]>('/daily'),
-          getJSON<DailySegmentRow[]>('/daily-segments'),
-          getJSON<OtpData>('/otp')
+          getJSON<DailySegmentRow[]>('/daily-segments')
         ]);
 
         if (summary.error) throw new Error(summary.error);
 
         setData({
-          otp,
           summary,
           segmentType: segmentTypes,
           segments,

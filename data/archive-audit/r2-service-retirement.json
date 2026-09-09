@@ -1,0 +1,12 @@
+{
+  "verified_at": "2026-09-08T06:12:59.958952+00:00",
+  "application_uuid": "go84cw00sso0s0w4ccok04s4",
+  "service_status": "exited:unhealthy",
+  "auto_deploy_enabled": false,
+  "docker_cleanup_requested": false,
+  "objects_deleted": 0,
+  "unique_archive_objects_preserved": 12,
+  "preserved_rows": 9422603,
+  "preserved_bytes": 482512591,
+  "manifest": "data/archive-audit/r2-local-manifest.json"
+}

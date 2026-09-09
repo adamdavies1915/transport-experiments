@@ -1,0 +1,70 @@
+{
+  "le_pass": {
+    "response_received_at": "2026-09-08T02:39:50.133924+00:00",
+    "method": "POST",
+    "host": "app5.moovitapp.com",
+    "path": "/services-app/services/V4/LineArrivals",
+    "encoding": "thrift-binary",
+    "stop_id": 4539336,
+    "line_id": 8697788,
+    "pattern_id": 17096284,
+    "next_poll_seconds": 20,
+    "vehicle_id": "460::1705629903",
+    "lat": 29.953527,
+    "lon": -90.07013,
+    "location_source": "PROVIDER_GPS",
+    "vehicle_status": "ON_SHAPE",
+    "vehicle_sample_time_utc_ms": 1788835173563,
+    "vehicle_sample_time_utc": "2026-09-08T02:39:33.563000+00:00",
+    "realtime_departure_utc_ms": 1788835537000,
+    "static_departure_utc_ms": 1788835537000,
+    "departure_utc": "2026-09-08T02:45:37+00:00"
+  },
+  "relay": {
+    "received_at": "2026-09-08T02:39:58.271787+00:00",
+    "vehicle": {
+      "vid": "460",
+      "rt": "12",
+      "tmstmp": "2026-09-07T21:39:00-05:00",
+      "lat": "29.95352833333333",
+      "lon": "-90.07013",
+      "pid": 558,
+      "des": "S. Carrollton at S. Claiborne",
+      "spd": 0
+    }
+  },
+  "rta_stop_predictions": {
+    "received_at": "2026-09-08T02:39:58.224755+00:00",
+    "stop_code": "259",
+    "stop_name": "St Charles Ave at Poydras St",
+    "predictions": [
+      {
+        "pt": "5 MIN",
+        "fd": "S. Carrollton at S. Claiborne",
+        "v": "460",
+        "scheduled": "false",
+        "rn": "12"
+      },
+      {
+        "pt": "10:25 PM SCH",
+        "fd": "S. Carrollton at S. Claiborne",
+        "v": "CNCL",
+        "scheduled": null,
+        "rn": "12"
+      }
+    ]
+  },
+  "comparison": {
+    "pair_receipt_gap_seconds": 8.137862920761108,
+    "coordinate_difference_meters": 0.148,
+    "app_reported_sample_age_at_response_seconds": 16.571,
+    "app_eta_seconds_from_response": 346.866
+  },
+  "limitations": [
+    "App sample time is millisecond-valued, but its relation to physical GPS measurement time is unverified.",
+    "API labels locationSource as PROVIDER_GPS; this is source metadata, not independent validation.",
+    "Single vehicle-ID prefix and coordinate match; composite Moovit vehicle-ID format is not universally verified.",
+    "Position difference between responses is not a GPS error estimate or a measured feed latency.",
+    "Arrival clocks agree approximately with the public rounded countdown; this does not establish eventual arrival accuracy."
+  ]
+}

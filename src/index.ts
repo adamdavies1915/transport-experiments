@@ -1,270 +1,127 @@
 import 'dotenv/config';
 import EventSource from 'eventsource';
-import { initMotherDuck, insertRecords, insertStreetcarSnapshotRecords, closeMotherDuck } from './motherduck';
-import { processVehicle } from './vehicle';
-import { captureStreetcarSnapshots, SnapshotRetryBuffer, snapshotSourceUrl } from './streetcar-snapshots';
-import type { RawVehicle, TransitRecord } from './types';
-import { startOtpWorker } from './otp-worker';
-import { startStreetcarWorker } from './streetcar-worker';
+import { createServer } from 'node:http';
+import { randomUUID, timingSafeEqual } from 'node:crypto';
+import { fork, type ChildProcess } from 'node:child_process';
+import { readFile, mkdir } from 'node:fs/promises';
+import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { unzipSync, strFromU8 } from 'fflate';
+import { parse } from 'csv-parse/sync';
+import { LocalJournal, DATA_DIR, atomicFile, diskBudget } from './local-journal';
+import { captureStreetcarSnapshots, snapshotSourceUrl } from './streetcar-snapshots';
+import type { CollectionBatch, StudyObservation } from './observation-types';
+import { safeError } from './log-safety';
+import type { LePassHealth } from './lepass-collector';
+import { mergeSourceQuality, PersistedSourceClocks } from './source-quality';
 
-const SSE_URL = process.env.SSE_URL || 'https://nolatransit.fly.dev/sse';
-const UPLOAD_INTERVAL = parseInt(process.env.UPLOAD_INTERVAL ?? '') || 60000; // 1 minute (MotherDuck handles batching)
-const RECONNECT_DELAY = parseInt(process.env.RECONNECT_DELAY ?? '') || 5000;
-// Cap on the retry buffer; when exceeded we drop the OLDEST records (Task 3).
-const MAX_BUFFER_RECORDS = parseInt(process.env.MAX_BUFFER_RECORDS ?? '') || 500000;
-const MAX_SNAPSHOT_BUFFER_RECORDS = Math.max(1, parseInt(process.env.MAX_SNAPSHOT_BUFFER_RECORDS ?? '') || 100000);
-// If no SSE message arrives within this window, force a reconnect (Task 3).
-const STALE_FEED_THRESHOLD = parseInt(process.env.STALE_FEED_THRESHOLD ?? '') || 300000; // 5 min
-// When the MotherDuck token is absent we run without writing (local smoke test).
-const DRY_RUN = !process.env.MOTHER_DUCK_API_KEY;
+const SSE_URL=process.env.SSE_URL||'https://nolatransit.fly.dev/sse';
+const journal=new LocalJournal(DATA_DIR);
+const STALE_MS=Number(process.env.STALE_FEED_THRESHOLD)||300_000;
+const token=process.env.TRANSIT_SUMMARY_TOKEN;
+let es:EventSource|undefined, worker:ChildProcess|undefined, stopping=false, paused=false;
+let lastReceived=0,lastPersisted=0,frames=0,errors=0,pending=0;
+const sourceClocks=new PersistedSourceClocks();
+let restartTimer:NodeJS.Timeout|undefined, reconnectTimer:NodeJS.Timeout|undefined;
+let lepassStop:(()=>void)|undefined;
+let lepassHealth:LePassHealth|{status:'unavailable';message:string}={status:'unavailable',message:'LePass is starting'};
+const routes=new Set<string>();
 
-let buffer: TransitRecord[] = [];
-let currentES: EventSource | undefined;
-let lastMessageAt = Date.now();
-let sampleLogged = false;
-let stopOtpWorker: (() => void) | undefined;
-let stopStreetcarWorker: (() => void) | undefined;
-let shuttingDown = false;
-let uploadInFlight: Promise<void> | undefined;
-let uploadTimer: ReturnType<typeof setInterval> | undefined;
-let statsTimer: ReturnType<typeof setInterval> | undefined;
-let freshnessTimer: ReturnType<typeof setInterval> | undefined;
-let reconnectTimer: ReturnType<typeof setTimeout> | undefined;
-// In-memory dedup: last-seen tmstmp per vehicle id (Task 2).
-const lastSeenTmstmp = new Map<string, number>();
-const stats = {
-  messagesReceived: 0,
-  vehiclesBuffered: 0,
-  vehiclesDeduped: 0,
-  uploadsCompleted: 0,
-  recordsDropped: 0,
-  snapshotsPersisted: 0,
-  snapshotsDropped: 0,
-  errors: 0,
-  startTime: new Date(),
-};
-const snapshotBuffer = new SnapshotRetryBuffer(MAX_SNAPSHOT_BUFFER_RECORDS, count => {
-  stats.snapshotsDropped += count;
-  console.error(`[DROP] Snapshot retry buffer exceeded ${MAX_SNAPSHOT_BUFFER_RECORDS}; dropped ${count} oldest snapshot(s). Total dropped: ${stats.snapshotsDropped}`);
+async function loadRoutes(){
+  try {
+    const catalog=JSON.parse(await readFile(join(fileURLToPath(new URL('./data/',import.meta.url)),'transit-study-network.json'),'utf8'));
+    for(const p of catalog.paths??[])routes.add(String(p.route_id));
+  }catch{}
+  try {
+    const response=await fetch(process.env.GTFS_URL||'https://www.norta.com/RTA/media/GTFS/GTFS.zip',{signal:AbortSignal.timeout(30_000)});
+    if(!response.ok)throw new Error(`GTFS HTTP ${response.status}`);
+    const bytes=new Uint8Array(await response.arrayBuffer());
+    const zip=unzipSync(bytes);
+    const rows=parse(strFromU8(zip['routes.txt']),{columns:true,bom:true,skip_empty_lines:true}) as Record<string,string>[];
+    for(const r of rows)if(['0','3'].includes(r.route_type))routes.add(r.route_short_name);
+    await atomicFile(join(DATA_DIR,'current-gtfs.zip'),bytes);
+  }catch(e){console.error('[Routes] Using bundled validated routes:',safeError(e));}
+  if(!routes.size)throw new Error('No validated RTA bus/streetcar routes available');
+}
+
+async function persist(batch:CollectionBatch){
+  // Backpressure disconnects the source rather than claiming unsaved observations.
+  if(paused||pending>=100){pause('Collection queue reached its ceiling');throw new Error('Collection is paused');}
+  pending++;
+  try{await sourceClocks.persist(batch,value=>journal.append(value));frames++;lastPersisted=Date.now();}
+  catch(e){errors++;pause(safeError(e));throw e;}
+  finally{pending--;}
+}
+function pause(reason:string){
+  if(!paused)console.error('[Collection paused]',reason);
+  paused=true;es?.close();es=undefined;lepassStop?.();lepassStop=undefined;
+}
+function capture(data:string,receivedAt:string,eventId?:string){
+  const snapshots=captureStreetcarSnapshots(JSON.parse(data),{received_at:receivedAt,source_url:SSE_URL,feed_event_id:eventId},routes);
+  const batch:CollectionBatch={schema_version:1,batch_id:randomUUID(),source:'sse',received_at:receivedAt,observations:snapshots.map(s=>({
+    observation:{source:'sse',observation_id:s.snapshot_id,vehicle_id:s.vid?`sse:${s.vid}`:null,provider_vehicle_id:s.vid,
+      route_id:s.route,trip_id:s.gtfs_trip_id??s.legacy_trip_id,observed_at:s.provider_observed_at?Date.parse(s.provider_observed_at)/1000:null,
+      received_at:Date.parse(s.received_at)/1000,lat:s.lat,lon:s.lon,speed_mph:s.speed,off_route:s.is_off_route===true,
+      in_service:s.destination&&/not\s+in\s+service/i.test(s.destination)?false:null,
+      location_source:'provider_gps',timestamp_precision_seconds:60,direction_id:null,pattern_id:s.pid,mapping_confidence:'verified'} satisfies StudyObservation,
+    raw:JSON.parse(s.raw_payload),
+  })),provenance:{endpoint:snapshotSourceUrl(SSE_URL),feed_event_id:eventId??null,provider_clock:'minute_truncated',received_at_is_gps_time:false}};
+  void persist(batch).catch(e=>console.error('[Journal]',safeError(e)));
+}
+function connect(){
+  if(stopping||paused)return;
+  es?.close();es=new EventSource(SSE_URL);const current=es;
+  current.onopen=()=>{lastReceived=Date.now();console.log('[SSE] Connected; preserving every validated RTA receipt');};
+  current.onmessage=event=>{if(current!==es||stopping||paused)return;lastReceived=Date.now();try{capture(event.data,new Date(lastReceived).toISOString(),event.lastEventId);}catch(e){errors++;console.error('[SSE] Invalid frame:',safeError(e));}};
+  current.onerror=()=>{if(current.readyState===EventSource.CLOSED&&!stopping&&!paused){clearTimeout(reconnectTimer);reconnectTimer=setTimeout(connect,5000);}};
+}
+function supervise(){
+  if(stopping||worker||process.env.LOCAL_ANALYSIS_ENABLED==='false')return;
+  worker=fork(fileURLToPath(new URL('./local-worker.ts',import.meta.url)),[],{execArgv:['--import','tsx'],stdio:'inherit'});
+  worker.on('error',e=>console.error('[Analysis worker]',safeError(e)));
+  worker.on('exit',code=>{worker=undefined;if(!stopping){console.error(`[Analysis worker] exited ${code}; journal retained`);restartTimer=setTimeout(supervise,30_000);}});
+}
+function authorized(value:string|undefined){
+  if(!token||!value?.startsWith('Bearer '))return false;
+  const a=Buffer.from(value.slice(7)),b=Buffer.from(token);return a.length===b.length&&timingSafeEqual(a,b);
+}
+const server=createServer(async(req,res)=>{
+  res.setHeader('Content-Type','application/json');res.setHeader('Cache-Control','no-store');
+  if(req.url==='/api/health'||req.url==='/health'){res.statusCode=paused?503:200;res.end(JSON.stringify({status:paused?'paused':'ready',last_persisted_at:lastPersisted?new Date(lastPersisted).toISOString():null}));return;}
+  if(!authorized(req.headers.authorization)){res.statusCode=401;res.end('{"error":"Authentication required"}');return;}
+  if(req.url==='/internal/health'){res.end(JSON.stringify({paused,frames,pending,errors,analysis:{enabled:process.env.LOCAL_ANALYSIS_ENABLED!=='false',running:!!worker},last_received_at:lastReceived?new Date(lastReceived).toISOString():null,last_persisted_at:lastPersisted?new Date(lastPersisted).toISOString():null,lepass:lepassHealth,disk:await diskBudget(DATA_DIR)}));return;}
+  if(req.url!=='/internal/summary'){res.statusCode=404;res.end('{"error":"Not found"}');return;}
+  try{
+    const saved=JSON.parse(await readFile(join(DATA_DIR,'summary.json'),'utf8'));
+    saved.source_quality=mergeSourceQuality(saved.source_quality,{clocks:sourceClocks.values,paused,lepass:lepassHealth,stale_ms:STALE_MS});
+    saved.source_quality.collection={paused,pending_frames:pending,last_received_at:lastReceived?new Date(lastReceived).toISOString():null};
+    res.end(JSON.stringify(saved));
+  }catch{res.statusCode=503;res.end('{"error":"The first local analysis snapshot is being prepared"}');}
 });
-
-function logStats(): void {
-  const uptime = Math.round((Date.now() - stats.startTime.getTime()) / 1000);
-  console.log(`[Stats] Uptime: ${uptime}s | Messages: ${stats.messagesReceived} | Buffered: ${buffer.length} | Uploads: ${stats.uploadsCompleted} | Deduped: ${stats.vehiclesDeduped} | Dropped: ${stats.recordsDropped} | Errors: ${stats.errors}`);
-  console.log(`[SnapshotStats] Pending: ${snapshotBuffer.size} | Persisted: ${stats.snapshotsPersisted} | Dropped: ${stats.snapshotsDropped}`);
-}
-
-// Enforce MAX_BUFFER_RECORDS by dropping the OLDEST records. Loud on purpose.
-function enforceBufferCap(): void {
-  if (buffer.length <= MAX_BUFFER_RECORDS) return;
-  const overflow = buffer.length - MAX_BUFFER_RECORDS;
-  buffer.splice(0, overflow);
-  stats.recordsDropped += overflow;
-  console.error(`[DROP] Retry buffer exceeded ${MAX_BUFFER_RECORDS}; dropped ${overflow} oldest record(s). Total dropped: ${stats.recordsDropped}`);
-}
-
-function processMessage(data: string, receivedAt: string, feedEventId?: string): void {
-  if (shuttingDown) return;
+async function startLePass(){
+  // Kept optional during bootstrap; an absent or invalid LePass configuration never blocks SSE.
   try {
-    const vehicles = JSON.parse(data) as RawVehicle[];
-    if (!Array.isArray(vehicles)) throw new Error('Expected an SSE vehicle array');
-    stats.messagesReceived++;
-    lastMessageAt = Date.now();
-
-    // This additive ledger retains every target vehicle in every received
-    // frame, including moved coordinates within one provider minute and
-    // repeated stationary frames. The existing OTP/raw watermark stays below.
-    snapshotBuffer.add(captureStreetcarSnapshots(vehicles, {
-      received_at: receivedAt, source_url: SSE_URL, feed_event_id: feedEventId,
-    }));
-
-    for (const v of vehicles) {
-      // Dedup: skip pings whose timestamp hasn't advanced for this vehicle.
-      const prev = lastSeenTmstmp.get(v.vid);
-      if (prev !== undefined && Date.parse(v.tmstmp) <= prev) {
-        stats.vehiclesDeduped++;
-        continue;
-      }
-
-      const record = processVehicle(v);
-      if (record) {
-        // Only advance the dedup watermark for pings we actually keep.
-        lastSeenTmstmp.set(v.vid, Date.parse(v.tmstmp));
-        if (!sampleLogged) {
-          console.log('[Sample] First parsed record:', JSON.stringify(record));
-          sampleLogged = true;
-        }
-        buffer.push(record);
-      }
-    }
-    enforceBufferCap();
-  } catch (err) {
-    stats.errors++;
-    console.error('Error processing message:', (err as Error).message);
-  }
+    const {startLePassFromEnvironment}=await import('./lepass-collector');
+    const collector=await startLePassFromEnvironment({stateDir:join(DATA_DIR,'lepass'),onBatch:persist,onHealth:(health:LePassHealth)=>{lepassHealth=health;}});
+    lepassStop=()=>collector.stop();
+  }catch(e){lepassHealth={status:'unavailable',message:safeError(e)};console.error('[LePass] Startup unavailable:',safeError(e));}
 }
-
-async function uploadLegacyBuffer(): Promise<void> {
-  if (buffer.length === 0) {
-    console.log('Buffer empty, skipping insert');
-    return;
-  }
-
-  const toInsert = buffer;
-  buffer = []; // Clear buffer immediately to avoid data loss
-
-  if (DRY_RUN) {
-    stats.uploadsCompleted++;
-    stats.vehiclesBuffered += toInsert.length;
-    console.log(`[DryRun] Would insert ${toInsert.length} records (MOTHER_DUCK_API_KEY unset)`);
-    return;
-  }
-
-  try {
-    await insertRecords(toInsert);
-    stats.uploadsCompleted++;
-    stats.vehiclesBuffered += toInsert.length;
-  } catch (err) {
-    stats.errors++;
-    console.error('Insert failed:', (err as Error).message);
-    // Put failed records back at the front to retry next time, then re-cap.
-    buffer = [...toInsert, ...buffer];
-    enforceBufferCap();
-  }
+let timer:NodeJS.Timeout;
+async function shutdown(){
+  if(stopping)return;stopping=true;clearInterval(timer);clearTimeout(restartTimer);clearTimeout(reconnectTimer);es?.close();lepassStop?.();
+  await journal.drain();server.close();worker?.kill('SIGTERM');
+  const deadline=setTimeout(()=>process.exit(0),20_000);deadline.unref();
+  if(worker)worker.once('exit',()=>process.exit(0));else process.exit(0);
 }
-
-async function uploadBuffers(): Promise<void> {
-  await uploadLegacyBuffer();
-  try {
-    const count = await snapshotBuffer.flush(async snapshots => {
-      if (DRY_RUN) console.log(`[DryRun] Would persist ${snapshots.length} streetcar SSE snapshots`);
-      else await insertStreetcarSnapshotRecords(snapshots);
-    });
-    stats.snapshotsPersisted += count;
-  } catch (err) {
-    stats.errors++;
-    console.error('Snapshot insert failed; retained for retry:', (err as Error).message);
-  }
+async function main(){
+  await mkdir(DATA_DIR,{recursive:true,mode:0o700});await journal.init();
+  server.listen(Number(process.env.PORT)||3100,'0.0.0.0');
+  await loadRoutes();supervise();
+  if((await diskBudget(DATA_DIR)).allowed){connect();await startLePass();}else pause('Insufficient local disk headroom');
+  timer=setInterval(()=>{
+    if(!paused&&Date.now()-lastReceived>STALE_MS)connect();
+    console.log(`[Collection] frames=${frames} pending=${pending} paused=${paused} errors=${errors}`);
+  },60_000);
+  process.on('SIGTERM',()=>void shutdown());process.on('SIGINT',()=>void shutdown());
 }
-
-async function uploadBuffer(): Promise<void> {
-  if (uploadInFlight) return uploadInFlight;
-  const attempt = uploadBuffers();
-  uploadInFlight = attempt;
-  try { await attempt; }
-  finally { if (uploadInFlight === attempt) uploadInFlight = undefined; }
-}
-
-function connectSSE(): EventSource | undefined {
-  if (shuttingDown) return;
-  clearTimeout(reconnectTimer);
-  reconnectTimer = undefined;
-  currentES?.close();
-  console.log(`Connecting to SSE endpoint: ${snapshotSourceUrl(SSE_URL) ?? '(configured feed)'}`);
-
-  const es = new EventSource(SSE_URL);
-  currentES = es;
-
-  es.onopen = () => {
-    if (currentES !== es || shuttingDown) return;
-    console.log('SSE connection established');
-    lastMessageAt = Date.now(); // reset freshness clock on (re)connect
-  };
-
-  es.onmessage = (event: MessageEvent<string>) => {
-    if (currentES !== es || shuttingDown) return;
-    const receivedAt = new Date().toISOString();
-    processMessage(event.data, receivedAt, event.lastEventId);
-  };
-
-  es.onerror = (err) => {
-    if (currentES !== es || shuttingDown) return;
-    stats.errors++;
-    console.error('SSE connection error:', (err as { message?: string }).message || 'Unknown error');
-
-    if (es.readyState === EventSource.CLOSED) {
-      console.log(`Reconnecting in ${RECONNECT_DELAY}ms...`);
-      es.close();
-      clearTimeout(reconnectTimer);
-      reconnectTimer = setTimeout(connectSSE, RECONNECT_DELAY);
-    }
-  };
-
-  return es;
-}
-
-// Freshness self-check: if the feed goes silent, log loudly and reconnect.
-function checkFeedFreshness(): void {
-  if (shuttingDown) return;
-  const silentFor = Date.now() - lastMessageAt;
-  if (silentFor < STALE_FEED_THRESHOLD) return;
-
-  console.error(`[STALE FEED] No SSE message in ${Math.round(silentFor / 1000)}s (threshold ${STALE_FEED_THRESHOLD / 1000}s). Forcing reconnect.`);
-  lastMessageAt = Date.now(); // avoid a reconnect storm before the new connection settles
-  if (currentES) currentES.close();
-  connectSSE();
-}
-
-async function shutdown(signal: string): Promise<void> {
-  if (shuttingDown) return;
-  shuttingDown = true;
-  currentES?.close();
-  clearTimeout(reconnectTimer);
-  clearInterval(uploadTimer);
-  clearInterval(statsTimer);
-  clearInterval(freshnessTimer);
-  stopOtpWorker?.();
-  stopStreetcarWorker?.();
-  console.log(`\nReceived ${signal}. Shutting down gracefully...`);
-
-  // Insert any remaining buffered data
-  try {
-    // Await any timer drain, then flush rows received while it was in flight.
-    // A failed drain restores its rows, so this also makes one final retry.
-    await uploadBuffer();
-    if (buffer.length || snapshotBuffer.size) await uploadBuffer();
-  } catch (err) { console.error('Error inserting buffers on shutdown:', (err as Error).message); }
-  if (buffer.length || snapshotBuffer.size) console.error(`[DROP] Shutdown left ${buffer.length} raw records and ${snapshotBuffer.size} snapshots unpersisted in memory.`);
-
-  await closeMotherDuck();
-  logStats();
-  process.exit(0);
-}
-
-async function main(): Promise<void> {
-  console.log('NOLA Transit Scraper (MotherDuck version) starting...');
-  console.log(`SSE URL: ${snapshotSourceUrl(SSE_URL) ?? '(configured feed)'}`);
-  console.log(`Insert interval: ${UPLOAD_INTERVAL / 1000}s`);
-  console.log(`Max buffer: ${MAX_BUFFER_RECORDS} | Stale threshold: ${STALE_FEED_THRESHOLD / 1000}s`);
-  console.log(`Streetcar snapshot retry cap: ${MAX_SNAPSHOT_BUFFER_RECORDS} | received_at records receipt, not GPS fix time`);
-
-  if (DRY_RUN) {
-    console.warn('MOTHER_DUCK_API_KEY not set — running in DRY RUN mode (inserts are stubbed).');
-  } else {
-    // Initialize MotherDuck
-    try {
-      await initMotherDuck();
-    } catch (err) {
-      console.error('Failed to initialize MotherDuck:', (err as Error).message);
-      process.exit(1);
-    }
-  }
-
-  connectSSE();
-  if (!DRY_RUN) { stopOtpWorker = startOtpWorker(); stopStreetcarWorker = startStreetcarWorker(); }
-
-  // Insert buffer periodically
-  uploadTimer = setInterval(() => { void uploadBuffer().catch(err => console.error('Unexpected upload failure:', String(err))); }, UPLOAD_INTERVAL);
-
-  // Log stats every 60 seconds
-  statsTimer = setInterval(logStats, 60000);
-
-  // Feed freshness watchdog
-  freshnessTimer = setInterval(checkFeedFreshness, Math.min(STALE_FEED_THRESHOLD, 60000));
-
-  // Handle graceful shutdown
-  process.on('SIGTERM', () => shutdown('SIGTERM'));
-  process.on('SIGINT', () => shutdown('SIGINT'));
-}
-
-main();
+main().catch(e=>{console.error(safeError(e));server.close();process.exitCode=1;});

@@ -54,7 +54,7 @@ export interface TransitRecord extends SegmentMatch {
   trip_id: string | null;
   gtfs_trip_id: string | null;
   destination: string | null;
-  speed: number;
+  speed: number | null;
   is_delayed: boolean | null;
   is_off_route: boolean;
   // Previously-dropped fields we now persist (all nullable).

@@ -27,6 +27,8 @@ export interface PriorityWaitData {
   sites: PriorityWaitSite[]; clock: 'collector_receipt';
 }
 export interface PriorityData {
+  /** Historical profiles have a fixed range; their quantiles cannot be re-filtered. */
+  snapshot_only?: boolean;
   status: 'ready' | 'not_ready'; network: StreetcarNetwork;
   profiles: PriorityProfile[]; waits: PriorityWaitData;
   available_from: string | null; available_to: string | null;

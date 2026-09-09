@@ -5,7 +5,19 @@ services:
     environment:
       - SSE_URL=${SSE_URL:-https://nolatransit.fly.dev/sse}
       - GTFS_URL=${GTFS_URL:-https://www.norta.com/RTA/media/GTFS/GTFS.zip}
-      - UPLOAD_INTERVAL=${UPLOAD_INTERVAL:-60000}
+      - UPLOAD_INTERVAL=${UPLOAD_INTERVAL:-900000}
       - RECONNECT_DELAY=${RECONNECT_DELAY:-5000}
       - MOTHER_DUCK_API_KEY=${MOTHER_DUCK_API_KEY}
       - MOTHERDUCK_DATABASE=${MOTHERDUCK_DATABASE:-my_db}
+      - MOTHERDUCK_CLOUD_WRITES=${MOTHERDUCK_CLOUD_WRITES:-false}
+      - TRANSIT_DATA_DIR=/app/data
+      - TRANSIT_SUMMARY_TOKEN=${TRANSIT_SUMMARY_TOKEN}
+      - LEPASS_ENABLED=${LEPASS_ENABLED:-false}
+      - LEPASS_API_KEY=${LEPASS_API_KEY}
+      - LEPASS_ENCRYPTION_KEY=${LEPASS_ENCRYPTION_KEY}
+    volumes:
+      - transit-observations:/app/data
+    expose:
+      - '3100'
+volumes:
+  transit-observations:

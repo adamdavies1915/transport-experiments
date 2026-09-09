@@ -1,0 +1,19 @@
+{
+  "old_revision": "1788154710566",
+  "new_revision": "1788853747615",
+  "old_query_count": 70,
+  "new_query_count": 70,
+  "added_query_ids": [],
+  "removed_query_ids": [],
+  "changed_mappings": [],
+  "old_verified_patterns": 74,
+  "new_verified_patterns": 74,
+  "old_candidate_patterns": 5,
+  "new_candidate_patterns": 5,
+  "gtfs_unchanged": true,
+  "validated_at": "2026-09-09T02:18:08.386Z",
+  "old_catalog_sha256": "ecff6a6a1f593defe3dd7d3e4d66f15cb7c3b9fd29de9b0ced90be30aab07148",
+  "new_catalog_sha256": "25351677f3c44710bc043b31cbf807a81d68233b3d4f88328bed195dbb8677bd",
+  "validation": "Read-only refresh of all 33 RTA route groups, line summaries and ordered stop-pattern entities against the unchanged GTFS archive; all 70 mappings remain identical apart from the validated metro revision.",
+  "candidate_mappings_preserved": true
+}

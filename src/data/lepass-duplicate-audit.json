@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "audit_scope": "Saved acceptance JSONL captures only; running collector database not opened",
+  "captures": [
+    {
+      "file": "network-batches.jsonl",
+      "batches": 225,
+      "observations": 71,
+      "distinct_vehicle_samples": 58,
+      "repeated_sample_groups": 13,
+      "additional_receipts": 13,
+      "same_sample_conflicts": {
+        "trip_id": 0,
+        "route_id": 0,
+        "direction_id": 0,
+        "pattern_id": 0,
+        "lat": 0,
+        "lon": 0
+      }
+    },
+    {
+      "file": "live-batches.jsonl",
+      "batches": 4,
+      "observations": 4,
+      "distinct_vehicle_samples": 3,
+      "repeated_sample_groups": 1,
+      "additional_receipts": 1,
+      "same_sample_conflicts": {
+        "trip_id": 0,
+        "route_id": 0,
+        "direction_id": 0,
+        "pattern_id": 0,
+        "lat": 0,
+        "lon": 0
+      }
+    }
+  ],
+  "combined_vehicles": 21,
+  "vehicles_with_multiple_query_ids": 1,
+  "vehicles_with_multiple_trip_ids": 0,
+  "vehicles_with_multiple_route_ids": 0,
+  "original_study_output": {
+    "passages": 12,
+    "encounters": 4
+  },
+  "globally_deduplicated_study_output": {
+    "passages": 12,
+    "encounters": 4
+  },
+  "delayed_replay_regression": {
+    "recorded_rows": 71,
+    "scenario": "Replay the same captured positions 70 seconds later, preserving provider clocks and IDs",
+    "original": {
+      "passages": 12,
+      "encounters": 4
+    },
+    "replay": {
+      "passages": 24,
+      "encounters": 8,
+      "quality": [
+        {
+          "date": "2026-09-08",
+          "source": "lepass",
+          "raw_observations": 142,
+          "usable_observations": 110,
+          "completed_passages": 24,
+          "complete_encounters": 8,
+          "excluded": {
+            "repeated_sample": 24,
+            "trajectory_break": 20,
+            "unverified_route_mapping": 8,
+            "matching_terminal_proximity": 4
+          }
+        }
+      ]
+    }
+  },
+  "conclusion": "No route/trip conflicts or inflated events in the captured sample. The delayed-replay regression originally doubled passages and encounters; global Le Pass provider-sample deduplication and chronology now preserve identical full event output. Raw receipts remain retained.",
+  "after_guard": {
+    "recorded_rows": 71,
+    "replayed_rows": 142,
+    "scenario": "Repeat the recorded samples 70 seconds later without changing provider clock, identity or position",
+    "original": {
+      "passages": 12,
+      "encounters": 4
+    },
+    "replay": {
+      "passages": 12,
+      "encounters": 4
+    },
+    "full_event_equality": true
+  }
+}

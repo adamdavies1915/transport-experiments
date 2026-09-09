@@ -6,3 +6,7 @@ node_modules/
 scripts/.env
 :md:
 test-motherduck.js
+runtime-data/
+*.duckdb
+*.duckdb.wal
+*.credentials.enc

@@ -34,7 +34,7 @@ export function processVehicle(v: RawVehicle): TransitRecord | null {
     trip_id: v.tatripid ?? null,
     gtfs_trip_id: ['', '0', 'N/A', 'null'].includes(gtfsId) ? null : gtfsId,
     destination: v.des || null,
-    speed: parseInt(v.spd ?? '') || 0,
+    speed: parseIntOrNull(v.spd),
     is_delayed: typeof v.dly === 'boolean' ? v.dly : null,
     is_off_route: v.or === true,
     pdist: parseIntOrNull(v.pdist),

@@ -1,0 +1,450 @@
+{
+  "schema_version": 1,
+  "captured_at": "2026-09-08T06:37:04.725Z",
+  "method": {
+    "network_version": "transit-study-network-v1-193a4631fc6b70de",
+    "study": "transit-two-source-study-v1",
+    "legacy": "streetcar-network-v1-e86d4e96c961-review-39c2c7a4:streetcar-fixed-window-v2:streetcar-receipt-waits-v2:atomic-refresh-v1"
+  },
+  "date_coverage": {
+    "from": "2026-08-01",
+    "to": "2026-09-08",
+    "processed_dates": 39,
+    "raw_dates": 39,
+    "legacy_completed_dates": 39
+  },
+  "raw_preservation": {
+    "before": {
+      "n": 7789622,
+      "first_wall": "2026-08-01 16:45:00",
+      "last_wall": "2026-09-08 03:47:48",
+      "with_utc": 53053
+    },
+    "after": {
+      "n": 7789622,
+      "first_wall": "2026-08-01 16:45:00",
+      "last_wall": "2026-09-08 03:47:48",
+      "with_utc": 53053
+    },
+    "snapshots_before": 27575,
+    "snapshots_after": 27575,
+    "counts_and_range_unchanged": true,
+    "original_content_fingerprint_unchanged": true,
+    "fingerprint_method": "DuckDB row hashes across all original Parquet columns: count, XOR and sum. Aggregate hashes detect changes probabilistically; this is not a cryptographic byte comparison."
+  },
+  "events": [
+    {
+      "source": "sse",
+      "kind": "encounter",
+      "n": 1006,
+      "first_date": "2026-09-07",
+      "last_date": "2026-09-08"
+    },
+    {
+      "source": "sse",
+      "kind": "passage",
+      "n": 3723637,
+      "first_date": "2026-08-01",
+      "last_date": "2026-09-08"
+    },
+    {
+      "source": "sse",
+      "kind": "quality",
+      "n": 1441,
+      "first_date": "2026-08-01",
+      "last_date": "2026-09-08"
+    }
+  ],
+  "table_counts": {
+    "cloud_batches": 0,
+    "collection_batches": 0,
+    "collection_payloads": 0,
+    "collection_receipts": 0,
+    "local_archive_catalog": 0,
+    "local_legacy_study_days": 39,
+    "local_state": 21,
+    "local_watermarks": 114,
+    "otp_backfill_days": 38,
+    "otp_coverage": 1287,
+    "otp_events": 188014,
+    "otp_processing_days": 3,
+    "otp_schedules": 1,
+    "otp_sequence_mappings": 6258,
+    "otp_sequence_validation": 1,
+    "otp_trip_mappings": 905,
+    "streetcar_backfill_days": 38,
+    "streetcar_bins": 16700,
+    "streetcar_networks": 2,
+    "streetcar_passages": 326693,
+    "streetcar_priority_days": 39,
+    "streetcar_quality": 117,
+    "streetcar_site_bins": 215717,
+    "streetcar_snapshots": 27575,
+    "streetcar_wait_quality": 117,
+    "streetcar_waits": 338,
+    "study_daily_results": 39,
+    "study_dates": 39,
+    "study_events": 3726084,
+    "study_network_catalogs": 1,
+    "transit_data": 7789622
+  },
+  "daily_coverage": [
+    {
+      "date": "2026-08-01",
+      "raw_records": 246488,
+      "passages": 3,
+      "encounters": 0,
+      "ambiguous_legacy_provider_minute": 138684
+    },
+    {
+      "date": "2026-08-02",
+      "raw_records": 781084,
+      "passages": 10,
+      "encounters": 0,
+      "ambiguous_legacy_provider_minute": 414295
+    },
+    {
+      "date": "2026-08-03",
+      "raw_records": 830592,
+      "passages": 9,
+      "encounters": 0,
+      "ambiguous_legacy_provider_minute": 436523
+    },
+    {
+      "date": "2026-08-04",
+      "raw_records": 827700,
+      "passages": 5152,
+      "encounters": 0,
+      "ambiguous_legacy_provider_minute": 444426
+    },
+    {
+      "date": "2026-08-05",
+      "raw_records": 163914,
+      "passages": 116606,
+      "encounters": 0,
+      "ambiguous_legacy_provider_minute": 0
+    },
+    {
+      "date": "2026-08-06",
+      "raw_records": 156525,
+      "passages": 116039,
+      "encounters": 0,
+      "ambiguous_legacy_provider_minute": 0
+    },
+    {
+      "date": "2026-08-07",
+      "raw_records": 154085,
+      "passages": 115190,
+      "encounters": 0,
+      "ambiguous_legacy_provider_minute": 0
+    },
+    {
+      "date": "2026-08-08",
+      "raw_records": 141095,
+      "passages": 107096,
+      "encounters": 0,
+      "ambiguous_legacy_provider_minute": 0
+    },
+    {
+      "date": "2026-08-09",
+      "raw_records": 140393,
+      "passages": 107591,
+      "encounters": 0,
+      "ambiguous_legacy_provider_minute": 0
+    },
+    {
+      "date": "2026-08-10",
+      "raw_records": 149337,
+      "passages": 108954,
+      "encounters": 0,
+      "ambiguous_legacy_provider_minute": 0
+    },
+    {
+      "date": "2026-08-11",
+      "raw_records": 149109,
+      "passages": 109038,
+      "encounters": 0,
+      "ambiguous_legacy_provider_minute": 0
+    },
+    {
+      "date": "2026-08-12",
+      "raw_records": 146380,
+      "passages": 108887,
+      "encounters": 0,
+      "ambiguous_legacy_provider_minute": 0
+    },
+    {
+      "date": "2026-08-13",
+      "raw_records": 152882,
+      "passages": 109251,
+      "encounters": 0,
+      "ambiguous_legacy_provider_minute": 0
+    },
+    {
+      "date": "2026-08-14",
+      "raw_records": 153012,
+      "passages": 110074,
+      "encounters": 0,
+      "ambiguous_legacy_provider_minute": 0
+    },
+    {
+      "date": "2026-08-15",
+      "raw_records": 141119,
+      "passages": 109137,
+      "encounters": 0,
+      "ambiguous_legacy_provider_minute": 0
+    },
+    {
+      "date": "2026-08-16",
+      "raw_records": 136930,
+      "passages": 105122,
+      "encounters": 0,
+      "ambiguous_legacy_provider_minute": 0
+    },
+    {
+      "date": "2026-08-17",
+      "raw_records": 152687,
+      "passages": 112493,
+      "encounters": 0,
+      "ambiguous_legacy_provider_minute": 0
+    },
+    {
+      "date": "2026-08-18",
+      "raw_records": 158346,
+      "passages": 117119,
+      "encounters": 0,
+      "ambiguous_legacy_provider_minute": 0
+    },
+    {
+      "date": "2026-08-19",
+      "raw_records": 154430,
+      "passages": 111527,
+      "encounters": 0,
+      "ambiguous_legacy_provider_minute": 0
+    },
+    {
+      "date": "2026-08-20",
+      "raw_records": 153954,
+      "passages": 106185,
+      "encounters": 0,
+      "ambiguous_legacy_provider_minute": 0
+    },
+    {
+      "date": "2026-08-21",
+      "raw_records": 153472,
+      "passages": 107618,
+      "encounters": 0,
+      "ambiguous_legacy_provider_minute": 0
+    },
+    {
+      "date": "2026-08-22",
+      "raw_records": 137782,
+      "passages": 107458,
+      "encounters": 0,
+      "ambiguous_legacy_provider_minute": 0
+    },
+    {
+      "date": "2026-08-23",
+      "raw_records": 137607,
+      "passages": 107216,
+      "encounters": 0,
+      "ambiguous_legacy_provider_minute": 0
+    },
+    {
+      "date": "2026-08-24",
+      "raw_records": 152555,
+      "passages": 109269,
+      "encounters": 0,
+      "ambiguous_legacy_provider_minute": 0
+    },
+    {
+      "date": "2026-08-25",
+      "raw_records": 154201,
+      "passages": 113555,
+      "encounters": 0,
+      "ambiguous_legacy_provider_minute": 0
+    },
+    {
+      "date": "2026-08-26",
+      "raw_records": 157489,
+      "passages": 113059,
+      "encounters": 0,
+      "ambiguous_legacy_provider_minute": 0
+    },
+    {
+      "date": "2026-08-27",
+      "raw_records": 162744,
+      "passages": 112757,
+      "encounters": 0,
+      "ambiguous_legacy_provider_minute": 0
+    },
+    {
+      "date": "2026-08-28",
+      "raw_records": 164959,
+      "passages": 114895,
+      "encounters": 0,
+      "ambiguous_legacy_provider_minute": 0
+    },
+    {
+      "date": "2026-08-29",
+      "raw_records": 144800,
+      "passages": 110917,
+      "encounters": 0,
+      "ambiguous_legacy_provider_minute": 0
+    },
+    {
+      "date": "2026-08-30",
+      "raw_records": 135585,
+      "passages": 106156,
+      "encounters": 0,
+      "ambiguous_legacy_provider_minute": 0
+    },
+    {
+      "date": "2026-08-31",
+      "raw_records": 158054,
+      "passages": 110522,
+      "encounters": 0,
+      "ambiguous_legacy_provider_minute": 0
+    },
+    {
+      "date": "2026-09-01",
+      "raw_records": 155570,
+      "passages": 109201,
+      "encounters": 0,
+      "ambiguous_legacy_provider_minute": 0
+    },
+    {
+      "date": "2026-09-02",
+      "raw_records": 155464,
+      "passages": 107216,
+      "encounters": 0,
+      "ambiguous_legacy_provider_minute": 0
+    },
+    {
+      "date": "2026-09-03",
+      "raw_records": 148131,
+      "passages": 100202,
+      "encounters": 0,
+      "ambiguous_legacy_provider_minute": 0
+    },
+    {
+      "date": "2026-09-04",
+      "raw_records": 157585,
+      "passages": 105250,
+      "encounters": 0,
+      "ambiguous_legacy_provider_minute": 0
+    },
+    {
+      "date": "2026-09-05",
+      "raw_records": 146005,
+      "passages": 107594,
+      "encounters": 0,
+      "ambiguous_legacy_provider_minute": 0
+    },
+    {
+      "date": "2026-09-06",
+      "raw_records": 138266,
+      "passages": 105147,
+      "encounters": 0,
+      "ambiguous_legacy_provider_minute": 0
+    },
+    {
+      "date": "2026-09-07",
+      "raw_records": 138419,
+      "passages": 99751,
+      "encounters": 1000,
+      "ambiguous_legacy_provider_minute": 274
+    },
+    {
+      "date": "2026-09-08",
+      "raw_records": 872,
+      "passages": 371,
+      "encounters": 6,
+      "ambiguous_legacy_provider_minute": 0
+    }
+  ],
+  "queues": {
+    "study": 0,
+    "legacy": 0,
+    "failed_legacy": 0,
+    "otp": 0
+  },
+  "otp": {
+    "before": {
+      "scheduled": 412714,
+      "observed": 149905,
+      "classified": 131627,
+      "early": 20697,
+      "on_time": 89787,
+      "late": 21143,
+      "uncertain": 18278,
+      "block_events": 36466,
+      "crosswalk_events": 8194,
+      "sequence_events": 139701,
+      "on_time_pct": 68.21320853624256
+    },
+    "after": {
+      "scheduled": 413098,
+      "observed": 153030,
+      "classified": 134401,
+      "early": 21078,
+      "on_time": 91672,
+      "late": 21651,
+      "uncertain": 18629,
+      "block_events": 34984,
+      "crosswalk_events": 14435,
+      "sequence_events": 136504,
+      "on_time_pct": 68.2078258346292
+    },
+    "note": "Both use the same dashboard acceptance SQL against original imported versus recomputed tables. OTP excludes uncertain outcomes and block guesses; labelled sequence inference is included. Raw observations are unchanged."
+  },
+  "summary": {
+    "bytes": 31245387,
+    "generated_at": "2026-09-08T06:36:29.826Z",
+    "from": "2026-08-01",
+    "to": "2026-09-08",
+    "coverage": {
+      "passages": 3723637,
+      "classified_passages": 3,
+      "unknown_passages": 3723634
+    },
+    "known_row_cells": 2,
+    "unknown_coverage_cells": 41809,
+    "signal_cells": 593
+  },
+  "database": {
+    "bytes": 3215470592
+  },
+  "final_run": {
+    "elapsed": "20:31.41",
+    "elapsed_seconds": 1231.41,
+    "max_resident_kib": 3668540,
+    "exit_status": 0,
+    "note": "Final successful restart only; earlier completed dates were resumed and troubleshooting time is excluded.",
+    "cloud_bootstrap": false,
+    "cloud_writes": false
+  },
+  "checks": {
+    "raw_unchanged": true,
+    "no_pending_study": true,
+    "no_pending_legacy": true,
+    "no_pending_otp": true,
+    "all_raw_dates_covered": true,
+    "all_legacy_dates_complete": true,
+    "public_passages_equal_events": true,
+    "public_encounters_equal_events": true,
+    "daily_passages_equal_events": true,
+    "below_64MiB": true,
+    "event_metadata_consistent": true,
+    "public_filter_counts_exact": true,
+    "original_content_fingerprint_unchanged": true
+  },
+  "limitations": [
+    "August 1–3 have almost no defensible complete passages because stored coordinates conflict within the same reported minute; August 4 has partial usable coverage.",
+    "Provider-only history supports travel-time passages, never historical wait events or an invented no-wait denominator.",
+    "Minute timestamp precision widens GPS timing bounds; candidate waits and roadway associations do not establish causal signal delay or causal ROW effects.",
+    "Reviewed ROW applicability begins September 8; earlier roadway classification remains unknown.",
+    "This acceptance covers the historical SSE database. Separately retained live SSE and LePass observations will be merged afterward; feed identities remain separate.",
+    "The first and last dates contain partial observed days."
+  ]
+}

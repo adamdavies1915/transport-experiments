@@ -103,9 +103,10 @@ export default function PriorityPanel({ data: suppliedData, initialFilters, init
           {profiles.map(item => <option key={item.path_id} value={item.path_id}>Route {item.route} · {item.headsign || `Direction ${item.direction}`}</option>)}
         </select></label>
         <div className="text-sm"><p className="text-slate-300">{from && to ? `${from} to ${to}` : 'Available observations'}</p>
-          <button type="button" className="text-blue-300 underline mt-1" aria-expanded={showFilters} onClick={() => setShowFilters(value => !value)}>{showFilters ? 'Hide date and time filters' : 'Change dates and times'}</button></div>
+          <button type="button" disabled={data.snapshot_only} className="text-blue-300 underline mt-1 disabled:hidden" aria-expanded={showFilters} onClick={() => setShowFilters(value => !value)}>{showFilters ? 'Hide date and time filters' : 'Change dates and times'}</button></div>
       </div>
-      {showFilters && <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mt-4 pt-4 border-t border-slate-700">
+      {data.snapshot_only && <p className="text-xs text-amber-200 mt-3">Archived scenario: the saved date range covers all days and hours. Filter current observations in the Signals view.</p>}
+      {showFilters && !data.snapshot_only && <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mt-4 pt-4 border-t border-slate-700">
         <label className="text-xs text-slate-300">From<input type="date" className={control} value={from} min={data.available_from || undefined} max={to || undefined} onChange={event => setFilters(previous => ({ ...previous, from: event.target.value, to }))} /></label>
         <label className="text-xs text-slate-300">Through<input type="date" className={control} value={to} min={from || undefined} max={data.available_to || undefined} onChange={event => setFilters(previous => ({ ...previous, from, to: event.target.value }))} /></label>
         <label className="text-xs text-slate-300">Days<select className={control} value={filters.dayType} onChange={event => setFilters(previous => ({ ...previous, dayType: event.target.value }))}><option value="all">All days</option><option value="weekday">Weekdays</option><option value="weekend">Weekends</option></select></label>

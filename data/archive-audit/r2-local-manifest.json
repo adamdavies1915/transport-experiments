@@ -1,0 +1,113 @@
+{
+  "verified_at": "2026-09-08T05:40:07.033822+00:00",
+  "objects": [
+    {
+      "key": "daily/2025-12-30.parquet",
+      "bytes": "32899348",
+      "modified": "2026-01-08T06:13:17.200Z",
+      "local_file": "runtime-data/r2-archive/2025-12-30.parquet",
+      "sha256": "4bd8907b4594ba8881bc1440bf2df6aec79ae386bf54836f0e36307065db5424",
+      "rows": 644430,
+      "parquet_readback_verified": true
+    },
+    {
+      "key": "daily/2025-12-31.parquet",
+      "bytes": "44713893",
+      "modified": "2026-01-08T06:13:38.572Z",
+      "local_file": "runtime-data/r2-archive/2025-12-31.parquet",
+      "sha256": "1e1731360688b39b38e60cfefff16c0f20e4e61f68675daf228453ae01595c72",
+      "rows": 876926,
+      "parquet_readback_verified": true
+    },
+    {
+      "key": "daily/2026-01-01.parquet",
+      "bytes": "42461304",
+      "modified": "2026-01-08T06:13:58.812Z",
+      "local_file": "runtime-data/r2-archive/2026-01-01.parquet",
+      "sha256": "2ba2248f198c215ab1f8bf21ec2b6930883bcb0acd13e3b1d01a2c6780ff6047",
+      "rows": 836694,
+      "parquet_readback_verified": true
+    },
+    {
+      "key": "daily/2026-01-02.parquet",
+      "bytes": "45453044",
+      "modified": "2026-01-08T06:14:20.490Z",
+      "local_file": "runtime-data/r2-archive/2026-01-02.parquet",
+      "sha256": "f901436327fd12ef8ccc38b5e461bc8fbb998f12b1b3fa8805724f5db305b91f",
+      "rows": 891334,
+      "parquet_readback_verified": true
+    },
+    {
+      "key": "daily/2026-01-03.parquet",
+      "bytes": "42678800",
+      "modified": "2026-01-08T06:14:40.727Z",
+      "local_file": "runtime-data/r2-archive/2026-01-03.parquet",
+      "sha256": "ad87c464d08b072fbdb62c179b712d33223d01509b4eddc85f6ecfe56daf5355",
+      "rows": 835655,
+      "parquet_readback_verified": true
+    },
+    {
+      "key": "daily/2026-01-04.parquet",
+      "bytes": "42158667",
+      "modified": "2026-01-08T06:15:00.930Z",
+      "local_file": "runtime-data/r2-archive/2026-01-04.parquet",
+      "sha256": "77b682236fe0dd003fe9cee22665568f60a4833de2abb05cfab217b799448e89",
+      "rows": 825644,
+      "parquet_readback_verified": true
+    },
+    {
+      "key": "daily/2026-01-05.parquet",
+      "bytes": "42840631",
+      "modified": "2026-01-08T06:15:24.778Z",
+      "local_file": "runtime-data/r2-archive/2026-01-05.parquet",
+      "sha256": "b1a851c8d40165e1d8894a4de6782ddb5f8c01edb7df0cd9a27946153200c95a",
+      "rows": 838734,
+      "parquet_readback_verified": true
+    },
+    {
+      "key": "daily/2026-01-06.parquet",
+      "bytes": "42723759",
+      "modified": "2026-01-08T06:15:49.330Z",
+      "local_file": "runtime-data/r2-archive/2026-01-06.parquet",
+      "sha256": "556cf42b6dfb84064c251d74df051a45f85df03243e58e16b6e3e7586a04aa3a",
+      "rows": 836012,
+      "parquet_readback_verified": true
+    },
+    {
+      "key": "daily/2026-01-07.parquet",
+      "bytes": "44962333",
+      "modified": "2026-01-08T06:16:11.349Z",
+      "local_file": "runtime-data/r2-archive/2026-01-07.parquet",
+      "sha256": "c488591c9b6651958bd3d8c521b7d95b37ebc97f71180ff59730cec53b82e3be",
+      "rows": 873890,
+      "parquet_readback_verified": true
+    },
+    {
+      "key": "daily/2026-01-08.parquet",
+      "bytes": "45475614",
+      "modified": "2026-01-09T02:01:22.785Z",
+      "local_file": "runtime-data/r2-archive/2026-01-08.parquet",
+      "sha256": "4878068c41389e28944aff55ed9ddb98917777b6ec28e8e79e216811acf8fb54",
+      "rows": 875776,
+      "parquet_readback_verified": true
+    },
+    {
+      "key": "daily/2026-01-09.parquet",
+      "bytes": "46510149",
+      "modified": "2026-01-10T02:01:35.329Z",
+      "local_file": "runtime-data/r2-archive/2026-01-09.parquet",
+      "sha256": "3f8f5180c360c310b074952d576a9f6b442da7c8370aa4946da36cc2a6f96108",
+      "rows": 900441,
+      "parquet_readback_verified": true
+    },
+    {
+      "key": "daily/2026-01-10.parquet",
+      "bytes": "9635049",
+      "modified": "2026-01-11T02:00:25.079Z",
+      "local_file": "runtime-data/r2-archive/2026-01-10.parquet",
+      "sha256": "87c9f41b89abb668ff34ca639e5dd14dedc9eca5aabc7ec24adb5c6f4be574af",
+      "rows": 187067,
+      "parquet_readback_verified": true
+    }
+  ]
+}

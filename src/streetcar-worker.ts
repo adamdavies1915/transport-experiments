@@ -6,6 +6,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { addDays, localDay, observationEpoch } from './otp';
 import { analyzeStreetcars, METHOD, type StreetcarObservation } from './streetcar-analysis';
 import { detectStreetcarWaits, WAIT_METHOD, type WaitSnapshot } from './streetcar-waits';
+import { prepareDerivedStage, replaceDerivedDay } from './derived-replacement';
 import type { StreetcarNetwork } from '../dashboard/src/streetcar-data';
 
 const quote = (s: string) => `'${s.replace(/'/g, "''")}'`;
@@ -71,15 +72,16 @@ export async function calculateStreetcarWaitDay(c: DuckDBConnection, network: St
   const events=detectStreetcarWaits(network,snapshots);
   await c.run('BEGIN TRANSACTION');
   try {
-    await c.run(`DELETE FROM streetcar_waits WHERE date=${quote(day)}::DATE`);
-    await c.run(`DELETE FROM streetcar_wait_quality WHERE date=${quote(day)}::DATE`);
-    for(let i=0;i<events.length;i+=DERIVED_BATCH_SIZE)await c.run(`INSERT INTO streetcar_waits VALUES ${events.slice(i,i+DERIVED_BATCH_SIZE).map(e=>`(${[
+    const waitsStage=await prepareDerivedStage(c,'streetcar_waits'),qualityStage=await prepareDerivedStage(c,'streetcar_wait_quality');
+    for(let i=0;i<events.length;i+=DERIVED_BATCH_SIZE)await c.run(`INSERT INTO ${waitsStage} VALUES ${events.slice(i,i+DERIVED_BATCH_SIZE).map(e=>`(${[
       quote(e.id),quote(day),quote(e.corridor),quote(e.route),quote(e.site_id),quote(e.context),e.started_at,e.ended_at,e.duration_seconds,quote(network.version),quote(WAIT_METHOD.name),
     ].join(',')})`).join(',')}`);
     for(const corridor of network.corridors) {
       const selected=snapshots.filter(s=>corridor.routes.includes(s.route));
-      await c.run(`INSERT INTO streetcar_wait_quality VALUES (${quote(day)},${quote(corridor.id)},${selected.length},${selected.length?selected[0].received_at:'NULL'},${selected.length?selected.at(-1)!.received_at:'NULL'},now())`);
+      await c.run(`INSERT INTO ${qualityStage} VALUES (${quote(day)},${quote(corridor.id)},${selected.length},${selected.length?selected[0].received_at:'NULL'},${selected.length?selected.at(-1)!.received_at:'NULL'},now())`);
     }
+    await replaceDerivedDay(c,{table:'streetcar_waits',stage:waitsStage,date_column:'date',date:day,keys:['id']});
+    await replaceDerivedDay(c,{table:'streetcar_wait_quality',stage:qualityStage,date_column:'date',date:day,keys:['date','corridor']});
     await c.run('COMMIT');
   }catch(err){await c.run('ROLLBACK');throw err;}
   console.log(`[Streetcars] ${day}: ${snapshots.length} retained snapshots, ${events.length} completed candidate waits (receipt clock)`);
@@ -105,7 +107,8 @@ export async function calculateStreetcarDay(c: DuckDBConnection, network: Street
     b.duration_lower_seconds??'NULL',b.duration_upper_seconds??'NULL'].join(',');
   await c.run('BEGIN TRANSACTION');
   try {
-    for (const table of ['streetcar_bins','streetcar_site_bins','streetcar_quality','streetcar_passages']) await c.run(`DELETE FROM ${table} WHERE date=${quote(day)}::DATE`);
+    const stages:Record<string,string>={};
+    for (const table of ['streetcar_bins','streetcar_site_bins','streetcar_quality','streetcar_passages']) stages[table]=await prepareDerivedStage(c,table);
     for(let i=0;i<result.passages.length;i+=DERIVED_BATCH_SIZE) {
       const values=result.passages.slice(i,i+DERIVED_BATCH_SIZE).map(p=>`(${[
         quote(p.date),quote(p.corridor),quote(p.route),quote(p.direction),quote(p.path_id),quote(p.window_id),
@@ -113,11 +116,13 @@ export async function calculateStreetcarDay(c: DuckDBConnection, network: Street
         p.entry_at,p.exit_at,p.hour,quote(p.day_type),quote(p.category),quote(JSON.stringify(p.signal_ids)),quote(JSON.stringify(p.stop_ids)),
         p.duration_seconds,p.duration_lower_seconds,p.duration_upper_seconds,quote(network.version),quote(PRIORITY_VERSION),
       ].join(',')})`);
-      await c.run(`INSERT INTO streetcar_passages VALUES ${values.join(',')}`);
+      await c.run(`INSERT INTO ${stages.streetcar_passages} VALUES ${values.join(',')}`);
     }
-    for (let i = 0; i < result.bins.length; i += DERIVED_BATCH_SIZE) await c.run(`INSERT INTO streetcar_bins VALUES ${result.bins.slice(i,i+DERIVED_BATCH_SIZE).map(b=>`(${metricValues(b)})`).join(',')}`);
-    for (let i = 0; i < result.site_bins.length; i += DERIVED_BATCH_SIZE) await c.run(`INSERT INTO streetcar_site_bins VALUES ${result.site_bins.slice(i,i+DERIVED_BATCH_SIZE).map(b=>`(${quote(b.site_id)},${metricValues(b)})`).join(',')}`);
-    if (result.quality.length) await c.run(`INSERT INTO streetcar_quality VALUES ${result.quality.map(q=>`(${quote(q.date)},${quote(q.corridor)},${q.raw_points},${q.candidate_intervals},${q.accepted_intervals},${quote(JSON.stringify(q.excluded))},${quote(network.version)},${quote(METHOD.name)},now())`).join(',')}`);
+    for (let i = 0; i < result.bins.length; i += DERIVED_BATCH_SIZE) await c.run(`INSERT INTO ${stages.streetcar_bins} VALUES ${result.bins.slice(i,i+DERIVED_BATCH_SIZE).map(b=>`(${metricValues(b)})`).join(',')}`);
+    for (let i = 0; i < result.site_bins.length; i += DERIVED_BATCH_SIZE) await c.run(`INSERT INTO ${stages.streetcar_site_bins} VALUES ${result.site_bins.slice(i,i+DERIVED_BATCH_SIZE).map(b=>`(${quote(b.site_id)},${metricValues(b)})`).join(',')}`);
+    if (result.quality.length) await c.run(`INSERT INTO ${stages.streetcar_quality} VALUES ${result.quality.map(q=>`(${quote(q.date)},${quote(q.corridor)},${q.raw_points},${q.candidate_intervals},${q.accepted_intervals},${quote(JSON.stringify(q.excluded))},${quote(network.version)},${quote(METHOD.name)},now())`).join(',')}`);
+    const keys:Record<string,string[]>={streetcar_passages:['date','run_id','window_id'],streetcar_bins:['date','corridor','route','direction','hour','day_type','category'],streetcar_site_bins:['site_id','date','corridor','route','direction','hour','day_type','category'],streetcar_quality:['date','corridor']};
+    for(const table of Object.keys(stages)) await replaceDerivedDay(c,{table,stage:stages[table],date_column:'date',date:day,keys:keys[table]});
     await c.run(`UPDATE streetcar_backfill_days SET applied_version=${quote(network.version + ':' + METHOD.name)},completed_at=now() WHERE date=${quote(day)}::DATE`);
     await c.run(`INSERT INTO streetcar_priority_days VALUES (${quote(day)},${quote(network.version+':'+PRIORITY_VERSION)},now())
       ON CONFLICT(date) DO UPDATE SET applied_version=excluded.applied_version,updated_at=excluded.updated_at`);

@@ -1,0 +1,1358 @@
+{
+  "schema_version": 1,
+  "fetched_at": "2026-09-09T02:18:08.386Z",
+  "metro_id": 1504,
+  "metro_revision": "1788853747615",
+  "gtfs_sha256": "3b32471680f5736301fdcaa2ae98bf62ba6e108ea51589febb1d66114ee567f9",
+  "query_count": 70,
+  "routes": [
+    "3",
+    "8",
+    "9",
+    "11",
+    "12",
+    "27",
+    "31",
+    "32",
+    "45",
+    "46",
+    "47",
+    "48",
+    "49",
+    "51",
+    "52",
+    "53-O",
+    "55",
+    "57",
+    "61",
+    "62",
+    "62-O",
+    "66",
+    "67",
+    "68",
+    "80",
+    "84",
+    "86",
+    "91",
+    "103",
+    "105",
+    "114A",
+    "114B",
+    "202"
+  ],
+  "missing_gtfs_routes": [
+    {
+      "route_id": "9999",
+      "route_name": "TEST ROUTE"
+    }
+  ],
+  "verified_patterns": 74,
+  "candidate_patterns": 5,
+  "exclusions": [
+    {
+      "groupId": 740760,
+      "routeId": "12",
+      "lineId": 9140135,
+      "patternId": 17096327,
+      "reason": "nonpassenger_line"
+    },
+    {
+      "groupId": 740761,
+      "routeId": "47",
+      "lineId": 6505251,
+      "patternId": 17096343,
+      "reason": "nonpassenger_line"
+    },
+    {
+      "groupId": 740761,
+      "routeId": "47",
+      "lineId": 6505275,
+      "patternId": 17096338,
+      "reason": "nonpassenger_line"
+    },
+    {
+      "groupId": 740761,
+      "routeId": "47",
+      "lineId": 6505275,
+      "patternId": 17096340,
+      "reason": "nonpassenger_line"
+    },
+    {
+      "groupId": 740762,
+      "routeId": "48",
+      "lineId": 6505246,
+      "patternId": 17096342,
+      "reason": "nonpassenger_line"
+    }
+  ],
+  "patterns": [
+    {
+      "groupId": 740727,
+      "routeId": "11",
+      "lineId": 6711844,
+      "patternId": 17096277,
+      "queryStopId": 4539638,
+      "gtfsStopId": "198",
+      "matchedStops": 33,
+      "totalStops": 36,
+      "directionId": "0",
+      "scores": {
+        "0": 0.9166666666666666,
+        "1": 0.024390243902439025
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 740727,
+      "routeId": "11",
+      "lineId": 7171579,
+      "patternId": 17096290,
+      "queryStopId": 35668053,
+      "gtfsStopId": "2098",
+      "matchedStops": 40,
+      "totalStops": 41,
+      "directionId": "1",
+      "scores": {
+        "0": 0.024390243902439025,
+        "1": 0.975609756097561
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 740730,
+      "routeId": "27",
+      "lineId": 3237613,
+      "patternId": 17096298,
+      "queryStopId": 4538626,
+      "gtfsStopId": "4",
+      "matchedStops": 43,
+      "totalStops": 43,
+      "directionId": "0",
+      "scores": {
+        "0": 1,
+        "1": 0.02127659574468085
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 740730,
+      "routeId": "27",
+      "lineId": 3237614,
+      "patternId": 17096301,
+      "queryStopId": 35667691,
+      "gtfsStopId": "1270",
+      "matchedStops": 47,
+      "totalStops": 47,
+      "directionId": "1",
+      "scores": {
+        "0": 0.02127659574468085,
+        "1": 1
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 740732,
+      "routeId": "32",
+      "lineId": 3237617,
+      "patternId": 17096336,
+      "queryStopId": 4539638,
+      "gtfsStopId": "198",
+      "matchedStops": 61,
+      "totalStops": 61,
+      "directionId": "0",
+      "scores": {
+        "0": 1,
+        "1": 0.01639344262295082
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 740732,
+      "routeId": "32",
+      "lineId": 3237618,
+      "patternId": 17096320,
+      "queryStopId": 4540113,
+      "gtfsStopId": "2422",
+      "matchedStops": 61,
+      "totalStops": 61,
+      "directionId": "1",
+      "scores": {
+        "0": 0.01639344262295082,
+        "1": 1
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 740734,
+      "routeId": "45",
+      "lineId": 3237621,
+      "patternId": 17096318,
+      "queryStopId": 35667774,
+      "gtfsStopId": "2118",
+      "matchedStops": 47,
+      "totalStops": 47,
+      "directionId": "1",
+      "scores": {
+        "1": 1
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 740735,
+      "routeId": "51",
+      "lineId": 3237622,
+      "patternId": 17096300,
+      "queryStopId": 4538704,
+      "gtfsStopId": "126",
+      "matchedStops": 56,
+      "totalStops": 57,
+      "directionId": "0",
+      "scores": {
+        "0": 0.9824561403508771,
+        "1": 0.017543859649122806
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 740735,
+      "routeId": "51",
+      "lineId": 3237623,
+      "patternId": 17096325,
+      "queryStopId": 4539658,
+      "gtfsStopId": "1551",
+      "matchedStops": 54,
+      "totalStops": 54,
+      "directionId": "1",
+      "scores": {
+        "0": 0.017543859649122806,
+        "1": 1
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 740736,
+      "routeId": "52",
+      "lineId": 3237626,
+      "patternId": 17096283,
+      "queryStopId": 4539484,
+      "gtfsStopId": "1291",
+      "matchedStops": 71,
+      "totalStops": 71,
+      "directionId": "1",
+      "scores": {
+        "0": 0.013888888888888888,
+        "1": 1
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 740736,
+      "routeId": "52",
+      "lineId": 10967837,
+      "patternId": 17937525,
+      "queryStopId": 4538798,
+      "gtfsStopId": "229",
+      "matchedStops": 68,
+      "totalStops": 69,
+      "directionId": "0",
+      "scores": {
+        "0": 0.9444444444444444,
+        "1": 0.014084507042253521
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 740737,
+      "routeId": "55",
+      "lineId": 6711845,
+      "patternId": 17096286,
+      "queryStopId": 4540113,
+      "gtfsStopId": "2422",
+      "matchedStops": 49,
+      "totalStops": 49,
+      "directionId": "1",
+      "scores": {
+        "0": 0.04081632653061224,
+        "1": 1
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 740737,
+      "routeId": "55",
+      "lineId": 9140136,
+      "patternId": 17096272,
+      "queryStopId": 4539577,
+      "gtfsStopId": "312",
+      "matchedStops": 63,
+      "totalStops": 63,
+      "directionId": "0",
+      "scores": {
+        "0": 1,
+        "1": 0.015873015873015872
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 740737,
+      "routeId": "55",
+      "lineId": 10369762,
+      "patternId": 17096323,
+      "queryStopId": 4540113,
+      "gtfsStopId": "2422",
+      "matchedStops": 34,
+      "totalStops": 34,
+      "directionId": "1",
+      "scores": {
+        "0": 0.024390243902439025,
+        "1": 1
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 740737,
+      "routeId": "55",
+      "lineId": 10369763,
+      "patternId": 17096275,
+      "queryStopId": 4538798,
+      "gtfsStopId": "229",
+      "matchedStops": 41,
+      "totalStops": 41,
+      "directionId": "0",
+      "scores": {
+        "0": 1,
+        "1": 0.024390243902439025
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 740738,
+      "routeId": "57",
+      "lineId": 3237629,
+      "patternId": 17096289,
+      "queryStopId": 35668051,
+      "gtfsStopId": "2069",
+      "matchedStops": 76,
+      "totalStops": 77,
+      "directionId": "0",
+      "scores": {
+        "0": 0.987012987012987,
+        "1": 0.012658227848101266
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 740738,
+      "routeId": "57",
+      "lineId": 3237630,
+      "patternId": 17096278,
+      "queryStopId": 35667823,
+      "gtfsStopId": "1603",
+      "matchedStops": 79,
+      "totalStops": 79,
+      "directionId": "1",
+      "scores": {
+        "0": 0.012658227848101266,
+        "1": 1
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 740740,
+      "routeId": "62",
+      "lineId": 6505248,
+      "patternId": 17096302,
+      "queryStopId": 4540113,
+      "gtfsStopId": "2422",
+      "matchedStops": 53,
+      "totalStops": 53,
+      "directionId": "1",
+      "scores": {
+        "0": 0.018867924528301886,
+        "1": 1
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 740740,
+      "routeId": "62",
+      "lineId": 6505259,
+      "patternId": 17096309,
+      "queryStopId": 1838016,
+      "gtfsStopId": "2739",
+      "matchedStops": 42,
+      "totalStops": 43,
+      "directionId": "0",
+      "scores": {
+        "0": 0.9767441860465116,
+        "1": 0.018867924528301886
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 740744,
+      "routeId": "80",
+      "lineId": 3237642,
+      "patternId": 17096291,
+      "queryStopId": 4539577,
+      "gtfsStopId": "312",
+      "matchedStops": 27,
+      "totalStops": 27,
+      "directionId": "0",
+      "scores": {
+        "0": 1,
+        "1": 0.037037037037037035
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 740744,
+      "routeId": "80",
+      "lineId": 3237643,
+      "patternId": 17096304,
+      "queryStopId": 4538763,
+      "gtfsStopId": "189",
+      "matchedStops": 26,
+      "totalStops": 26,
+      "directionId": "1",
+      "scores": {
+        "0": 0.037037037037037035,
+        "1": 1
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 740745,
+      "routeId": "84",
+      "lineId": 3237644,
+      "patternId": 17096287,
+      "queryStopId": 1838039,
+      "gtfsStopId": "779",
+      "matchedStops": 49,
+      "totalStops": 49,
+      "directionId": "0",
+      "scores": {
+        "0": 1,
+        "1": 0.02040816326530612
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 740745,
+      "routeId": "84",
+      "lineId": 3237645,
+      "patternId": 17096276,
+      "queryStopId": 46011098,
+      "gtfsStopId": null,
+      "matchedStops": 44,
+      "totalStops": 46,
+      "directionId": "1",
+      "scores": {
+        "0": 0.02040816326530612,
+        "1": 0.9565217391304348
+      },
+      "confidence": "candidate"
+    },
+    {
+      "groupId": 740748,
+      "routeId": "91",
+      "lineId": 3237650,
+      "patternId": 17096271,
+      "queryStopId": 4538648,
+      "gtfsStopId": "53",
+      "matchedStops": 58,
+      "totalStops": 59,
+      "directionId": "0",
+      "scores": {
+        "0": 0.9830508474576272,
+        "1": 0.01694915254237288
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 740748,
+      "routeId": "91",
+      "lineId": 3237651,
+      "patternId": 17096267,
+      "queryStopId": 35668243,
+      "gtfsStopId": "31",
+      "matchedStops": 49,
+      "totalStops": 49,
+      "directionId": "1",
+      "scores": {
+        "0": 0.01694915254237288,
+        "1": 1
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 740758,
+      "routeId": "202",
+      "lineId": 3237670,
+      "patternId": 17096296,
+      "queryStopId": 4540051,
+      "gtfsStopId": "2316",
+      "matchedStops": 12,
+      "totalStops": 13,
+      "directionId": "0",
+      "scores": {
+        "0": 0.9230769230769231,
+        "1": 0.07692307692307693
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 740758,
+      "routeId": "202",
+      "lineId": 3237671,
+      "patternId": 16039641,
+      "queryStopId": 35668172,
+      "gtfsStopId": "906",
+      "matchedStops": 6,
+      "totalStops": 6,
+      "directionId": "1",
+      "scores": {
+        "0": 0.07692307692307693,
+        "1": 1
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 740760,
+      "routeId": "12",
+      "lineId": 7171595,
+      "patternId": 17096268,
+      "queryStopId": 4539313,
+      "gtfsStopId": "1039",
+      "matchedStops": 52,
+      "totalStops": 54,
+      "directionId": "1",
+      "scores": {
+        "0": 0.01818181818181818,
+        "1": 0.9629629629629629
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 740760,
+      "routeId": "12",
+      "lineId": 8697788,
+      "patternId": 17096284,
+      "queryStopId": 4539150,
+      "gtfsStopId": "1269",
+      "matchedStops": 55,
+      "totalStops": 55,
+      "directionId": "0",
+      "scores": {
+        "0": 1,
+        "1": 0.01818181818181818
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 740761,
+      "routeId": "47",
+      "lineId": 6435066,
+      "patternId": 17096269,
+      "queryStopId": 35668317,
+      "gtfsStopId": "1963",
+      "matchedStops": 24,
+      "totalStops": 25,
+      "directionId": "0",
+      "scores": {
+        "0": 0.96,
+        "1": 0.04
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 740761,
+      "routeId": "47",
+      "lineId": 10731058,
+      "patternId": 17096321,
+      "queryStopId": 4539758,
+      "gtfsStopId": "1964",
+      "matchedStops": 24,
+      "totalStops": 25,
+      "directionId": "1",
+      "scores": {
+        "0": 0.04,
+        "1": 0.96
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 740762,
+      "routeId": "48",
+      "lineId": 6435050,
+      "patternId": 17096307,
+      "queryStopId": 4539758,
+      "gtfsStopId": "1964",
+      "matchedStops": 24,
+      "totalStops": 25,
+      "directionId": "1",
+      "scores": {
+        "0": 0.04,
+        "1": 0.96
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 740762,
+      "routeId": "48",
+      "lineId": 6939631,
+      "patternId": 17096285,
+      "queryStopId": 1837982,
+      "gtfsStopId": "1236",
+      "matchedStops": 24,
+      "totalStops": 25,
+      "directionId": "0",
+      "scores": {
+        "0": 0.96,
+        "1": 0.04
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 82576087,
+      "routeId": "86",
+      "lineId": 7957132,
+      "patternId": 17096330,
+      "queryStopId": 1838039,
+      "gtfsStopId": "779",
+      "matchedStops": 42,
+      "totalStops": 42,
+      "directionId": "1",
+      "scores": {
+        "0": 0.023809523809523808,
+        "1": 1
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 82576087,
+      "routeId": "86",
+      "lineId": 8364815,
+      "patternId": 17096299,
+      "queryStopId": 212698695,
+      "gtfsStopId": "2787",
+      "matchedStops": 23,
+      "totalStops": 23,
+      "directionId": "0",
+      "scores": {
+        "0": 1,
+        "1": 0.023809523809523808
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 82648303,
+      "routeId": "49",
+      "lineId": 9140151,
+      "patternId": 13947590,
+      "queryStopId": 37650363,
+      "gtfsStopId": null,
+      "matchedStops": 6,
+      "totalStops": 8,
+      "directionId": null,
+      "scores": {
+        "0": 0.125,
+        "1": 0.75
+      },
+      "confidence": "candidate"
+    },
+    {
+      "groupId": 82648303,
+      "routeId": "49",
+      "lineId": 10732026,
+      "patternId": 13947588,
+      "queryStopId": 4540595,
+      "gtfsStopId": "1625",
+      "matchedStops": 7,
+      "totalStops": 8,
+      "directionId": "0",
+      "scores": {
+        "0": 0.875,
+        "1": 0.125
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 99839740,
+      "routeId": "3",
+      "lineId": 6505271,
+      "patternId": 17096306,
+      "queryStopId": 46132645,
+      "gtfsStopId": "2716",
+      "matchedStops": 40,
+      "totalStops": 53,
+      "directionId": null,
+      "scores": {
+        "0": 0.7169811320754716,
+        "1": 0.018867924528301886
+      },
+      "confidence": "candidate"
+    },
+    {
+      "groupId": 99839740,
+      "routeId": "3",
+      "lineId": 9893886,
+      "patternId": 17097834,
+      "queryStopId": 35667622,
+      "gtfsStopId": "1843",
+      "matchedStops": 37,
+      "totalStops": 43,
+      "directionId": "1",
+      "scores": {
+        "0": 0.022222222222222223,
+        "1": 0.813953488372093
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 99839740,
+      "routeId": "3",
+      "lineId": 10369755,
+      "patternId": 17096335,
+      "queryStopId": 37677017,
+      "gtfsStopId": "2711",
+      "matchedStops": 33,
+      "totalStops": 45,
+      "directionId": null,
+      "scores": {
+        "0": 0.6888888888888889,
+        "1": 0.022222222222222223
+      },
+      "confidence": "candidate"
+    },
+    {
+      "groupId": 99839740,
+      "routeId": "3",
+      "lineId": 10992438,
+      "patternId": 18024133,
+      "queryStopId": 35667622,
+      "gtfsStopId": "1843",
+      "matchedStops": 42,
+      "totalStops": 48,
+      "directionId": "1",
+      "scores": {
+        "0": 0.020833333333333332,
+        "1": 0.8163265306122449
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 99839741,
+      "routeId": "8",
+      "lineId": 6505258,
+      "patternId": 17096274,
+      "queryStopId": 1838039,
+      "gtfsStopId": "779",
+      "matchedStops": 34,
+      "totalStops": 34,
+      "directionId": "0",
+      "scores": {
+        "0": 1,
+        "1": 0.029411764705882353
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 99839741,
+      "routeId": "8",
+      "lineId": 6505263,
+      "patternId": 17096314,
+      "queryStopId": 4540113,
+      "gtfsStopId": "2422",
+      "matchedStops": 30,
+      "totalStops": 30,
+      "directionId": "1",
+      "scores": {
+        "0": 0.029411764705882353,
+        "1": 1
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 99839742,
+      "routeId": "9",
+      "lineId": 6505241,
+      "patternId": 17096312,
+      "queryStopId": 4540276,
+      "gtfsStopId": "2632",
+      "matchedStops": 93,
+      "totalStops": 93,
+      "directionId": "1",
+      "scores": {
+        "0": 0.010752688172043012,
+        "1": 1
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 99839742,
+      "routeId": "9",
+      "lineId": 6505269,
+      "patternId": 17096288,
+      "queryStopId": 4540320,
+      "gtfsStopId": "2690",
+      "matchedStops": 86,
+      "totalStops": 86,
+      "directionId": "0",
+      "scores": {
+        "0": 1,
+        "1": 0.010752688172043012
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 99839745,
+      "routeId": "31",
+      "lineId": 6505253,
+      "patternId": 17096333,
+      "queryStopId": 4539638,
+      "gtfsStopId": "198",
+      "matchedStops": 71,
+      "totalStops": 71,
+      "directionId": "0",
+      "scores": {
+        "0": 1,
+        "1": 0.014084507042253521
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 99839745,
+      "routeId": "31",
+      "lineId": 6505273,
+      "patternId": 17096322,
+      "queryStopId": 4538869,
+      "gtfsStopId": "1407",
+      "matchedStops": 70,
+      "totalStops": 70,
+      "directionId": "1",
+      "scores": {
+        "0": 0.014084507042253521,
+        "1": 1
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 99839752,
+      "routeId": "61",
+      "lineId": 6505268,
+      "patternId": 17096313,
+      "queryStopId": 4540113,
+      "gtfsStopId": "2422",
+      "matchedStops": 47,
+      "totalStops": 47,
+      "directionId": "1",
+      "scores": {
+        "0": 0.015625,
+        "1": 1
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 99839752,
+      "routeId": "61",
+      "lineId": 10369757,
+      "patternId": 17096346,
+      "queryStopId": 4540709,
+      "gtfsStopId": "1953",
+      "matchedStops": 71,
+      "totalStops": 72,
+      "directionId": "0",
+      "scores": {
+        "0": 0.9861111111111112,
+        "1": 0.013888888888888888
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 99839752,
+      "routeId": "61",
+      "lineId": 10376367,
+      "patternId": 17937524,
+      "queryStopId": 4540709,
+      "gtfsStopId": "1953",
+      "matchedStops": 58,
+      "totalStops": 59,
+      "directionId": "0",
+      "scores": {
+        "0": 0.90625,
+        "1": 0.01694915254237288
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 99839754,
+      "routeId": "66",
+      "lineId": 6505278,
+      "patternId": 17096270,
+      "queryStopId": 1838016,
+      "gtfsStopId": "2739",
+      "matchedStops": 34,
+      "totalStops": 34,
+      "directionId": "1",
+      "scores": {
+        "0": 0.029411764705882353,
+        "1": 1
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 99839754,
+      "routeId": "66",
+      "lineId": 9140142,
+      "patternId": 17096295,
+      "queryStopId": 4540599,
+      "gtfsStopId": "1627",
+      "matchedStops": 23,
+      "totalStops": 23,
+      "directionId": "0",
+      "scores": {
+        "0": 1,
+        "1": 0.029411764705882353
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 99839755,
+      "routeId": "67",
+      "lineId": 6505265,
+      "patternId": 17096329,
+      "queryStopId": 4539216,
+      "gtfsStopId": "805",
+      "matchedStops": 20,
+      "totalStops": 20,
+      "directionId": "0",
+      "scores": {
+        "0": 1,
+        "1": 0.041666666666666664
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 99839755,
+      "routeId": "67",
+      "lineId": 9140144,
+      "patternId": 17096273,
+      "queryStopId": 1838016,
+      "gtfsStopId": "2739",
+      "matchedStops": 24,
+      "totalStops": 24,
+      "directionId": "1",
+      "scores": {
+        "0": 0.041666666666666664,
+        "1": 1
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 99839756,
+      "routeId": "68",
+      "lineId": 6505277,
+      "patternId": 17096297,
+      "queryStopId": 1838016,
+      "gtfsStopId": "2739",
+      "matchedStops": 54,
+      "totalStops": 54,
+      "directionId": "1",
+      "scores": {
+        "1": 1
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 99839761,
+      "routeId": "103",
+      "lineId": 10369759,
+      "patternId": 17096326,
+      "queryStopId": 4540120,
+      "gtfsStopId": "937",
+      "matchedStops": 66,
+      "totalStops": 71,
+      "directionId": "0",
+      "scores": {
+        "0": 0.9295774647887324,
+        "1": 0.014084507042253521
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 99839761,
+      "routeId": "103",
+      "lineId": 10369759,
+      "patternId": 17096345,
+      "queryStopId": 4540120,
+      "gtfsStopId": "937",
+      "matchedStops": 65,
+      "totalStops": 71,
+      "directionId": "0",
+      "scores": {
+        "0": 0.9154929577464789,
+        "1": 0.014084507042253521
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 99839761,
+      "routeId": "103",
+      "lineId": 10369759,
+      "patternId": 17096294,
+      "queryStopId": 4540120,
+      "gtfsStopId": "937",
+      "matchedStops": 65,
+      "totalStops": 71,
+      "directionId": "0",
+      "scores": {
+        "0": 0.9154929577464789,
+        "1": 0.014084507042253521
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 99839761,
+      "routeId": "103",
+      "lineId": 10369760,
+      "patternId": 17096347,
+      "queryStopId": 4540120,
+      "gtfsStopId": "937",
+      "matchedStops": 63,
+      "totalStops": 69,
+      "directionId": "0",
+      "scores": {
+        "0": 0.9130434782608695,
+        "1": 0.014492753623188406
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 99839761,
+      "routeId": "103",
+      "lineId": 10369764,
+      "patternId": 17096337,
+      "queryStopId": 37650349,
+      "gtfsStopId": "1436",
+      "matchedStops": 54,
+      "totalStops": 56,
+      "directionId": "1",
+      "scores": {
+        "0": 0.014492753623188406,
+        "1": 0.9642857142857143
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 99839761,
+      "routeId": "103",
+      "lineId": 10369764,
+      "patternId": 17096328,
+      "queryStopId": 37650349,
+      "gtfsStopId": "1436",
+      "matchedStops": 55,
+      "totalStops": 57,
+      "directionId": "1",
+      "scores": {
+        "0": 0.014492753623188406,
+        "1": 0.9649122807017544
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 99839761,
+      "routeId": "103",
+      "lineId": 10369764,
+      "patternId": 17096281,
+      "queryStopId": 37650349,
+      "gtfsStopId": "1436",
+      "matchedStops": 56,
+      "totalStops": 59,
+      "directionId": "1",
+      "scores": {
+        "0": 0.014492753623188406,
+        "1": 0.9491525423728814
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 99839761,
+      "routeId": "103",
+      "lineId": 10369764,
+      "patternId": 17096334,
+      "queryStopId": 37650349,
+      "gtfsStopId": "1436",
+      "matchedStops": 57,
+      "totalStops": 60,
+      "directionId": "1",
+      "scores": {
+        "0": 0.014492753623188406,
+        "1": 0.95
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 99839762,
+      "routeId": "105",
+      "lineId": 6505247,
+      "patternId": 17096324,
+      "queryStopId": 4540285,
+      "gtfsStopId": "2648",
+      "matchedStops": 35,
+      "totalStops": 36,
+      "directionId": "1",
+      "scores": {
+        "0": 0.02702702702702703,
+        "1": 0.9722222222222222
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 99839762,
+      "routeId": "105",
+      "lineId": 6505282,
+      "patternId": 17096282,
+      "queryStopId": 4539937,
+      "gtfsStopId": "2034",
+      "matchedStops": 36,
+      "totalStops": 37,
+      "directionId": "0",
+      "scores": {
+        "0": 0.972972972972973,
+        "1": 0.02702702702702703
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 99839765,
+      "routeId": "114A",
+      "lineId": 9140140,
+      "patternId": 17096293,
+      "queryStopId": 37650349,
+      "gtfsStopId": "1436",
+      "matchedStops": 46,
+      "totalStops": 48,
+      "directionId": "1",
+      "scores": {
+        "0": 0.02040816326530612,
+        "1": 0.9583333333333334
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 99839765,
+      "routeId": "114A",
+      "lineId": 9140140,
+      "patternId": 17096315,
+      "queryStopId": 37650349,
+      "gtfsStopId": "1436",
+      "matchedStops": 45,
+      "totalStops": 46,
+      "directionId": "1",
+      "scores": {
+        "0": 0.02040816326530612,
+        "1": 0.9782608695652174
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 99839765,
+      "routeId": "114A",
+      "lineId": 10369761,
+      "patternId": 17096311,
+      "queryStopId": 4540122,
+      "gtfsStopId": "939",
+      "matchedStops": 48,
+      "totalStops": 49,
+      "directionId": "0",
+      "scores": {
+        "0": 0.9795918367346939,
+        "1": 0.02040816326530612
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 99839765,
+      "routeId": "114A",
+      "lineId": 10369761,
+      "patternId": 17096319,
+      "queryStopId": 4540122,
+      "gtfsStopId": "939",
+      "matchedStops": 49,
+      "totalStops": 50,
+      "directionId": "0",
+      "scores": {
+        "0": 0.98,
+        "1": 0.02
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 99839766,
+      "routeId": "114B",
+      "lineId": 6505252,
+      "patternId": 17096292,
+      "queryStopId": 37650349,
+      "gtfsStopId": "1436",
+      "matchedStops": 48,
+      "totalStops": 50,
+      "directionId": "1",
+      "scores": {
+        "0": 0.02,
+        "1": 0.96
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 99839766,
+      "routeId": "114B",
+      "lineId": 6505252,
+      "patternId": 17096332,
+      "queryStopId": 37650349,
+      "gtfsStopId": "1436",
+      "matchedStops": 49,
+      "totalStops": 51,
+      "directionId": "1",
+      "scores": {
+        "0": 0.0196078431372549,
+        "1": 0.9607843137254902
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 99839766,
+      "routeId": "114B",
+      "lineId": 9140152,
+      "patternId": 17096331,
+      "queryStopId": 4539931,
+      "gtfsStopId": "2028",
+      "matchedStops": 45,
+      "totalStops": 46,
+      "directionId": "0",
+      "scores": {
+        "0": 0.9782608695652174,
+        "1": 0.02
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 99839766,
+      "routeId": "114B",
+      "lineId": 9140152,
+      "patternId": 17096310,
+      "queryStopId": 4539931,
+      "gtfsStopId": "2028",
+      "matchedStops": 47,
+      "totalStops": 48,
+      "directionId": "0",
+      "scores": {
+        "0": 0.9791666666666666,
+        "1": 0.02
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 99839767,
+      "routeId": "53-O",
+      "lineId": 6505242,
+      "patternId": 17096344,
+      "queryStopId": 4538798,
+      "gtfsStopId": "229",
+      "matchedStops": 71,
+      "totalStops": 72,
+      "directionId": "0",
+      "scores": {
+        "0": 0.9861111111111112,
+        "1": 0.013513513513513514
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 99839767,
+      "routeId": "53-O",
+      "lineId": 6505255,
+      "patternId": 17096341,
+      "queryStopId": 4539658,
+      "gtfsStopId": "1551",
+      "matchedStops": 74,
+      "totalStops": 74,
+      "directionId": "1",
+      "scores": {
+        "0": 0.013513513513513514,
+        "1": 1
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 99839768,
+      "routeId": "62-O",
+      "lineId": 6505274,
+      "patternId": 17096339,
+      "queryStopId": 35667754,
+      "gtfsStopId": "2283",
+      "matchedStops": 67,
+      "totalStops": 68,
+      "directionId": "0",
+      "scores": {
+        "0": 0.9852941176470589,
+        "1": 0.014705882352941176
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 99839768,
+      "routeId": "62-O",
+      "lineId": 6505279,
+      "patternId": 17096303,
+      "queryStopId": 1838011,
+      "gtfsStopId": "2420",
+      "matchedStops": 52,
+      "totalStops": 52,
+      "directionId": "1",
+      "scores": {
+        "0": 0.014705882352941176,
+        "1": 1
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 203156873,
+      "routeId": "46",
+      "lineId": 8364817,
+      "patternId": 17096279,
+      "queryStopId": 4540882,
+      "gtfsStopId": "2138",
+      "matchedStops": 10,
+      "totalStops": 11,
+      "directionId": "0",
+      "scores": {
+        "0": 0.9090909090909091,
+        "1": 0.09090909090909091
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 203156873,
+      "routeId": "46",
+      "lineId": 9140137,
+      "patternId": 17096317,
+      "queryStopId": 814273037,
+      "gtfsStopId": null,
+      "matchedStops": 10,
+      "totalStops": 11,
+      "directionId": "1",
+      "scores": {
+        "0": 0.09090909090909091,
+        "1": 0.9090909090909091
+      },
+      "confidence": "candidate"
+    }
+  ],
+  "polling": {
+    "max_queries_per_request": 8,
+    "max_requests_per_second": 1,
+    "minimum_query_interval_seconds": 20
+  },
+  "coverage_note": "Queries request arrivals at selected downstream stops. Optional vehicle locations are not a complete fleet feed. Unsupported directions and changed metro revisions remain candidate mappings."
+}

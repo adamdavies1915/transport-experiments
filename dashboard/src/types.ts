@@ -1,8 +1,4 @@
-// Shapes returned by the dashboard API (server-motherduck.ts) and consumed by
-// the React app. The server computes these aggregates on the fly from the
-// MotherDuck transit_data table.
-import type { OtpData } from './otp-data';
-
+// Public historical aggregates are prepared locally by the collector.
 export interface Summary {
   total_records: number;
   total_routes: number;
@@ -62,7 +58,6 @@ export interface DailySegmentRow {
 
 // Aggregated payload assembled by the useTransitData hook.
 export interface TransitData {
-  otp: OtpData;
   summary: Summary;
   segmentType: SegmentTypeRow[];
   segments: SegmentRow[];

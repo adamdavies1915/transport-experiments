@@ -1,5 +1,7 @@
 import OtpPanel from './OtpPanel';
 import PriorityPanel from './PriorityPanel';
+import StudyPanel from './StudyPanel';
+import SourceQuality from './SourceQuality';
 import { useTransitData } from './hooks/useTransitData';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
@@ -71,14 +73,13 @@ function OverviewPage({ onRetry }: { onRetry: () => void }) {
 
   const dedicatedData = data.segmentType.find(s => s.segment_type === 'dedicated_row');
   const mixedData = data.segmentType.find(s => s.segment_type === 'mixed_traffic');
-  const speedDiff = ((dedicatedData?.avg_speed || 0) / (mixedData?.avg_speed || 1)).toFixed(1);
 
   return (
     <section aria-labelledby="overview-heading">
         <div className="mb-8">
           <h2 id="overview-heading" className="text-2xl font-semibold">Transit overview</h2>
           <p className="text-slate-300 mt-2">
-            Collection coverage and speed trends across the network.
+            Historical collection coverage and reported vehicle-speed readings. Use the ROW study for matched completed-passage comparisons.
           </p>
         </div>
 
@@ -93,7 +94,7 @@ function OverviewPage({ onRetry }: { onRetry: () => void }) {
           <StatCard
             title="Dedicated ROW Speed"
             value={`${dedicatedData?.avg_speed || 0} mph`}
-            subtitle={`${speedDiff}x faster than mixed`}
+            subtitle="Historical reported-speed average"
             color="green"
           />
           <StatCard
@@ -117,7 +118,7 @@ function OverviewPage({ onRetry }: { onRetry: () => void }) {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           {/* ROW vs Mixed Traffic */}
           <div className="bg-slate-800 rounded-lg p-6">
-            <h2 className="text-xl font-semibold mb-4">Streetcar: ROW vs Mixed Traffic</h2>
+            <h2 className="text-xl font-semibold mb-4">Historical reported speeds and delay flags</h2>
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={data.segmentType} layout="vertical">
                 <CartesianGrid strokeDasharray="3 3" stroke="#475569" />
@@ -248,15 +249,21 @@ function OtpView() {
   return result.data ? <OtpPanel data={result.data} /> : null;
 }
 
+function SignalsView() {
+  const [historical, setHistorical] = useState(false);
+  return <><StudyPanel kind="signals" /><div className="mt-8 border-t border-slate-700 pt-5"><button type="button" className="text-sm text-blue-300 underline" aria-expanded={historical} onClick={() => setHistorical(value => !value)}>{historical ? 'Hide' : 'Open'} earlier streetcar priority scenarios</button>{historical && <div className="mt-6"><PriorityPanel /></div>}</div></>;
+}
+
 const views = [
-  { id: 'signal-priority', label: 'Signal priority', detail: 'Streetcar journey times' },
+  { id: 'row', label: 'Roadway time', detail: 'Reserved vs shared roadway' },
+  { id: 'signals', label: 'Signals', detail: 'Detected waits and priority' },
   { id: 'overview', label: 'Overview', detail: 'Network and data coverage' },
   { id: 'otp', label: 'On-time performance', detail: 'Service against the schedule' },
 ] as const;
 type ViewId = typeof views[number]['id'];
 function viewFromHash(): ViewId {
   const hash = typeof window === 'undefined' ? '' : window.location.hash.slice(1);
-  return views.find(view => view.id === hash)?.id ?? 'signal-priority';
+  return hash === 'signal-priority' || hash === 'priority' ? 'signals' : views.find(view => view.id === hash)?.id ?? 'row';
 }
 
 function App({ initialView }: { initialView?: ViewId }) {
@@ -266,15 +273,16 @@ function App({ initialView }: { initialView?: ViewId }) {
     window.addEventListener('hashchange', handleHashChange);
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
+  useEffect(() => { window.scrollTo(0, 0); }, [view]);
   return <div className="min-h-screen px-4 py-6 sm:px-6 sm:py-8">
     <div className="max-w-7xl mx-auto">
       <header className="mb-6 sm:mb-8">
         <p className="text-xs uppercase tracking-widest text-amber-300 mb-2">Independent transit data</p>
         <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight">NOLA transit performance</h1>
-        <p className="text-slate-300 mt-2 max-w-2xl">Explore streetcar travel times, signal priority, and on-time service.</p>
+        <p className="text-slate-300 mt-2 max-w-2xl">Measure roadway travel time and candidate signal waits using our observations, with Le Pass as a separate comparison source.</p>
       </header>
       <nav aria-label="Dashboard views" className="sticky top-0 z-20 -mx-4 px-4 pt-2 pb-4 bg-slate-900/95 backdrop-blur sm:rounded-xl mb-5">
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           {views.map(item => <a key={item.id} href={`#${item.id}`} aria-current={view === item.id ? 'page' : undefined}
             className={`rounded-lg border px-3 py-3 sm:px-4 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-300 ${view === item.id ? 'border-amber-300 bg-amber-300 text-slate-950' : 'border-slate-600 bg-slate-800 text-slate-200 hover:bg-slate-700'}`}
             onClick={() => setView(item.id)}>
@@ -283,13 +291,15 @@ function App({ initialView }: { initialView?: ViewId }) {
           </a>)}
         </div>
       </nav>
+      <SourceQuality />
       <main id="dashboard-content" aria-label={views.find(item => item.id === view)?.label}>
-        {view === 'signal-priority' && <PriorityPanel />}
+        {view === 'row' && <StudyPanel key="row" kind="row" />}
+        {view === 'signals' && <SignalsView />}
         {view === 'overview' && <OverviewView />}
         {view === 'otp' && <OtpView />}
       </main>
       <footer className="border-t border-slate-700 mt-10 pt-5 text-sm text-slate-400 flex flex-wrap gap-x-6 gap-y-2 justify-between">
-        <p>Our observations from the NOLA RTA real-time feed.</p>
+        <p>Independent observations. Sources are analyzed separately; missing data is not zero delay.</p>
         <a href="https://github.com/adamdavies1915/transport-experiments" className="text-blue-300 hover:underline">Source and methods</a>
       </footer>
     </div>

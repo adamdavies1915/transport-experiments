@@ -1,0 +1,182 @@
+{
+  "package": "com.norta.lepass",
+  "version": "5.197.0.1799",
+  "base_apk_sha256": "fa334aaa6ba7f5ef85e123945432191ff7d087320578d5e0c17686e550e56728",
+  "verification": "Static DEX inspection of official installed app; no live refresh request executed.",
+  "live_refresh_exchange_observed": false,
+  "token_rotation_observed": false,
+  "request": {
+    "method": "POST",
+    "url": "https://app4.moovitapp.com/services-app/services/UserAuth/RefreshTokens",
+    "content_type": "application/octet",
+    "model": "MVValidationTokensRefreshRequest",
+    "fields": {
+      "1": {
+        "name": "refreshToken",
+        "type": "STRING"
+      }
+    },
+    "skip_initial_access_token_attachment": true,
+    "disable_content_logging": true,
+    "other_default_header_requirements": "Not isolated by this analysis"
+  },
+  "response": {
+    "model": "MVValidationTokensRefreshResponse",
+    "fields": {
+      "1": {
+        "name": "validationTokens",
+        "type": "STRUCT",
+        "fields": {
+          "1": "accessToken",
+          "2": "refreshToken"
+        }
+      }
+    },
+    "each_token_fields": {
+      "1": "issueTime I64",
+      "2": "expirationTime I64",
+      "3": "token STRING"
+    },
+    "storage": "Whole returned AuthenticationInfo replaces the saved token pair before success is reported."
+  },
+  "legacy_refresh_trigger": {
+    "formula": "now >= expirationTime - (expirationTime - issueTime) / 10",
+    "checked_when": "Obtaining a device token for a request",
+    "background_timer_established": false,
+    "sample_lifetime_seconds": 86400,
+    "sample_refresh_after_seconds": 77760,
+    "sample_remaining_seconds": 8640,
+    "concurrency": "Shared monitor, with cached-token check repeated inside lock",
+    "clock_fallback": "For the identical cached token, elapsedRealtime in [refresh receipt, refresh receipt + 90% issued lifetime) can still validate the token if the wall-clock check fails.",
+    "reactive_error": "HTTP 401 and WWW-Authenticate exactly CLIENT_DEVICE_ACCESS_TOKEN_INVALID, when device authentication is configured. Refresh handler then propagates original request error at the inspected call site.",
+    "acquisition_retry": {
+      "max_total_attempts": 4,
+      "eligible_errors": [
+        "SocketException",
+        "SocketTimeoutException",
+        "UnknownHostException"
+      ],
+      "nested_cause_limit": 3,
+      "requires_connectivity_check": true,
+      "wait_seconds_before_subsequent_attempts": [
+        [
+          2,
+          3
+        ],
+        [
+          4,
+          5
+        ],
+        [
+          8,
+          9
+        ]
+      ],
+      "scope": "Normal token-acquisition wrapper only; not an HTTP retry guarantee for every call."
+    }
+  },
+  "ktor_refresh_trigger": {
+    "status": 401,
+    "recognized_challenge_scheme": "CLIENT_DEVICE_ACCESS_TOKEN_INVALID",
+    "single_provider_fallback": true,
+    "after_success": "Attach replacement Access-Token and retry original request",
+    "concurrency": "Atomic shared deferred refresh and token-version tracking",
+    "retry_guard": "Remove selected provider from attempt set; retried request receives internal auth-request marker"
+  },
+  "user_key": "No USER_KEY setter in inspected refresh path; lifetime remains unestablished.",
+  "failure_behavior": "Missing stored refresh token or caught remote/storage failure returns no replacement pair; successful live renewal has not been tested.",
+  "source_locations": [
+    {
+      "dex": "classes5.dex",
+      "class": "com.moovit.data.auth.remote.a",
+      "method": "a",
+      "evidence": "Constructs refresh DTO, selects POST/APP_SECURED_SERVER/UserAuth/RefreshTokens, flags auth=false and disable-content-logging=true, converts response pair"
+    },
+    {
+      "dex": "classes5.dex",
+      "class": "com.moovit.data.auth.a",
+      "method": "b",
+      "evidence": "Serializes refresh with coroutine mutex, calls remote, saves complete returned AuthenticationInfo, handles missing token/errors"
+    },
+    {
+      "dex": "classes5.dex",
+      "class": "jj5",
+      "methods": [
+        "a",
+        "b",
+        "c",
+        "d",
+        "e"
+      ],
+      "evidence": "Token acquisition, 90% lifetime check, lock, monotonic fallback and bounded acquisition retry wrapper"
+    },
+    {
+      "dex": "classes.dex",
+      "class": "ysb",
+      "methods": [
+        "L",
+        "W"
+      ],
+      "evidence": "HTTP401 to UnauthorizedException with WWW-Authenticate; device-token-invalid gate calls sync refresh"
+    },
+    {
+      "dex": "classes5.dex",
+      "class": "com.moovit.core.network.auth.a",
+      "methods": [
+        "a",
+        "b"
+      ],
+      "evidence": "Add Access-Token; obtain replacement through shared token holder"
+    },
+    {
+      "dex": "classes5.dex",
+      "class": "com.moovit.core.network.auth.b",
+      "methods": [
+        "a",
+        "b"
+      ],
+      "evidence": "Shared deferred load/refresh and cached pair"
+    },
+    {
+      "dex": "classes6.dex",
+      "class": "io.ktor.client.plugins.auth.AuthKt$Auth$2$2",
+      "method": "invokeSuspend",
+      "evidence": "401 selection, provider-attempt set, call refresh/retry helpers"
+    },
+    {
+      "dex": "classes6.dex",
+      "class": "io.ktor.client.plugins.auth.d",
+      "methods": [
+        "a",
+        "b"
+      ],
+      "evidence": "Retry with new headers and auth-request marker; version-aware refresh"
+    },
+    {
+      "dex": "classes7.dex",
+      "class": "com.tranzmate.moovit.protocol.commonauth.MVValidationTokensRefreshRequest / MVValidationTokensRefreshResponse",
+      "evidence": "Thrift field IDs and nested access/refresh-token types"
+    }
+  ],
+  "credential_values_retained": false,
+  "validation": {
+    "independent_schema_review": true,
+    "independent_request_and_storage_review": true,
+    "independent_legacy_trigger_review": true,
+    "sample_90_percent_arithmetic_checked": true
+  },
+  "cleanup": {
+    "copied_apk_and_dex_removed": [
+      "classes6.dex",
+      "classes.dex",
+      "classes4.dex",
+      "classes7.dex",
+      "classes8.dex",
+      "classes2.dex",
+      "classes3.dex",
+      "classes5.dex",
+      "base.apk"
+    ],
+    "emulator_settings_changed": false
+  }
+}

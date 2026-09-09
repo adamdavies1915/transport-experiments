@@ -1,0 +1,96 @@
+{
+  "captured_at_utc": "2026-09-08T02:03:16.152352+00:00",
+  "request": "https://bustime.norta.com/bustime/map/getBusPredictions.jsp?bus=972&route=12",
+  "vehicle_id": "972",
+  "predictions": [
+    {
+      "stop": "Carondelet St at Girod St",
+      "prediction": "APPROACHING"
+    },
+    {
+      "stop": "CarondeletSt at Poydras St",
+      "prediction": "Less than 2 MIN"
+    },
+    {
+      "stop": "Carondelet St at Gravier St",
+      "prediction": "2 MIN"
+    },
+    {
+      "stop": "Canal St at Carondelet St",
+      "prediction": "9 MIN"
+    }
+  ],
+  "interpretation": "Current inbound stop sequence; does not establish the exact trip behind an earlier outbound stop prediction.",
+  "google_maps_capture_utc": "2026-09-08T02:07:53.7432642Z",
+  "google_maps_stop": "https://www.google.com/maps/place/?q=place_id:ChIJXfHEvHSmIIYRN4RPUyt-sck&hl=en",
+  "google_departures_local": [
+    "21:14",
+    "21:29",
+    "21:45",
+    "22:00",
+    "22:25",
+    "22:50"
+  ],
+  "static_service4_departures": [
+    {
+      "trip_id": "4397070",
+      "time": "21:14:37",
+      "headsign": "S. Carrollton at S. Claiborne"
+    },
+    {
+      "trip_id": "5877070",
+      "time": "21:29:37",
+      "headsign": "S. Carrollton at S. Claiborne"
+    },
+    {
+      "trip_id": "5191070",
+      "time": "21:45:37",
+      "headsign": "S. Carrollton at S. Claiborne"
+    },
+    {
+      "trip_id": "2878070",
+      "time": "22:00:37",
+      "headsign": "S. Carrollton at S. Claiborne"
+    },
+    {
+      "trip_id": "2134070",
+      "time": "22:25:37",
+      "headsign": "S. Carrollton at S. Claiborne"
+    },
+    {
+      "trip_id": "1941070",
+      "time": "22:50:37",
+      "headsign": "S. Carrollton at S. Claiborne"
+    }
+  ],
+  "rta_stop_prediction_followup": {
+    "started_at": "2026-09-08T02:09:29.507366+00:00",
+    "received_at": "2026-09-08T02:09:29.679735+00:00",
+    "http_date": "Tue, 08 Sep 2026 02:09:29 GMT",
+    "url": "https://bustime.norta.com/bustime/map/getStopPredictions.jsp?stop=259&route=12",
+    "stop_code": "259",
+    "stop_name": "St Charles Ave at Poydras St",
+    "direction": "OUTBOUND",
+    "predictions": [
+      {
+        "pt": "5 MIN",
+        "fd": "S. Carrollton at S. Claiborne",
+        "v": "972",
+        "scheduled": "false",
+        "rn": "12"
+      },
+      {
+        "pt": "20 MIN",
+        "fd": "S. Carrollton at S. Claiborne",
+        "v": "953",
+        "scheduled": "false",
+        "rn": "12"
+      }
+    ]
+  },
+  "notes": [
+    "Google Maps capture, vehicle predictions and stop prediction follow-up occurred at different times; see individual timestamps.",
+    "Google Maps showed no explicit live/on-time/delay indicator in the captured departure board. Its first six departures matched the static schedule to the displayed minute.",
+    "Matching timetable values suggest schedule-based presentation but do not establish the Google backend or accuracy of an actual arrival."
+  ]
+}

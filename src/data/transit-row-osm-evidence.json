@@ -1,0 +1,4614 @@
+{
+  "schema_version": 1,
+  "attribution": "© OpenStreetMap contributors",
+  "license_url": "https://www.openstreetmap.org/copyright",
+  "ways": [
+    {
+      "fetched_at": "2026-09-08",
+      "source_url": "https://api.openstreetmap.org/api/0.6/way/24008477/full.json",
+      "elements": [
+        {
+          "type": "node",
+          "id": 115974855,
+          "lat": 29.9476356,
+          "lon": -90.0725031,
+          "timestamp": "2015-02-17T18:09:46Z",
+          "version": 4
+        },
+        {
+          "type": "node",
+          "id": 116035924,
+          "lat": 29.944664,
+          "lon": -90.0733877,
+          "timestamp": "2021-02-19T00:14:38Z",
+          "version": 6
+        },
+        {
+          "type": "node",
+          "id": 116080763,
+          "lat": 29.9497693,
+          "lon": -90.0718651,
+          "timestamp": "2026-03-12T04:02:09Z",
+          "version": 7,
+          "tags": {
+            "crossing": "traffic_signals",
+            "highway": "traffic_signals",
+            "traffic_signals": "signal"
+          }
+        },
+        {
+          "type": "node",
+          "id": 116080764,
+          "lat": 29.9485861,
+          "lon": -90.0722271,
+          "timestamp": "2012-01-15T06:20:47Z",
+          "version": 4
+        },
+        {
+          "type": "node",
+          "id": 116080765,
+          "lat": 29.9462099,
+          "lon": -90.0729326,
+          "timestamp": "2017-03-26T01:41:28Z",
+          "version": 6,
+          "tags": {
+            "crossing": "traffic_signals",
+            "highway": "traffic_signals"
+          }
+        },
+        {
+          "type": "node",
+          "id": 3340719163,
+          "lat": 29.9442497,
+          "lon": -90.0735208,
+          "timestamp": "2017-03-28T21:02:54Z",
+          "version": 2
+        },
+        {
+          "type": "node",
+          "id": 4349055693,
+          "lat": 29.9475112,
+          "lon": -90.0725406,
+          "timestamp": "2021-02-19T01:54:13Z",
+          "version": 2
+        },
+        {
+          "type": "node",
+          "id": 7025192475,
+          "lat": 29.9466731,
+          "lon": -90.0727947,
+          "timestamp": "2019-12-02T06:52:04Z",
+          "version": 1
+        },
+        {
+          "type": "node",
+          "id": 7271457307,
+          "lat": 29.9484423,
+          "lon": -90.0722689,
+          "timestamp": "2020-03-06T09:18:11Z",
+          "version": 1
+        },
+        {
+          "type": "node",
+          "id": 7516610942,
+          "lat": 29.9463823,
+          "lon": -90.0728813,
+          "timestamp": "2020-05-14T06:02:34Z",
+          "version": 1
+        },
+        {
+          "type": "node",
+          "id": 10561695386,
+          "lat": 29.9493079,
+          "lon": -90.0720063,
+          "timestamp": "2023-01-17T09:07:43Z",
+          "version": 1
+        },
+        {
+          "type": "node",
+          "id": 10561695388,
+          "lat": 29.9489785,
+          "lon": -90.0721071,
+          "timestamp": "2023-01-17T09:07:43Z",
+          "version": 1
+        },
+        {
+          "type": "node",
+          "id": 11390434996,
+          "lat": 29.9496901,
+          "lon": -90.0718894,
+          "timestamp": "2026-03-12T04:02:09Z",
+          "version": 3,
+          "tags": {
+            "crossing": "traffic_signals",
+            "crossing:markings": "zebra",
+            "crossing:signals": "yes",
+            "highway": "crossing",
+            "tactile_paving": "yes"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11760272728,
+          "lat": 29.9473655,
+          "lon": -90.0725851,
+          "timestamp": "2024-03-25T06:39:57Z",
+          "version": 1
+        },
+        {
+          "type": "way",
+          "id": 24008477,
+          "timestamp": "2025-04-05T00:27:31Z",
+          "version": 28,
+          "nodes": [
+            3340719163,
+            116035924,
+            116080765,
+            7516610942,
+            7025192475,
+            11760272728,
+            4349055693,
+            115974855,
+            7271457307,
+            116080764,
+            10561695388,
+            10561695386,
+            11390434996,
+            116080763
+          ],
+          "tags": {
+            "embedded_rails": "tram",
+            "highway": "residential",
+            "lanes": "1",
+            "lit": "yes",
+            "maxspeed": "25 mph",
+            "name": "Carondelet Street",
+            "oneway": "yes",
+            "sidewalk": "both",
+            "surface": "asphalt",
+            "tiger:cfcc": "A41",
+            "tiger:county": "Orleans, LA",
+            "tiger:zip_left": "70113",
+            "tiger:zip_right": "70130"
+          }
+        }
+      ]
+    },
+    {
+      "fetched_at": "2026-09-08",
+      "source_url": "https://api.openstreetmap.org/api/0.6/way/329181616/full.json",
+      "elements": [
+        {
+          "type": "node",
+          "id": 115974852,
+          "lat": 29.9473502,
+          "lon": -90.0712549,
+          "timestamp": "2024-12-22T06:30:44Z",
+          "version": 5
+        },
+        {
+          "type": "node",
+          "id": 116009535,
+          "lat": 29.9483217,
+          "lon": -90.0709639,
+          "timestamp": "2024-12-22T06:30:44Z",
+          "version": 6
+        },
+        {
+          "type": "node",
+          "id": 116009538,
+          "lat": 29.9478759,
+          "lon": -90.0710974,
+          "timestamp": "2024-12-22T06:30:44Z",
+          "version": 6
+        },
+        {
+          "type": "node",
+          "id": 4532596568,
+          "lat": 29.9459212,
+          "lon": -90.0716828,
+          "timestamp": "2024-12-22T06:30:44Z",
+          "version": 4,
+          "tags": {
+            "crossing": "traffic_signals",
+            "highway": "traffic_signals",
+            "tactile_paving": "yes"
+          }
+        },
+        {
+          "type": "node",
+          "id": 6924340630,
+          "lat": 29.9471878,
+          "lon": -90.0713035,
+          "timestamp": "2024-12-22T06:30:44Z",
+          "version": 2
+        },
+        {
+          "type": "node",
+          "id": 6924340631,
+          "lat": 29.946858,
+          "lon": -90.0714022,
+          "timestamp": "2024-12-22T06:30:44Z",
+          "version": 3
+        },
+        {
+          "type": "node",
+          "id": 7271457315,
+          "lat": 29.9467808,
+          "lon": -90.0714254,
+          "timestamp": "2024-12-22T06:30:44Z",
+          "version": 2
+        },
+        {
+          "type": "node",
+          "id": 10919957200,
+          "lat": 29.9477368,
+          "lon": -90.0711391,
+          "timestamp": "2024-12-22T06:30:44Z",
+          "version": 2
+        },
+        {
+          "type": "way",
+          "id": 329181616,
+          "timestamp": "2026-03-12T12:10:46Z",
+          "version": 19,
+          "nodes": [
+            116009535,
+            116009538,
+            10919957200,
+            115974852,
+            6924340630,
+            6924340631,
+            7271457315,
+            4532596568
+          ],
+          "tags": {
+            "embedded_rails": "tram",
+            "HFCS": "Minor Arterial",
+            "highway": "tertiary",
+            "lanes": "2",
+            "lit": "yes",
+            "maxspeed": "35 mph",
+            "name": "Saint Charles Avenue",
+            "oneway": "yes",
+            "sidewalk": "both",
+            "surface": "asphalt",
+            "tiger:cfcc": "A41",
+            "tiger:county": "Orleans, LA",
+            "tiger:zip_left": "70130",
+            "tiger:zip_right": "70130"
+          }
+        }
+      ]
+    },
+    {
+      "fetched_at": "2026-09-08",
+      "source_url": "https://api.openstreetmap.org/api/0.6/way/24016723/full.json",
+      "elements": [
+        {
+          "type": "node",
+          "id": 116073500,
+          "lat": 29.9430137,
+          "lon": -90.1340587,
+          "timestamp": "2021-02-19T18:56:29Z",
+          "version": 22,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260443211,
+          "lat": 29.9429114,
+          "lon": -90.0725778,
+          "timestamp": "2026-01-26T17:04:10Z",
+          "version": 18,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260443227,
+          "lat": 29.9425688,
+          "lon": -90.0728792,
+          "timestamp": "2021-02-19T02:15:45Z",
+          "version": 12
+        },
+        {
+          "type": "node",
+          "id": 260443231,
+          "lat": 29.9413177,
+          "lon": -90.0738171,
+          "timestamp": "2021-02-19T18:56:29Z",
+          "version": 13,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260443233,
+          "lat": 29.9404839,
+          "lon": -90.0744303,
+          "timestamp": "2017-03-30T01:04:27Z",
+          "version": 14,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260443235,
+          "lat": 29.9397923,
+          "lon": -90.0749439,
+          "timestamp": "2017-03-30T01:04:27Z",
+          "version": 15,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260443334,
+          "lat": 29.9391032,
+          "lon": -90.0754504,
+          "timestamp": "2016-12-12T22:05:23Z",
+          "version": 13,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260443335,
+          "lat": 29.9390534,
+          "lon": -90.0754878,
+          "timestamp": "2016-12-12T22:05:23Z",
+          "version": 12,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260443337,
+          "lat": 29.938356,
+          "lon": -90.0760087,
+          "timestamp": "2021-02-19T18:56:29Z",
+          "version": 13,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260443338,
+          "lat": 29.9376692,
+          "lon": -90.0765177,
+          "timestamp": "2021-02-19T02:15:45Z",
+          "version": 15,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260443339,
+          "lat": 29.9369651,
+          "lon": -90.0770323,
+          "timestamp": "2017-03-30T01:04:40Z",
+          "version": 15,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260443340,
+          "lat": 29.936459,
+          "lon": -90.0774005,
+          "timestamp": "2021-02-19T02:15:45Z",
+          "version": 12
+        },
+        {
+          "type": "node",
+          "id": 260443341,
+          "lat": 29.9362597,
+          "lon": -90.0775794,
+          "timestamp": "2021-02-19T02:15:45Z",
+          "version": 14,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260443342,
+          "lat": 29.9357739,
+          "lon": -90.0781584,
+          "timestamp": "2021-02-19T02:15:45Z",
+          "version": 13,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260443343,
+          "lat": 29.9353056,
+          "lon": -90.0787422,
+          "timestamp": "2021-02-19T02:15:45Z",
+          "version": 14,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260443633,
+          "lat": 29.9282629,
+          "lon": -90.0913507,
+          "timestamp": "2021-02-19T02:15:45Z",
+          "version": 15,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260443634,
+          "lat": 29.9282155,
+          "lon": -90.0914818,
+          "timestamp": "2021-02-19T02:15:45Z",
+          "version": 16,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260443635,
+          "lat": 29.9286149,
+          "lon": -90.0903679,
+          "timestamp": "2015-02-11T22:44:16Z",
+          "version": 12
+        },
+        {
+          "type": "node",
+          "id": 260443636,
+          "lat": 29.9286984,
+          "lon": -90.0901458,
+          "timestamp": "2021-02-19T02:15:45Z",
+          "version": 15,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260443637,
+          "lat": 29.9290433,
+          "lon": -90.0893515,
+          "timestamp": "2024-04-01T23:07:50Z",
+          "version": 14,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260443639,
+          "lat": 29.9297151,
+          "lon": -90.0881302,
+          "timestamp": "2016-11-12T13:27:02Z",
+          "version": 13,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260443640,
+          "lat": 29.9292603,
+          "lon": -90.0889436,
+          "timestamp": "2017-03-30T01:04:36Z",
+          "version": 15,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260443641,
+          "lat": 29.9350066,
+          "lon": -90.0791815,
+          "timestamp": "2021-02-19T02:15:45Z",
+          "version": 12,
+          "tags": {
+            "railway": "switch"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260443642,
+          "lat": 29.9347205,
+          "lon": -90.0796229,
+          "timestamp": "2016-12-12T22:05:23Z",
+          "version": 13,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260443643,
+          "lat": 29.9340978,
+          "lon": -90.0805861,
+          "timestamp": "2016-12-12T22:05:24Z",
+          "version": 13,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260443644,
+          "lat": 29.9340745,
+          "lon": -90.0806222,
+          "timestamp": "2016-12-12T22:05:24Z",
+          "version": 13,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260443645,
+          "lat": 29.9336948,
+          "lon": -90.0811971,
+          "timestamp": "2015-02-12T20:56:11Z",
+          "version": 11
+        },
+        {
+          "type": "node",
+          "id": 260443646,
+          "lat": 29.9334418,
+          "lon": -90.0815957,
+          "timestamp": "2021-02-19T02:15:45Z",
+          "version": 12,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260443647,
+          "lat": 29.9331141,
+          "lon": -90.0821043,
+          "timestamp": "2021-02-19T02:15:45Z",
+          "version": 14
+        },
+        {
+          "type": "node",
+          "id": 260443648,
+          "lat": 29.9327618,
+          "lon": -90.0827168,
+          "timestamp": "2016-11-12T13:27:02Z",
+          "version": 13,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260443649,
+          "lat": 29.9323163,
+          "lon": -90.0835071,
+          "timestamp": "2016-11-12T13:27:02Z",
+          "version": 13,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260443650,
+          "lat": 29.9318483,
+          "lon": -90.0843312,
+          "timestamp": "2021-02-19T02:15:45Z",
+          "version": 14,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260443651,
+          "lat": 29.9313965,
+          "lon": -90.085137,
+          "timestamp": "2021-02-19T02:15:45Z",
+          "version": 13,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260443652,
+          "lat": 29.9309244,
+          "lon": -90.085977,
+          "timestamp": "2021-02-19T02:15:45Z",
+          "version": 14,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260443653,
+          "lat": 29.9305297,
+          "lon": -90.0866757,
+          "timestamp": "2016-11-12T13:27:02Z",
+          "version": 12,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260443654,
+          "lat": 29.9301596,
+          "lon": -90.087339,
+          "timestamp": "2016-11-12T13:27:02Z",
+          "version": 14,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260443701,
+          "lat": 29.9269069,
+          "lon": -90.0964205,
+          "timestamp": "2017-03-31T04:57:43Z",
+          "version": 13,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260443702,
+          "lat": 29.9268263,
+          "lon": -90.0974319,
+          "timestamp": "2021-02-19T02:15:45Z",
+          "version": 14,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260443703,
+          "lat": 29.9271159,
+          "lon": -90.0947618,
+          "timestamp": "2021-02-19T02:15:45Z",
+          "version": 17,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260443704,
+          "lat": 29.9269787,
+          "lon": -90.0955928,
+          "timestamp": "2021-02-19T02:15:45Z",
+          "version": 15,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260443705,
+          "lat": 29.9271501,
+          "lon": -90.0946061,
+          "timestamp": "2021-02-19T02:15:45Z",
+          "version": 16,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260443707,
+          "lat": 29.9277482,
+          "lon": -90.0927721,
+          "timestamp": "2021-02-19T02:15:45Z",
+          "version": 15,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260443708,
+          "lat": 29.9278133,
+          "lon": -90.0925949,
+          "timestamp": "2021-02-19T02:15:45Z",
+          "version": 16,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260443765,
+          "lat": 29.9278176,
+          "lon": -90.1115154,
+          "timestamp": "2021-02-19T02:15:45Z",
+          "version": 14,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260443766,
+          "lat": 29.9269766,
+          "lon": -90.109734,
+          "timestamp": "2021-02-19T02:15:45Z",
+          "version": 16,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260443767,
+          "lat": 29.927413,
+          "lon": -90.1106563,
+          "timestamp": "2021-02-19T02:15:45Z",
+          "version": 14,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260443768,
+          "lat": 29.9261519,
+          "lon": -90.1077069,
+          "timestamp": "2021-02-19T02:15:45Z",
+          "version": 14,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260443769,
+          "lat": 29.9265359,
+          "lon": -90.1088024,
+          "timestamp": "2021-02-19T02:15:45Z",
+          "version": 15,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260443770,
+          "lat": 29.9261114,
+          "lon": -90.1066991,
+          "timestamp": "2017-03-31T04:57:40Z",
+          "version": 14,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260443771,
+          "lat": 29.9261999,
+          "lon": -90.1055553,
+          "timestamp": "2017-03-31T04:57:40Z",
+          "version": 13,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260443772,
+          "lat": 29.9284895,
+          "lon": -90.1129406,
+          "timestamp": "2021-02-19T02:15:45Z",
+          "version": 15,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260443773,
+          "lat": 29.9285417,
+          "lon": -90.1130518,
+          "timestamp": "2021-02-19T02:15:45Z",
+          "version": 15,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260443774,
+          "lat": 29.9289798,
+          "lon": -90.1139792,
+          "timestamp": "2021-02-19T02:15:45Z",
+          "version": 17,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260443776,
+          "lat": 29.9263789,
+          "lon": -90.1084813,
+          "timestamp": "2017-03-31T04:57:38Z",
+          "version": 12
+        },
+        {
+          "type": "node",
+          "id": 260443849,
+          "lat": 29.9346427,
+          "lon": -90.1231376,
+          "timestamp": "2021-02-19T02:15:45Z",
+          "version": 15,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260443850,
+          "lat": 29.9349368,
+          "lon": -90.1235571,
+          "timestamp": "2021-02-19T02:15:45Z",
+          "version": 15,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260443851,
+          "lat": 29.9351246,
+          "lon": -90.1238216,
+          "timestamp": "2021-02-19T02:15:45Z",
+          "version": 15,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260443852,
+          "lat": 29.9341663,
+          "lon": -90.1224654,
+          "timestamp": "2021-02-19T02:15:45Z",
+          "version": 21,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260443854,
+          "lat": 29.9324492,
+          "lon": -90.1200397,
+          "timestamp": "2021-02-19T02:15:45Z",
+          "version": 15,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260443855,
+          "lat": 29.9306718,
+          "lon": -90.1174338,
+          "timestamp": "2021-02-19T02:15:45Z",
+          "version": 14,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260443857,
+          "lat": 29.9319327,
+          "lon": -90.1193119,
+          "timestamp": "2021-02-19T02:15:45Z",
+          "version": 14,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260443858,
+          "lat": 29.9321961,
+          "lon": -90.1196806,
+          "timestamp": "2021-02-19T02:15:45Z",
+          "version": 15,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260443859,
+          "lat": 29.9329224,
+          "lon": -90.1207108,
+          "timestamp": "2021-02-19T02:15:45Z",
+          "version": 15,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260443860,
+          "lat": 29.9294096,
+          "lon": -90.1148867,
+          "timestamp": "2021-02-19T02:15:45Z",
+          "version": 14,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260443861,
+          "lat": 29.9297952,
+          "lon": -90.1157047,
+          "timestamp": "2021-02-19T02:15:45Z",
+          "version": 14,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260443862,
+          "lat": 29.9302163,
+          "lon": -90.1165877,
+          "timestamp": "2021-02-19T02:15:45Z",
+          "version": 14,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260443998,
+          "lat": 29.9372735,
+          "lon": -90.1268497,
+          "timestamp": "2021-02-19T02:15:45Z",
+          "version": 16,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260444000,
+          "lat": 29.9377896,
+          "lon": -90.1275561,
+          "timestamp": "2021-02-19T02:15:45Z",
+          "version": 18,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260444015,
+          "lat": 29.9367361,
+          "lon": -90.1260937,
+          "timestamp": "2021-02-19T02:15:45Z",
+          "version": 14,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260444016,
+          "lat": 29.9372515,
+          "lon": -90.1268198,
+          "timestamp": "2021-02-19T02:15:45Z",
+          "version": 17,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260444017,
+          "lat": 29.9356977,
+          "lon": -90.1246383,
+          "timestamp": "2021-02-19T02:15:45Z",
+          "version": 15,
+          "tags": {
+            "railway": "crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260444025,
+          "lat": 29.9362385,
+          "lon": -90.1254083,
+          "timestamp": "2021-02-19T18:56:29Z",
+          "version": 16,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260444234,
+          "lat": 29.9423758,
+          "lon": -90.1333153,
+          "timestamp": "2021-02-19T18:56:29Z",
+          "version": 14,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260444235,
+          "lat": 29.9411013,
+          "lon": -90.1317556,
+          "timestamp": "2021-02-19T18:56:29Z",
+          "version": 16,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260444238,
+          "lat": 29.9417557,
+          "lon": -90.1325687,
+          "timestamp": "2021-02-19T18:56:29Z",
+          "version": 15,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260444242,
+          "lat": 29.9398368,
+          "lon": -90.1302064,
+          "timestamp": "2021-02-19T18:56:29Z",
+          "version": 15,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260444243,
+          "lat": 29.9392227,
+          "lon": -90.1294494,
+          "timestamp": "2021-02-19T18:56:29Z",
+          "version": 14,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260444246,
+          "lat": 29.9438085,
+          "lon": -90.1334287,
+          "timestamp": "2021-02-19T02:15:45Z",
+          "version": 16,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260444247,
+          "lat": 29.9444593,
+          "lon": -90.1327302,
+          "timestamp": "2021-02-19T02:15:45Z",
+          "version": 13,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260444248,
+          "lat": 29.938312,
+          "lon": -90.1282888,
+          "timestamp": "2021-02-19T18:56:29Z",
+          "version": 16,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260444250,
+          "lat": 29.9430408,
+          "lon": -90.1340682,
+          "timestamp": "2021-02-19T18:56:29Z",
+          "version": 14
+        },
+        {
+          "type": "node",
+          "id": 260444251,
+          "lat": 29.9431165,
+          "lon": -90.1340742,
+          "timestamp": "2021-02-19T18:56:29Z",
+          "version": 18,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260444547,
+          "lat": 29.9550741,
+          "lon": -90.1213908,
+          "timestamp": "2021-02-19T18:56:29Z",
+          "version": 16,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260444552,
+          "lat": 29.9543667,
+          "lon": -90.1221438,
+          "timestamp": "2021-02-19T02:15:47Z",
+          "version": 13,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260444569,
+          "lat": 29.9508325,
+          "lon": -90.1259266,
+          "timestamp": "2021-02-19T02:15:47Z",
+          "version": 13,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260444597,
+          "lat": 29.9536537,
+          "lon": -90.1229038,
+          "timestamp": "2021-02-19T02:15:47Z",
+          "version": 14,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260444598,
+          "lat": 29.9529485,
+          "lon": -90.1236605,
+          "timestamp": "2021-02-19T02:15:47Z",
+          "version": 16,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260444602,
+          "lat": 29.9522446,
+          "lon": -90.1244119,
+          "timestamp": "2021-02-19T02:15:47Z",
+          "version": 14,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260444603,
+          "lat": 29.9515342,
+          "lon": -90.125172,
+          "timestamp": "2021-02-19T02:15:47Z",
+          "version": 14,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260444604,
+          "lat": 29.9501212,
+          "lon": -90.1266797,
+          "timestamp": "2021-02-19T02:15:47Z",
+          "version": 15,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260444605,
+          "lat": 29.9494154,
+          "lon": -90.1274339,
+          "timestamp": "2021-02-19T02:15:47Z",
+          "version": 16,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260444606,
+          "lat": 29.9479906,
+          "lon": -90.1289595,
+          "timestamp": "2021-02-19T02:15:47Z",
+          "version": 17,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260444607,
+          "lat": 29.9472883,
+          "lon": -90.1297062,
+          "timestamp": "2021-02-19T02:15:47Z",
+          "version": 15,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260444608,
+          "lat": 29.9465846,
+          "lon": -90.1304583,
+          "timestamp": "2021-02-19T02:15:47Z",
+          "version": 14,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260444609,
+          "lat": 29.9451694,
+          "lon": -90.1319749,
+          "timestamp": "2021-02-19T02:15:47Z",
+          "version": 15,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260444610,
+          "lat": 29.9458762,
+          "lon": -90.1312181,
+          "timestamp": "2021-02-19T02:15:47Z",
+          "version": 14,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 260444611,
+          "lat": 29.9486994,
+          "lon": -90.1281965,
+          "timestamp": "2021-02-19T02:15:47Z",
+          "version": 14,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 354599136,
+          "lat": 29.9428679,
+          "lon": -90.0726497,
+          "timestamp": "2026-01-26T17:04:10Z",
+          "version": 5
+        },
+        {
+          "type": "node",
+          "id": 661969512,
+          "lat": 29.9430738,
+          "lon": -90.1340731,
+          "timestamp": "2021-02-19T18:56:29Z",
+          "version": 5
+        },
+        {
+          "type": "node",
+          "id": 2342374176,
+          "lat": 29.9445248,
+          "lon": -90.1326607,
+          "timestamp": "2021-02-19T18:56:29Z",
+          "version": 3,
+          "tags": {
+            "name": "South Carrollton at Maple",
+            "network": "RTA",
+            "public_transport": "stop_position",
+            "railway": "tram_stop",
+            "tram": "yes"
+          }
+        },
+        {
+          "type": "node",
+          "id": 2342376044,
+          "lat": 29.945934,
+          "lon": -90.1311551,
+          "timestamp": "2021-02-19T18:56:29Z",
+          "version": 3,
+          "tags": {
+            "name": "South Carrollton at Freret",
+            "network": "RTA",
+            "public_transport": "stop_position",
+            "railway": "tram_stop",
+            "tram": "yes"
+          }
+        },
+        {
+          "type": "node",
+          "id": 2342376045,
+          "lat": 29.9473653,
+          "lon": -90.1296248,
+          "timestamp": "2021-02-19T18:56:29Z",
+          "version": 3,
+          "tags": {
+            "name": "South Carrollton at Oak",
+            "network": "RTA",
+            "public_transport": "stop_position",
+            "railway": "tram_stop",
+            "tram": "yes"
+          }
+        },
+        {
+          "type": "node",
+          "id": 2342376048,
+          "lat": 29.953001,
+          "lon": -90.1236049,
+          "timestamp": "2021-02-19T18:56:29Z",
+          "version": 3,
+          "tags": {
+            "name": "South Carrollton at Spruce",
+            "network": "RTA",
+            "public_transport": "stop_position",
+            "railway": "tram_stop",
+            "tram": "yes"
+          }
+        },
+        {
+          "type": "node",
+          "id": 3339903735,
+          "lat": 29.9404427,
+          "lon": -90.1309488,
+          "timestamp": "2021-02-19T18:56:29Z",
+          "version": 5,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 3340017888,
+          "lat": 29.9428942,
+          "lon": -90.1339631,
+          "timestamp": "2021-02-19T18:56:29Z",
+          "version": 3
+        },
+        {
+          "type": "node",
+          "id": 3340017889,
+          "lat": 29.9429684,
+          "lon": -90.1340328,
+          "timestamp": "2021-02-19T18:56:29Z",
+          "version": 4
+        },
+        {
+          "type": "node",
+          "id": 3340017890,
+          "lat": 29.9431621,
+          "lon": -90.1340664,
+          "timestamp": "2021-02-19T18:56:29Z",
+          "version": 3
+        },
+        {
+          "type": "node",
+          "id": 3340017891,
+          "lat": 29.9432579,
+          "lon": -90.134011,
+          "timestamp": "2021-02-19T02:15:47Z",
+          "version": 2
+        },
+        {
+          "type": "node",
+          "id": 3340017892,
+          "lat": 29.9433112,
+          "lon": -90.1339602,
+          "timestamp": "2021-02-19T18:56:29Z",
+          "version": 3,
+          "tags": {
+            "name": "South Carrollton at Saint Charles",
+            "network": "RTA",
+            "public_transport": "stop_position",
+            "railway": "tram_stop",
+            "tram": "yes"
+          }
+        },
+        {
+          "type": "node",
+          "id": 3342471928,
+          "lat": 29.9311323,
+          "lon": -90.1181706,
+          "timestamp": "2026-03-12T03:57:04Z",
+          "version": 4,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 3344161295,
+          "lat": 29.9260933,
+          "lon": -90.1069808,
+          "timestamp": "2017-03-31T04:57:39Z",
+          "version": 2
+        },
+        {
+          "type": "node",
+          "id": 3344161296,
+          "lat": 29.9260993,
+          "lon": -90.1072309,
+          "timestamp": "2017-03-31T04:57:39Z",
+          "version": 2
+        },
+        {
+          "type": "node",
+          "id": 3344161297,
+          "lat": 29.9261101,
+          "lon": -90.1074234,
+          "timestamp": "2015-02-11T15:56:29Z",
+          "version": 1
+        },
+        {
+          "type": "node",
+          "id": 3344161299,
+          "lat": 29.9261739,
+          "lon": -90.1078249,
+          "timestamp": "2017-03-31T04:57:39Z",
+          "version": 2
+        },
+        {
+          "type": "node",
+          "id": 3344161303,
+          "lat": 29.9262183,
+          "lon": -90.1080131,
+          "timestamp": "2017-03-31T04:57:38Z",
+          "version": 2
+        },
+        {
+          "type": "node",
+          "id": 3344161306,
+          "lat": 29.9262859,
+          "lon": -90.1044217,
+          "timestamp": "2017-03-31T04:57:41Z",
+          "version": 3,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 3344161308,
+          "lat": 29.9262934,
+          "lon": -90.1082645,
+          "timestamp": "2017-03-31T04:57:38Z",
+          "version": 2
+        },
+        {
+          "type": "node",
+          "id": 3344161311,
+          "lat": 29.926372,
+          "lon": -90.1033204,
+          "timestamp": "2017-03-31T04:57:41Z",
+          "version": 3,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 3344161316,
+          "lat": 29.92646,
+          "lon": -90.1021677,
+          "timestamp": "2017-03-31T04:57:41Z",
+          "version": 3,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 3344161317,
+          "lat": 29.9264767,
+          "lon": -90.1019442,
+          "timestamp": "2017-03-31T04:57:42Z",
+          "version": 3,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 3344161321,
+          "lat": 29.9265684,
+          "lon": -90.1007975,
+          "timestamp": "2017-03-31T04:57:42Z",
+          "version": 3,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 3344161325,
+          "lat": 29.9266487,
+          "lon": -90.0997049,
+          "timestamp": "2024-04-03T01:04:31Z",
+          "version": 5,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 3344161328,
+          "lat": 29.926738,
+          "lon": -90.098566,
+          "timestamp": "2024-04-03T01:04:31Z",
+          "version": 5,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 3344187054,
+          "lat": 29.9272874,
+          "lon": -90.0940909,
+          "timestamp": "2021-02-19T02:15:47Z",
+          "version": 4
+        },
+        {
+          "type": "node",
+          "id": 3344187056,
+          "lat": 29.9274271,
+          "lon": -90.0936684,
+          "timestamp": "2021-02-19T02:15:47Z",
+          "version": 4,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 3344842781,
+          "lat": 29.9281988,
+          "lon": -90.1123283,
+          "timestamp": "2021-02-19T02:15:47Z",
+          "version": 4,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 3344865711,
+          "lat": 29.9361645,
+          "lon": -90.0776794,
+          "timestamp": "2021-02-19T18:56:29Z",
+          "version": 3
+        },
+        {
+          "type": "node",
+          "id": 4349050558,
+          "lat": 29.9418444,
+          "lon": -90.0734226,
+          "timestamp": "2021-02-19T18:56:30Z",
+          "version": 4,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 4349050559,
+          "lat": 29.9422001,
+          "lon": -90.0731466,
+          "timestamp": "2021-02-19T18:56:30Z",
+          "version": 3,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 4349050560,
+          "lat": 29.9404113,
+          "lon": -90.0744842,
+          "timestamp": "2021-02-19T18:56:30Z",
+          "version": 3,
+          "tags": {
+            "name": "Saint Charles at Erato",
+            "network": "RTA",
+            "public_transport": "stop_position",
+            "railway": "tram_stop",
+            "tram": "yes"
+          }
+        },
+        {
+          "type": "node",
+          "id": 4496766346,
+          "lat": 29.9286583,
+          "lon": -90.0902507,
+          "timestamp": "2016-11-12T13:27:01Z",
+          "version": 1,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 4540514703,
+          "lat": 29.9310642,
+          "lon": -90.1180674,
+          "timestamp": "2021-02-19T02:15:47Z",
+          "version": 3,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 4597154654,
+          "lat": 29.9274543,
+          "lon": -90.1107425,
+          "timestamp": "2021-02-19T18:56:30Z",
+          "version": 3,
+          "tags": {
+            "name": "Saint Charles at Dufossat",
+            "network": "RTA",
+            "public_transport": "stop_position",
+            "railway": "tram_stop",
+            "tram": "yes"
+          }
+        },
+        {
+          "type": "node",
+          "id": 4597154658,
+          "lat": 29.9336031,
+          "lon": -90.1216707,
+          "timestamp": "2021-02-19T18:56:30Z",
+          "version": 3,
+          "tags": {
+            "name": "Saint Charles at Exposition",
+            "network": "RTA",
+            "public_transport": "stop_position",
+            "railway": "tram_stop",
+            "tram": "yes"
+          }
+        },
+        {
+          "type": "node",
+          "id": 4597154659,
+          "lat": 29.9411395,
+          "lon": -90.1318034,
+          "timestamp": "2021-02-19T18:56:30Z",
+          "version": 3,
+          "tags": {
+            "name": "Saint Charles at Burdette",
+            "network": "RTA",
+            "public_transport": "stop_position",
+            "railway": "tram_stop",
+            "tram": "yes"
+          }
+        },
+        {
+          "type": "node",
+          "id": 4597154665,
+          "lat": 29.9373373,
+          "lon": -90.1269365,
+          "timestamp": "2021-02-19T18:56:30Z",
+          "version": 3,
+          "tags": {
+            "name": "Saint Charles at Broadway",
+            "network": "RTA",
+            "public_transport": "stop_position",
+            "railway": "tram_stop",
+            "tram": "yes"
+          }
+        },
+        {
+          "type": "node",
+          "id": 4597154671,
+          "lat": 29.9319711,
+          "lon": -90.1193655,
+          "timestamp": "2021-02-19T18:56:30Z",
+          "version": 3,
+          "tags": {
+            "name": "Saint Charles at Webster",
+            "network": "RTA",
+            "public_transport": "stop_position",
+            "railway": "tram_stop",
+            "tram": "yes"
+          }
+        },
+        {
+          "type": "node",
+          "id": 4597154700,
+          "lat": 29.9389811,
+          "lon": -90.0755425,
+          "timestamp": "2021-02-19T18:56:30Z",
+          "version": 3,
+          "tags": {
+            "name": "Saint Charles at Melpomene",
+            "network": "RTA",
+            "public_transport": "stop_position",
+            "railway": "tram_stop",
+            "tram": "yes"
+          }
+        },
+        {
+          "type": "node",
+          "id": 4597154702,
+          "lat": 29.9270117,
+          "lon": -90.0953641,
+          "timestamp": "2021-02-19T18:56:30Z",
+          "version": 3,
+          "tags": {
+            "name": "Saint Charles at Peniston",
+            "network": "RTA",
+            "public_transport": "stop_position",
+            "railway": "tram_stop",
+            "tram": "yes"
+          }
+        },
+        {
+          "type": "node",
+          "id": 4597172794,
+          "lat": 29.9515885,
+          "lon": -90.1251134,
+          "timestamp": "2021-02-19T18:56:30Z",
+          "version": 3,
+          "tags": {
+            "name": "South Carrollton at Hickory",
+            "network": "RTA",
+            "public_transport": "stop_position",
+            "railway": "tram_stop",
+            "tram": "yes"
+          }
+        },
+        {
+          "type": "node",
+          "id": 4597172795,
+          "lat": 29.9487844,
+          "lon": -90.1281057,
+          "timestamp": "2021-02-19T18:56:30Z",
+          "version": 3,
+          "tags": {
+            "name": "South Carrollton at Willow",
+            "network": "RTA",
+            "public_transport": "stop_position",
+            "railway": "tram_stop",
+            "tram": "yes"
+          }
+        },
+        {
+          "type": "node",
+          "id": 4597172796,
+          "lat": 29.949561,
+          "lon": -90.127279,
+          "timestamp": "2021-02-19T18:56:30Z",
+          "version": 3,
+          "tags": {
+            "name": "South Carrollton at Jeannette",
+            "network": "RTA",
+            "public_transport": "stop_position",
+            "railway": "tram_stop",
+            "tram": "yes"
+          }
+        },
+        {
+          "type": "node",
+          "id": 4597549574,
+          "lat": 29.9383652,
+          "lon": -90.1283581,
+          "timestamp": "2021-02-19T18:56:30Z",
+          "version": 3,
+          "tags": {
+            "name": "Saint Charles at Lowerline",
+            "network": "RTA",
+            "public_transport": "stop_position",
+            "railway": "tram_stop",
+            "tram": "yes"
+          }
+        },
+        {
+          "type": "node",
+          "id": 4597549575,
+          "lat": 29.9398899,
+          "lon": -90.1302736,
+          "timestamp": "2021-02-19T18:56:30Z",
+          "version": 3,
+          "tags": {
+            "name": "Saint Charles at Hillary",
+            "network": "RTA",
+            "public_transport": "stop_position",
+            "railway": "tram_stop",
+            "tram": "yes"
+          }
+        },
+        {
+          "type": "node",
+          "id": 4763199721,
+          "lat": 29.9401643,
+          "lon": -90.074669,
+          "timestamp": "2021-02-19T02:15:47Z",
+          "version": 2,
+          "tags": {
+            "railway": "switch"
+          }
+        },
+        {
+          "type": "node",
+          "id": 4766027925,
+          "lat": 29.9260891,
+          "lon": -90.1071057,
+          "timestamp": "2017-03-31T04:57:40Z",
+          "version": 1
+        },
+        {
+          "type": "node",
+          "id": 4766046055,
+          "lat": 29.9554166,
+          "lon": -90.1210244,
+          "timestamp": "2021-02-19T02:15:48Z",
+          "version": 2,
+          "tags": {
+            "railway": "switch"
+          }
+        },
+        {
+          "type": "node",
+          "id": 4893458893,
+          "lat": 29.9302847,
+          "lon": -90.1167259,
+          "timestamp": "2021-02-19T18:56:30Z",
+          "version": 3,
+          "tags": {
+            "name": "Saint Charles at Nashville",
+            "network": "RTA",
+            "public_transport": "stop_position",
+            "railway": "tram_stop",
+            "tram": "yes"
+          }
+        },
+        {
+          "type": "node",
+          "id": 5252656133,
+          "lat": 29.9265399,
+          "lon": -90.1011541,
+          "timestamp": "2017-11-28T19:01:07Z",
+          "version": 1,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 8436261895,
+          "lat": 29.9437289,
+          "lon": -90.072523,
+          "timestamp": "2026-01-26T17:04:10Z",
+          "version": 4,
+          "tags": {
+            "railway": "switch"
+          }
+        },
+        {
+          "type": "node",
+          "id": 8436261896,
+          "lat": 29.9437296,
+          "lon": -90.0724344,
+          "timestamp": "2026-01-26T17:04:10Z",
+          "version": 2
+        },
+        {
+          "type": "node",
+          "id": 8436261897,
+          "lat": 29.9437214,
+          "lon": -90.0723669,
+          "timestamp": "2021-02-19T00:14:38Z",
+          "version": 1
+        },
+        {
+          "type": "node",
+          "id": 8436261898,
+          "lat": 29.9436951,
+          "lon": -90.0722788,
+          "timestamp": "2026-03-12T12:10:46Z",
+          "version": 4,
+          "tags": {
+            "crossing": "traffic_signals",
+            "crossing:markings": "zebra",
+            "crossing:signals": "yes",
+            "railway": "crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 8436261899,
+          "lat": 29.9436713,
+          "lon": -90.0722266,
+          "timestamp": "2026-01-26T17:04:10Z",
+          "version": 2
+        },
+        {
+          "type": "node",
+          "id": 8436261900,
+          "lat": 29.9436,
+          "lon": -90.0721257,
+          "timestamp": "2026-01-26T17:04:10Z",
+          "version": 2
+        },
+        {
+          "type": "node",
+          "id": 8436261901,
+          "lat": 29.9435763,
+          "lon": -90.0721047,
+          "timestamp": "2026-01-26T17:04:10Z",
+          "version": 2
+        },
+        {
+          "type": "node",
+          "id": 8436261902,
+          "lat": 29.9434712,
+          "lon": -90.0720358,
+          "timestamp": "2026-01-26T17:04:10Z",
+          "version": 2
+        },
+        {
+          "type": "node",
+          "id": 8436261903,
+          "lat": 29.9433998,
+          "lon": -90.0720125,
+          "timestamp": "2026-01-26T17:04:10Z",
+          "version": 2
+        },
+        {
+          "type": "node",
+          "id": 8436261904,
+          "lat": 29.9433526,
+          "lon": -90.0720059,
+          "timestamp": "2026-01-26T17:04:10Z",
+          "version": 2
+        },
+        {
+          "type": "node",
+          "id": 8436261905,
+          "lat": 29.9433041,
+          "lon": -90.0720061,
+          "timestamp": "2026-01-26T17:04:10Z",
+          "version": 2
+        },
+        {
+          "type": "node",
+          "id": 8436261906,
+          "lat": 29.9432637,
+          "lon": -90.0720125,
+          "timestamp": "2026-01-26T17:04:10Z",
+          "version": 2
+        },
+        {
+          "type": "node",
+          "id": 8436261907,
+          "lat": 29.9430804,
+          "lon": -90.072102,
+          "timestamp": "2026-01-26T17:04:10Z",
+          "version": 2
+        },
+        {
+          "type": "node",
+          "id": 8436261908,
+          "lat": 29.9430159,
+          "lon": -90.0721788,
+          "timestamp": "2026-01-26T17:04:10Z",
+          "version": 2
+        },
+        {
+          "type": "node",
+          "id": 8436261909,
+          "lat": 29.9429767,
+          "lon": -90.0722476,
+          "timestamp": "2026-01-26T17:04:10Z",
+          "version": 2
+        },
+        {
+          "type": "node",
+          "id": 8436261910,
+          "lat": 29.942932,
+          "lon": -90.0723936,
+          "timestamp": "2026-01-26T17:04:10Z",
+          "version": 3
+        },
+        {
+          "type": "node",
+          "id": 8436261911,
+          "lat": 29.9429206,
+          "lon": -90.0725296,
+          "timestamp": "2026-01-26T17:04:10Z",
+          "version": 3
+        },
+        {
+          "type": "node",
+          "id": 8436261912,
+          "lat": 29.9429172,
+          "lon": -90.0725527,
+          "timestamp": "2026-01-26T17:04:10Z",
+          "version": 3
+        },
+        {
+          "type": "node",
+          "id": 8436261913,
+          "lat": 29.942902,
+          "lon": -90.0726035,
+          "timestamp": "2026-01-26T17:04:10Z",
+          "version": 3
+        },
+        {
+          "type": "node",
+          "id": 8436374166,
+          "lat": 29.943216,
+          "lon": -90.1340431,
+          "timestamp": "2021-02-19T18:56:30Z",
+          "version": 2
+        },
+        {
+          "type": "node",
+          "id": 8436374168,
+          "lat": 29.9429315,
+          "lon": -90.1340026,
+          "timestamp": "2021-02-19T18:56:30Z",
+          "version": 2
+        },
+        {
+          "type": "node",
+          "id": 8436374170,
+          "lat": 29.9425419,
+          "lon": -90.1335214,
+          "timestamp": "2021-02-19T18:56:30Z",
+          "version": 2,
+          "tags": {
+            "railway": "switch"
+          }
+        },
+        {
+          "type": "node",
+          "id": 8436374172,
+          "lat": 29.9374145,
+          "lon": -90.1270427,
+          "timestamp": "2021-02-19T02:15:44Z",
+          "version": 1,
+          "tags": {
+            "railway": "switch"
+          }
+        },
+        {
+          "type": "node",
+          "id": 8436374174,
+          "lat": 29.9339293,
+          "lon": -90.1221315,
+          "timestamp": "2021-02-19T02:15:44Z",
+          "version": 1,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 8436374176,
+          "lat": 29.9335441,
+          "lon": -90.121587,
+          "timestamp": "2021-02-19T02:15:44Z",
+          "version": 1,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 8436374183,
+          "lat": 29.9315162,
+          "lon": -90.1187181,
+          "timestamp": "2021-02-19T02:15:44Z",
+          "version": 1,
+          "tags": {
+            "railway": "switch"
+          }
+        },
+        {
+          "type": "node",
+          "id": 8436374185,
+          "lat": 29.9303747,
+          "lon": -90.1169061,
+          "timestamp": "2021-02-19T02:15:44Z",
+          "version": 1
+        },
+        {
+          "type": "node",
+          "id": 8436374187,
+          "lat": 29.926409,
+          "lon": -90.1028359,
+          "timestamp": "2021-02-19T02:15:44Z",
+          "version": 1,
+          "tags": {
+            "railway": "switch"
+          }
+        },
+        {
+          "type": "node",
+          "id": 8436374188,
+          "lat": 29.9270373,
+          "lon": -90.0951762,
+          "timestamp": "2021-02-19T02:15:44Z",
+          "version": 1
+        },
+        {
+          "type": "node",
+          "id": 8436374190,
+          "lat": 29.927959,
+          "lon": -90.0921916,
+          "timestamp": "2021-02-19T02:15:44Z",
+          "version": 1,
+          "tags": {
+            "railway": "switch"
+          }
+        },
+        {
+          "type": "node",
+          "id": 8436374192,
+          "lat": 29.9289376,
+          "lon": -90.0895771,
+          "timestamp": "2021-02-19T02:15:44Z",
+          "version": 1
+        },
+        {
+          "type": "node",
+          "id": 8436374195,
+          "lat": 29.9288144,
+          "lon": -90.0898607,
+          "timestamp": "2021-02-19T02:15:44Z",
+          "version": 1
+        },
+        {
+          "type": "node",
+          "id": 8436374196,
+          "lat": 29.9291191,
+          "lon": -90.0892031,
+          "timestamp": "2021-02-19T02:15:44Z",
+          "version": 1
+        },
+        {
+          "type": "node",
+          "id": 8436374198,
+          "lat": 29.9345088,
+          "lon": -90.0799504,
+          "timestamp": "2021-02-19T02:15:44Z",
+          "version": 1,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 8436374202,
+          "lat": 29.9335495,
+          "lon": -90.081426,
+          "timestamp": "2021-02-19T02:15:44Z",
+          "version": 1,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 8436374208,
+          "lat": 29.9351828,
+          "lon": -90.0789139,
+          "timestamp": "2021-02-19T02:15:44Z",
+          "version": 1
+        },
+        {
+          "type": "node",
+          "id": 8436374210,
+          "lat": 29.936356,
+          "lon": -90.0774863,
+          "timestamp": "2021-02-19T02:15:44Z",
+          "version": 1
+        },
+        {
+          "type": "node",
+          "id": 8436374212,
+          "lat": 29.940685,
+          "lon": -90.0742782,
+          "timestamp": "2021-02-19T18:56:30Z",
+          "version": 2,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 8436374215,
+          "lat": 29.9427853,
+          "lon": -90.0727201,
+          "timestamp": "2021-02-19T18:56:30Z",
+          "version": 2
+        },
+        {
+          "type": "node",
+          "id": 8438971190,
+          "lat": 29.9551641,
+          "lon": -90.1212934,
+          "timestamp": "2021-02-19T18:56:26Z",
+          "version": 1,
+          "tags": {
+            "railway": "level_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 8438971200,
+          "lat": 29.9361292,
+          "lon": -90.1252543,
+          "timestamp": "2021-02-19T18:56:26Z",
+          "version": 1,
+          "tags": {
+            "name": "Saint Charles at Walnut",
+            "network": "RTA",
+            "public_transport": "stop_position",
+            "railway": "tram_stop",
+            "tram": "yes"
+          }
+        },
+        {
+          "type": "node",
+          "id": 8438984339,
+          "lat": 29.9342617,
+          "lon": -90.1226004,
+          "timestamp": "2021-02-19T18:56:27Z",
+          "version": 1,
+          "tags": {
+            "name": "Saint Charles at Tulane/Loyola",
+            "network": "RTA",
+            "public_transport": "stop_position",
+            "railway": "tram_stop",
+            "tram": "yes"
+          }
+        },
+        {
+          "type": "node",
+          "id": 8438984340,
+          "lat": 29.9352011,
+          "lon": -90.1239301,
+          "timestamp": "2021-02-19T18:56:27Z",
+          "version": 1,
+          "tags": {
+            "name": "Saint Charles at Tulane University",
+            "network": "RTA",
+            "public_transport": "stop_position",
+            "railway": "tram_stop",
+            "tram": "yes"
+          }
+        },
+        {
+          "type": "node",
+          "id": 8438984342,
+          "lat": 29.9329697,
+          "lon": -90.1207769,
+          "timestamp": "2021-02-19T18:56:27Z",
+          "version": 1,
+          "tags": {
+            "name": "Saint Charles at Calhoun",
+            "network": "RTA",
+            "public_transport": "stop_position",
+            "railway": "tram_stop",
+            "tram": "yes"
+          }
+        },
+        {
+          "type": "node",
+          "id": 8438984343,
+          "lat": 29.9311408,
+          "lon": -90.1181823,
+          "timestamp": "2021-02-19T18:56:27Z",
+          "version": 1,
+          "tags": {
+            "name": "Saint Charles at State",
+            "network": "RTA",
+            "public_transport": "stop_position",
+            "railway": "tram_stop",
+            "tram": "yes"
+          }
+        },
+        {
+          "type": "node",
+          "id": 8438984344,
+          "lat": 29.9294559,
+          "lon": -90.1149843,
+          "timestamp": "2021-02-19T18:56:27Z",
+          "version": 1,
+          "tags": {
+            "name": "Saint Charles at Joseph",
+            "network": "RTA",
+            "public_transport": "stop_position",
+            "railway": "tram_stop",
+            "tram": "yes"
+          }
+        },
+        {
+          "type": "node",
+          "id": 8438984345,
+          "lat": 29.928587,
+          "lon": -90.1131468,
+          "timestamp": "2021-02-19T18:56:27Z",
+          "version": 1,
+          "tags": {
+            "name": "Saint Charles at Jefferson",
+            "network": "RTA",
+            "public_transport": "stop_position",
+            "railway": "tram_stop",
+            "tram": "yes"
+          }
+        },
+        {
+          "type": "node",
+          "id": 8438984346,
+          "lat": 29.9278532,
+          "lon": -90.111592,
+          "timestamp": "2021-02-19T18:56:27Z",
+          "version": 1,
+          "tags": {
+            "name": "Saint Charles at Valmont",
+            "network": "RTA",
+            "public_transport": "stop_position",
+            "railway": "tram_stop",
+            "tram": "yes"
+          }
+        },
+        {
+          "type": "node",
+          "id": 8438984347,
+          "lat": 29.9265751,
+          "lon": -90.1088875,
+          "timestamp": "2021-02-19T18:56:27Z",
+          "version": 1,
+          "tags": {
+            "name": "Saint Charles at Robert",
+            "network": "RTA",
+            "public_transport": "stop_position",
+            "railway": "tram_stop",
+            "tram": "yes"
+          }
+        },
+        {
+          "type": "node",
+          "id": 8438984348,
+          "lat": 29.9261066,
+          "lon": -90.1067682,
+          "timestamp": "2021-02-19T18:56:27Z",
+          "version": 1,
+          "tags": {
+            "name": "Saint Charles at Bordeaux",
+            "network": "RTA",
+            "public_transport": "stop_position",
+            "railway": "tram_stop",
+            "tram": "yes"
+          }
+        },
+        {
+          "type": "node",
+          "id": 8438984349,
+          "lat": 29.9262789,
+          "lon": -90.1045277,
+          "timestamp": "2021-02-19T18:56:27Z",
+          "version": 1,
+          "tags": {
+            "name": "Saint Charles at Cadiz",
+            "network": "RTA",
+            "public_transport": "stop_position",
+            "railway": "tram_stop",
+            "tram": "yes"
+          }
+        },
+        {
+          "type": "node",
+          "id": 8438984350,
+          "lat": 29.9264497,
+          "lon": -90.1022934,
+          "timestamp": "2021-02-19T18:56:27Z",
+          "version": 1,
+          "tags": {
+            "name": "Saint Charles at Napoleon",
+            "network": "RTA",
+            "public_transport": "stop_position",
+            "railway": "tram_stop",
+            "tram": "yes"
+          }
+        },
+        {
+          "type": "node",
+          "id": 8438984351,
+          "lat": 29.9266688,
+          "lon": -90.0994945,
+          "timestamp": "2021-02-19T18:56:27Z",
+          "version": 1,
+          "tags": {
+            "name": "Saint Charles at Milan",
+            "network": "RTA",
+            "public_transport": "stop_position",
+            "railway": "tram_stop",
+            "tram": "yes"
+          }
+        },
+        {
+          "type": "node",
+          "id": 8438984352,
+          "lat": 29.926819,
+          "lon": -90.0975204,
+          "timestamp": "2021-02-19T18:56:27Z",
+          "version": 1,
+          "tags": {
+            "name": "Saint Charles at Constantinople",
+            "network": "RTA",
+            "public_transport": "stop_position",
+            "railway": "tram_stop",
+            "tram": "yes"
+          }
+        },
+        {
+          "type": "node",
+          "id": 8438984354,
+          "lat": 29.9275054,
+          "lon": -90.0934491,
+          "timestamp": "2021-02-19T18:56:27Z",
+          "version": 1,
+          "tags": {
+            "name": "Saint Charles at Foucher",
+            "network": "RTA",
+            "public_transport": "stop_position",
+            "railway": "tram_stop",
+            "tram": "yes"
+          }
+        },
+        {
+          "type": "node",
+          "id": 8438984355,
+          "lat": 29.9281711,
+          "lon": -90.0916031,
+          "timestamp": "2021-02-19T18:56:27Z",
+          "version": 1,
+          "tags": {
+            "name": "Saint Charles at Louisiana",
+            "network": "RTA",
+            "public_transport": "stop_position",
+            "railway": "tram_stop",
+            "tram": "yes"
+          }
+        },
+        {
+          "type": "node",
+          "id": 8438984356,
+          "lat": 29.9292054,
+          "lon": -90.0890447,
+          "timestamp": "2021-02-19T18:56:27Z",
+          "version": 1,
+          "tags": {
+            "name": "Saint Charles at Eighth Street",
+            "network": "RTA",
+            "public_transport": "stop_position",
+            "railway": "tram_stop",
+            "tram": "yes"
+          }
+        },
+        {
+          "type": "node",
+          "id": 8438984357,
+          "lat": 29.9301178,
+          "lon": -90.0874122,
+          "timestamp": "2021-02-19T18:56:27Z",
+          "version": 1,
+          "tags": {
+            "name": "Saint Charles at Sixth Street",
+            "network": "RTA",
+            "public_transport": "stop_position",
+            "railway": "tram_stop",
+            "tram": "yes"
+          }
+        },
+        {
+          "type": "node",
+          "id": 8438984358,
+          "lat": 29.9308618,
+          "lon": -90.0860874,
+          "timestamp": "2026-01-28T01:10:49Z",
+          "version": 2,
+          "tags": {
+            "name": "Saint Charles at Washington",
+            "network": "RTA",
+            "public_transport": "stop_position",
+            "railway": "tram_stop",
+            "ref": "N241",
+            "tram": "yes"
+          }
+        },
+        {
+          "type": "node",
+          "id": 8438984359,
+          "lat": 29.931804,
+          "lon": -90.0844094,
+          "timestamp": "2021-02-19T18:56:27Z",
+          "version": 1,
+          "tags": {
+            "name": "Saint Charles at Third Street",
+            "network": "RTA",
+            "public_transport": "stop_position",
+            "railway": "tram_stop",
+            "tram": "yes"
+          }
+        },
+        {
+          "type": "node",
+          "id": 8438984360,
+          "lat": 29.9327178,
+          "lon": -90.0827951,
+          "timestamp": "2021-02-19T18:56:27Z",
+          "version": 1,
+          "tags": {
+            "name": "Saint Charles at First Street",
+            "network": "RTA",
+            "public_transport": "stop_position",
+            "railway": "tram_stop",
+            "tram": "yes"
+          }
+        },
+        {
+          "type": "node",
+          "id": 8438984361,
+          "lat": 29.9340057,
+          "lon": -90.0807243,
+          "timestamp": "2021-02-19T18:56:27Z",
+          "version": 1,
+          "tags": {
+            "name": "Saint Charles at Jackson",
+            "network": "RTA",
+            "public_transport": "stop_position",
+            "railway": "tram_stop",
+            "tram": "yes"
+          }
+        },
+        {
+          "type": "node",
+          "id": 8438984362,
+          "lat": 29.9346584,
+          "lon": -90.0797179,
+          "timestamp": "2021-02-19T18:56:27Z",
+          "version": 1,
+          "tags": {
+            "name": "Saint Charles at Josephine",
+            "network": "RTA",
+            "public_transport": "stop_position",
+            "railway": "tram_stop",
+            "tram": "yes"
+          }
+        },
+        {
+          "type": "node",
+          "id": 8438984363,
+          "lat": 29.9352525,
+          "lon": -90.078816,
+          "timestamp": "2021-02-19T18:56:27Z",
+          "version": 1,
+          "tags": {
+            "name": "Saint Charles at Saint Andrew",
+            "network": "RTA",
+            "public_transport": "stop_position",
+            "railway": "tram_stop",
+            "tram": "yes"
+          }
+        },
+        {
+          "type": "node",
+          "id": 8438984364,
+          "lat": 29.936198,
+          "lon": -90.0776419,
+          "timestamp": "2021-02-19T18:56:27Z",
+          "version": 1,
+          "tags": {
+            "name": "Saint Charles at Felicity",
+            "network": "RTA",
+            "public_transport": "stop_position",
+            "railway": "tram_stop",
+            "tram": "yes"
+          }
+        },
+        {
+          "type": "node",
+          "id": 8438984365,
+          "lat": 29.9376002,
+          "lon": -90.0765674,
+          "timestamp": "2021-02-19T18:56:27Z",
+          "version": 1,
+          "tags": {
+            "name": "Saint Charles at Euterpe",
+            "network": "RTA",
+            "public_transport": "stop_position",
+            "railway": "tram_stop",
+            "tram": "yes"
+          }
+        },
+        {
+          "type": "node",
+          "id": 8438984374,
+          "lat": 29.9429279,
+          "lon": -90.0724329,
+          "timestamp": "2026-01-26T17:04:10Z",
+          "version": 2
+        },
+        {
+          "type": "node",
+          "id": 8438984379,
+          "lat": 29.9427723,
+          "lon": -90.0727294,
+          "timestamp": "2021-02-19T18:56:27Z",
+          "version": 1,
+          "tags": {
+            "name": "Saint Charles at Lee Circle",
+            "network": "RTA",
+            "public_transport": "stop_position",
+            "railway": "tram_stop",
+            "tram": "yes"
+          }
+        },
+        {
+          "type": "node",
+          "id": 8438987403,
+          "lat": 29.9282283,
+          "lon": -90.1123902,
+          "timestamp": "2021-02-19T18:56:24Z",
+          "version": 1,
+          "tags": {
+            "railway": "switch"
+          }
+        },
+        {
+          "type": "node",
+          "id": 8439084416,
+          "lat": 29.9487574,
+          "lon": -90.1281345,
+          "timestamp": "2021-02-19T19:51:09Z",
+          "version": 1,
+          "tags": {
+            "railway": "railway_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 8439170818,
+          "lat": 29.9485967,
+          "lon": -90.12831,
+          "timestamp": "2021-02-19T19:51:09Z",
+          "version": 1,
+          "tags": {
+            "railway": "switch"
+          }
+        },
+        {
+          "type": "node",
+          "id": 8439170830,
+          "lat": 29.9493741,
+          "lon": -90.1274779,
+          "timestamp": "2021-02-19T19:51:09Z",
+          "version": 1,
+          "tags": {
+            "railway": "railway_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 8439170839,
+          "lat": 29.9495404,
+          "lon": -90.127301,
+          "timestamp": "2021-02-19T19:51:09Z",
+          "version": 1,
+          "tags": {
+            "railway": "switch"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11778420689,
+          "lat": 29.9413649,
+          "lon": -90.0737818,
+          "timestamp": "2024-04-01T15:09:27Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11778420699,
+          "lat": 29.9405246,
+          "lon": -90.0743995,
+          "timestamp": "2024-04-01T15:09:27Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11778420707,
+          "lat": 29.9404328,
+          "lon": -90.0744683,
+          "timestamp": "2024-04-01T15:09:27Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11778420713,
+          "lat": 29.9398299,
+          "lon": -90.0749161,
+          "timestamp": "2024-04-01T15:09:27Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11778420721,
+          "lat": 29.9397603,
+          "lon": -90.0749674,
+          "timestamp": "2024-04-01T15:09:27Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11778420727,
+          "lat": 29.9391395,
+          "lon": -90.0754237,
+          "timestamp": "2024-04-01T15:09:27Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11778420735,
+          "lat": 29.9390043,
+          "lon": -90.0755249,
+          "timestamp": "2024-04-01T15:09:27Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11778420743,
+          "lat": 29.9384006,
+          "lon": -90.0759754,
+          "timestamp": "2024-04-01T15:09:27Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11778420749,
+          "lat": 29.9383123,
+          "lon": -90.0760411,
+          "timestamp": "2024-04-01T15:09:27Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11778420756,
+          "lat": 29.9377049,
+          "lon": -90.0764913,
+          "timestamp": "2024-04-01T15:09:27Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11778420762,
+          "lat": 29.9376194,
+          "lon": -90.0765536,
+          "timestamp": "2024-04-01T15:09:27Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11778435269,
+          "lat": 29.9370046,
+          "lon": -90.0770034,
+          "timestamp": "2024-04-01T15:09:27Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11778435276,
+          "lat": 29.9369167,
+          "lon": -90.0770675,
+          "timestamp": "2024-04-01T15:09:27Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11778435282,
+          "lat": 29.9363015,
+          "lon": -90.077539,
+          "timestamp": "2024-04-01T15:09:27Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11778435288,
+          "lat": 29.9362086,
+          "lon": -90.0776312,
+          "timestamp": "2024-04-01T15:09:27Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11778435296,
+          "lat": 29.9358075,
+          "lon": -90.0781172,
+          "timestamp": "2024-04-01T15:09:27Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11778435303,
+          "lat": 29.9357336,
+          "lon": -90.0782086,
+          "timestamp": "2024-04-01T15:09:27Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11778435310,
+          "lat": 29.9353473,
+          "lon": -90.0786902,
+          "timestamp": "2024-04-01T15:09:27Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11778435316,
+          "lat": 29.9352693,
+          "lon": -90.0787926,
+          "timestamp": "2024-04-01T15:09:27Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11778455904,
+          "lat": 29.9346771,
+          "lon": -90.0796892,
+          "timestamp": "2024-04-01T15:24:39Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11778455912,
+          "lat": 29.9347592,
+          "lon": -90.0795632,
+          "timestamp": "2024-04-01T15:24:39Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11778455924,
+          "lat": 29.9341444,
+          "lon": -90.080514,
+          "timestamp": "2024-04-01T15:24:39Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11778455928,
+          "lat": 29.934021,
+          "lon": -90.0807016,
+          "timestamp": "2024-04-01T15:24:39Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11778455934,
+          "lat": 29.9327945,
+          "lon": -90.08266,
+          "timestamp": "2024-04-01T15:24:39Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11778455942,
+          "lat": 29.9327304,
+          "lon": -90.0827727,
+          "timestamp": "2024-04-01T15:24:39Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11778455948,
+          "lat": 29.9323426,
+          "lon": -90.0834605,
+          "timestamp": "2024-04-01T15:24:39Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11778455955,
+          "lat": 29.9322819,
+          "lon": -90.0835678,
+          "timestamp": "2024-04-01T15:24:39Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11778455962,
+          "lat": 29.9318821,
+          "lon": -90.0842717,
+          "timestamp": "2024-04-01T15:24:39Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11778457469,
+          "lat": 29.9318222,
+          "lon": -90.0843773,
+          "timestamp": "2024-04-01T15:24:39Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11778457476,
+          "lat": 29.9313669,
+          "lon": -90.0851897,
+          "timestamp": "2024-04-01T15:24:39Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11778457483,
+          "lat": 29.9314282,
+          "lon": -90.0850803,
+          "timestamp": "2024-04-01T15:24:39Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11778457490,
+          "lat": 29.9309601,
+          "lon": -90.0859135,
+          "timestamp": "2024-04-01T15:24:39Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11778457496,
+          "lat": 29.9308899,
+          "lon": -90.0860379,
+          "timestamp": "2024-04-01T15:24:39Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11778457504,
+          "lat": 29.9305067,
+          "lon": -90.0867169,
+          "timestamp": "2024-04-01T15:24:39Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11778457512,
+          "lat": 29.9305569,
+          "lon": -90.0866287,
+          "timestamp": "2024-04-01T15:24:39Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11778457518,
+          "lat": 29.9301893,
+          "lon": -90.0872858,
+          "timestamp": "2024-04-01T15:24:39Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11778457526,
+          "lat": 29.9301281,
+          "lon": -90.0873942,
+          "timestamp": "2024-04-01T15:24:39Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11778457534,
+          "lat": 29.9297434,
+          "lon": -90.0880798,
+          "timestamp": "2024-04-01T15:24:39Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11778457539,
+          "lat": 29.9296786,
+          "lon": -90.0881955,
+          "timestamp": "2024-04-01T15:24:39Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11779150803,
+          "lat": 29.9292911,
+          "lon": -90.0888884,
+          "timestamp": "2024-04-01T23:07:50Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11779150807,
+          "lat": 29.9292254,
+          "lon": -90.0890078,
+          "timestamp": "2024-04-01T23:07:50Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11779150813,
+          "lat": 29.9290617,
+          "lon": -90.0893156,
+          "timestamp": "2024-04-01T23:07:50Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11779150819,
+          "lat": 29.9290228,
+          "lon": -90.0893952,
+          "timestamp": "2024-04-01T23:07:50Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11779150830,
+          "lat": 29.9287168,
+          "lon": -90.0901005,
+          "timestamp": "2024-04-01T23:07:50Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11779150835,
+          "lat": 29.9286365,
+          "lon": -90.0903095,
+          "timestamp": "2024-04-01T23:07:50Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11779150848,
+          "lat": 29.9282867,
+          "lon": -90.0912841,
+          "timestamp": "2024-04-01T23:07:50Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11779150853,
+          "lat": 29.9281845,
+          "lon": -90.0915666,
+          "timestamp": "2024-04-01T23:07:50Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11779150868,
+          "lat": 29.9278353,
+          "lon": -90.0925341,
+          "timestamp": "2024-04-01T23:07:50Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11779152070,
+          "lat": 29.9277951,
+          "lon": -90.0926444,
+          "timestamp": "2024-04-01T23:07:50Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11779152079,
+          "lat": 29.9274039,
+          "lon": -90.0937384,
+          "timestamp": "2024-04-01T23:07:50Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11779152085,
+          "lat": 29.9274512,
+          "lon": -90.0936008,
+          "timestamp": "2024-04-01T23:07:50Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11779152093,
+          "lat": 29.9271035,
+          "lon": -90.0948273,
+          "timestamp": "2024-04-01T23:07:50Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11779152104,
+          "lat": 29.9269732,
+          "lon": -90.0956564,
+          "timestamp": "2024-04-01T23:07:50Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11779152111,
+          "lat": 29.9269878,
+          "lon": -90.0955294,
+          "timestamp": "2024-04-01T23:07:50Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11779184929,
+          "lat": 29.9269009,
+          "lon": -90.0964956,
+          "timestamp": "2024-04-01T23:32:55Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11779184934,
+          "lat": 29.9269125,
+          "lon": -90.0963556,
+          "timestamp": "2024-04-01T23:32:55Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11779184943,
+          "lat": 29.9268212,
+          "lon": -90.0974934,
+          "timestamp": "2024-04-01T23:32:55Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11779184948,
+          "lat": 29.92683,
+          "lon": -90.0973851,
+          "timestamp": "2024-04-01T23:32:55Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11779184955,
+          "lat": 29.9267333,
+          "lon": -90.09865,
+          "timestamp": "2024-04-01T23:32:55Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11779184962,
+          "lat": 29.926746,
+          "lon": -90.0984829,
+          "timestamp": "2024-04-01T23:32:55Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11779184968,
+          "lat": 29.9266553,
+          "lon": -90.0996482,
+          "timestamp": "2024-04-03T01:04:31Z",
+          "version": 2,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11779185376,
+          "lat": 29.9266418,
+          "lon": -90.099762,
+          "timestamp": "2024-04-03T01:04:31Z",
+          "version": 2,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11779185385,
+          "lat": 29.9265725,
+          "lon": -90.1007433,
+          "timestamp": "2024-04-01T23:32:55Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11779185391,
+          "lat": 29.9265635,
+          "lon": -90.1008674,
+          "timestamp": "2024-04-04T01:46:05Z",
+          "version": 2,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11779185404,
+          "lat": 29.9264843,
+          "lon": -90.1018488,
+          "timestamp": "2024-04-01T23:32:55Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11779185411,
+          "lat": 29.9264519,
+          "lon": -90.1022662,
+          "timestamp": "2024-04-01T23:32:55Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11779185480,
+          "lat": 29.9263762,
+          "lon": -90.1032657,
+          "timestamp": "2024-04-01T23:32:55Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11779185486,
+          "lat": 29.9263675,
+          "lon": -90.1033781,
+          "timestamp": "2024-04-01T23:32:55Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 11781412310,
+          "lat": 29.9412812,
+          "lon": -90.0738437,
+          "timestamp": "2024-04-02T21:19:12Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 13500829526,
+          "lat": 29.9429228,
+          "lon": -90.0725024,
+          "timestamp": "2026-01-26T17:04:10Z",
+          "version": 1
+        },
+        {
+          "type": "node",
+          "id": 13500829527,
+          "lat": 29.9428927,
+          "lon": -90.0726197,
+          "timestamp": "2026-01-26T17:04:10Z",
+          "version": 1
+        },
+        {
+          "type": "node",
+          "id": 13500829528,
+          "lat": 29.9428825,
+          "lon": -90.0726334,
+          "timestamp": "2026-01-26T17:04:10Z",
+          "version": 1
+        },
+        {
+          "type": "node",
+          "id": 13500829529,
+          "lat": 29.9429253,
+          "lon": -90.0724721,
+          "timestamp": "2026-01-26T17:04:10Z",
+          "version": 1
+        },
+        {
+          "type": "node",
+          "id": 13500829536,
+          "lat": 29.9429382,
+          "lon": -90.0723611,
+          "timestamp": "2026-01-26T17:04:10Z",
+          "version": 1
+        },
+        {
+          "type": "node",
+          "id": 13500829537,
+          "lat": 29.9429456,
+          "lon": -90.0723313,
+          "timestamp": "2026-01-26T17:04:10Z",
+          "version": 1
+        },
+        {
+          "type": "node",
+          "id": 13500829538,
+          "lat": 29.9429552,
+          "lon": -90.0723014,
+          "timestamp": "2026-01-26T17:04:10Z",
+          "version": 1
+        },
+        {
+          "type": "node",
+          "id": 13500829539,
+          "lat": 29.9429663,
+          "lon": -90.0722711,
+          "timestamp": "2026-01-26T17:04:10Z",
+          "version": 1
+        },
+        {
+          "type": "node",
+          "id": 13500829540,
+          "lat": 29.9429879,
+          "lon": -90.0722263,
+          "timestamp": "2026-01-26T17:04:10Z",
+          "version": 1
+        },
+        {
+          "type": "node",
+          "id": 13500829541,
+          "lat": 29.9430009,
+          "lon": -90.072203,
+          "timestamp": "2026-01-26T17:04:10Z",
+          "version": 1
+        },
+        {
+          "type": "node",
+          "id": 13500829542,
+          "lat": 29.9430305,
+          "lon": -90.0721578,
+          "timestamp": "2026-01-26T17:04:10Z",
+          "version": 1
+        },
+        {
+          "type": "node",
+          "id": 13500829543,
+          "lat": 29.943046,
+          "lon": -90.0721393,
+          "timestamp": "2026-01-26T17:04:10Z",
+          "version": 1
+        },
+        {
+          "type": "node",
+          "id": 13500829544,
+          "lat": 29.9430627,
+          "lon": -90.0721207,
+          "timestamp": "2026-01-26T17:04:10Z",
+          "version": 1
+        },
+        {
+          "type": "node",
+          "id": 13500829545,
+          "lat": 29.9430983,
+          "lon": -90.0720869,
+          "timestamp": "2026-01-26T17:04:10Z",
+          "version": 1
+        },
+        {
+          "type": "node",
+          "id": 13500829546,
+          "lat": 29.9433297,
+          "lon": -90.0720047,
+          "timestamp": "2026-01-26T17:04:10Z",
+          "version": 1
+        },
+        {
+          "type": "node",
+          "id": 13500829547,
+          "lat": 29.9432844,
+          "lon": -90.072008,
+          "timestamp": "2026-01-26T17:04:10Z",
+          "version": 1
+        },
+        {
+          "type": "node",
+          "id": 13500829548,
+          "lat": 29.9431195,
+          "lon": -90.0720718,
+          "timestamp": "2026-01-26T17:04:10Z",
+          "version": 1
+        },
+        {
+          "type": "node",
+          "id": 13500829549,
+          "lat": 29.9431393,
+          "lon": -90.0720599,
+          "timestamp": "2026-01-26T17:04:10Z",
+          "version": 1
+        },
+        {
+          "type": "node",
+          "id": 13500829550,
+          "lat": 29.9431617,
+          "lon": -90.0720486,
+          "timestamp": "2026-01-26T17:04:10Z",
+          "version": 1
+        },
+        {
+          "type": "node",
+          "id": 13500829551,
+          "lat": 29.9432371,
+          "lon": -90.0720191,
+          "timestamp": "2026-01-26T17:04:10Z",
+          "version": 1
+        },
+        {
+          "type": "node",
+          "id": 13500829552,
+          "lat": 29.9432064,
+          "lon": -90.07203,
+          "timestamp": "2026-01-26T17:04:10Z",
+          "version": 1
+        },
+        {
+          "type": "node",
+          "id": 13500829553,
+          "lat": 29.9431831,
+          "lon": -90.0720396,
+          "timestamp": "2026-01-26T17:04:10Z",
+          "version": 1
+        },
+        {
+          "type": "node",
+          "id": 13500829554,
+          "lat": 29.9433751,
+          "lon": -90.0720089,
+          "timestamp": "2026-01-26T17:04:10Z",
+          "version": 1
+        },
+        {
+          "type": "node",
+          "id": 13500829555,
+          "lat": 29.9434212,
+          "lon": -90.0720184,
+          "timestamp": "2026-01-26T17:04:10Z",
+          "version": 1
+        },
+        {
+          "type": "node",
+          "id": 13500829556,
+          "lat": 29.9434455,
+          "lon": -90.0720266,
+          "timestamp": "2026-01-26T17:04:10Z",
+          "version": 1
+        },
+        {
+          "type": "node",
+          "id": 13500829557,
+          "lat": 29.9434948,
+          "lon": -90.0720465,
+          "timestamp": "2026-01-26T17:04:10Z",
+          "version": 1
+        },
+        {
+          "type": "node",
+          "id": 13500829558,
+          "lat": 29.943516,
+          "lon": -90.072059,
+          "timestamp": "2026-01-26T17:04:10Z",
+          "version": 1
+        },
+        {
+          "type": "node",
+          "id": 13500829559,
+          "lat": 29.9435559,
+          "lon": -90.0720874,
+          "timestamp": "2026-01-26T17:04:10Z",
+          "version": 1
+        },
+        {
+          "type": "node",
+          "id": 13500829560,
+          "lat": 29.943537,
+          "lon": -90.0720732,
+          "timestamp": "2026-01-26T17:04:10Z",
+          "version": 1
+        },
+        {
+          "type": "node",
+          "id": 13500829561,
+          "lat": 29.9436194,
+          "lon": -90.0721476,
+          "timestamp": "2026-01-26T17:04:10Z",
+          "version": 1
+        },
+        {
+          "type": "node",
+          "id": 13500829562,
+          "lat": 29.9436556,
+          "lon": -90.0722004,
+          "timestamp": "2026-01-26T17:04:10Z",
+          "version": 1
+        },
+        {
+          "type": "node",
+          "id": 13500829563,
+          "lat": 29.9436398,
+          "lon": -90.0721749,
+          "timestamp": "2026-01-26T17:04:10Z",
+          "version": 1
+        },
+        {
+          "type": "node",
+          "id": 13500829564,
+          "lat": 29.9437058,
+          "lon": -90.0723065,
+          "timestamp": "2026-01-26T17:04:10Z",
+          "version": 1
+        },
+        {
+          "type": "node",
+          "id": 13500829565,
+          "lat": 29.9436826,
+          "lon": -90.0722493,
+          "timestamp": "2026-01-26T17:04:10Z",
+          "version": 1
+        },
+        {
+          "type": "node",
+          "id": 13500829566,
+          "lat": 29.9437141,
+          "lon": -90.0723349,
+          "timestamp": "2026-01-26T17:04:10Z",
+          "version": 1
+        },
+        {
+          "type": "node",
+          "id": 13500829567,
+          "lat": 29.9437269,
+          "lon": -90.0724011,
+          "timestamp": "2026-01-26T17:04:10Z",
+          "version": 1
+        },
+        {
+          "type": "node",
+          "id": 13500829568,
+          "lat": 29.9437307,
+          "lon": -90.0724675,
+          "timestamp": "2026-01-26T17:04:10Z",
+          "version": 1
+        },
+        {
+          "type": "node",
+          "id": 13500829569,
+          "lat": 29.9437304,
+          "lon": -90.072495,
+          "timestamp": "2026-01-26T17:04:10Z",
+          "version": 1
+        },
+        {
+          "type": "node",
+          "id": 13640039278,
+          "lat": 29.934258,
+          "lon": -90.1225952,
+          "timestamp": "2026-03-12T07:49:34Z",
+          "version": 2,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 13640042749,
+          "lat": 29.9329588,
+          "lon": -90.1207615,
+          "timestamp": "2026-03-12T07:49:34Z",
+          "version": 2,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 13640042750,
+          "lat": 29.9328752,
+          "lon": -90.1206438,
+          "timestamp": "2026-03-12T03:57:04Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 13640042775,
+          "lat": 29.9310359,
+          "lon": -90.1180218,
+          "timestamp": "2026-03-12T03:57:04Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 13640054661,
+          "lat": 29.9318703,
+          "lon": -90.119223,
+          "timestamp": "2026-03-12T04:20:50Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 13640056711,
+          "lat": 29.9301762,
+          "lon": -90.1165035,
+          "timestamp": "2026-03-12T04:12:52Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 13640056713,
+          "lat": 29.930274,
+          "lon": -90.1167042,
+          "timestamp": "2026-03-12T04:12:52Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 13640089188,
+          "lat": 29.9349123,
+          "lon": -90.1235221,
+          "timestamp": "2026-03-12T05:16:22Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 13640089196,
+          "lat": 29.9349778,
+          "lon": -90.1236148,
+          "timestamp": "2026-03-12T05:16:22Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 13640112076,
+          "lat": 29.9335974,
+          "lon": -90.1216619,
+          "timestamp": "2026-03-12T07:49:34Z",
+          "version": 2,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 13640112082,
+          "lat": 29.933527,
+          "lon": -90.1215628,
+          "timestamp": "2026-03-12T05:11:02Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 13640112091,
+          "lat": 29.9339531,
+          "lon": -90.1221651,
+          "timestamp": "2026-03-12T05:11:02Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 13640112096,
+          "lat": 29.9341448,
+          "lon": -90.1224352,
+          "timestamp": "2026-03-12T05:11:02Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 13640116706,
+          "lat": 29.9346223,
+          "lon": -90.1231088,
+          "timestamp": "2026-03-12T05:11:02Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 13640116708,
+          "lat": 29.9346847,
+          "lon": -90.1231976,
+          "timestamp": "2026-03-12T05:11:02Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 13640116712,
+          "lat": 29.9362705,
+          "lon": -90.1254524,
+          "timestamp": "2026-03-12T05:11:02Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 13640116713,
+          "lat": 29.9362204,
+          "lon": -90.1253829,
+          "timestamp": "2026-03-12T05:11:02Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 13640122006,
+          "lat": 29.9351934,
+          "lon": -90.1239191,
+          "timestamp": "2026-03-12T07:49:34Z",
+          "version": 2,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 13640810892,
+          "lat": 29.9458339,
+          "lon": -90.1312634,
+          "timestamp": "2026-03-12T11:14:38Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 13640826502,
+          "lat": 29.9429602,
+          "lon": -90.1340261,
+          "timestamp": "2026-03-12T11:14:38Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 13640878028,
+          "lat": 29.9431822,
+          "lon": -90.1340577,
+          "timestamp": "2026-03-12T11:36:24Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 13640878039,
+          "lat": 29.9437598,
+          "lon": -90.1334808,
+          "timestamp": "2026-03-12T11:36:24Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 13640878050,
+          "lat": 29.9438559,
+          "lon": -90.1333778,
+          "timestamp": "2026-03-12T11:36:24Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 13640878059,
+          "lat": 29.9445084,
+          "lon": -90.1326781,
+          "timestamp": "2026-03-12T11:36:24Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 13640878069,
+          "lat": 29.9451257,
+          "lon": -90.1320214,
+          "timestamp": "2026-03-12T11:36:24Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 13640878079,
+          "lat": 29.9452269,
+          "lon": -90.1319134,
+          "timestamp": "2026-03-12T11:36:24Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 13640888096,
+          "lat": 29.9404778,
+          "lon": -90.1309917,
+          "timestamp": "2026-03-12T11:51:39Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 13640915624,
+          "lat": 29.9424103,
+          "lon": -90.1333581,
+          "timestamp": "2026-03-12T11:51:39Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 13640915634,
+          "lat": 29.942345,
+          "lon": -90.1332782,
+          "timestamp": "2026-03-12T11:51:39Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 13640915637,
+          "lat": 29.9418121,
+          "lon": -90.1326366,
+          "timestamp": "2026-03-12T11:51:39Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 13640915651,
+          "lat": 29.9417284,
+          "lon": -90.1325348,
+          "timestamp": "2026-03-12T11:51:39Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 13640933446,
+          "lat": 29.9410649,
+          "lon": -90.131711,
+          "timestamp": "2026-03-12T12:02:12Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 13640933455,
+          "lat": 29.9411264,
+          "lon": -90.131787,
+          "timestamp": "2026-03-12T12:02:12Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 13640986039,
+          "lat": 29.9529038,
+          "lon": -90.1237082,
+          "timestamp": "2026-03-12T12:36:44Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 13640986044,
+          "lat": 29.9529892,
+          "lon": -90.1236174,
+          "timestamp": "2026-03-12T12:36:44Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "node",
+          "id": 13644455225,
+          "lat": 29.9426731,
+          "lon": -90.0728024,
+          "timestamp": "2026-03-13T04:12:21Z",
+          "version": 1,
+          "tags": {
+            "railway": "tram_crossing"
+          }
+        },
+        {
+          "type": "way",
+          "id": 24016723,
+          "timestamp": "2026-03-13T04:12:21Z",
+          "version": 65,
+          "nodes": [
+            4766046055,
+            8438971190,
+            260444547,
+            260444552,
+            260444597,
+            2342376048,
+            13640986044,
+            260444598,
+            13640986039,
+            260444602,
+            4597172794,
+            260444603,
+            260444569,
+            260444604,
+            4597172796,
+            8439170839,
+            260444605,
+            8439170830,
+            4597172795,
+            8439084416,
+            260444611,
+            8439170818,
+            260444606,
+            2342376045,
+            260444607,
+            260444608,
+            2342376044,
+            260444610,
+            13640810892,
+            13640878079,
+            260444609,
+            13640878069,
+            2342374176,
+            13640878059,
+            260444247,
+            13640878050,
+            260444246,
+            13640878039,
+            3340017892,
+            3340017891,
+            8436374166,
+            13640878028,
+            3340017890,
+            260444251,
+            661969512,
+            260444250,
+            116073500,
+            3340017889,
+            13640826502,
+            8436374168,
+            3340017888,
+            8436374170,
+            13640915624,
+            260444234,
+            13640915634,
+            13640915637,
+            260444238,
+            13640915651,
+            4597154659,
+            13640933455,
+            260444235,
+            13640933446,
+            13640888096,
+            3339903735,
+            4597549575,
+            260444242,
+            260444243,
+            4597549574,
+            260444248,
+            260444000,
+            8436374172,
+            4597154665,
+            260443998,
+            260444016,
+            260444015,
+            13640116712,
+            260444025,
+            13640116713,
+            8438971200,
+            260444017,
+            8438984340,
+            13640122006,
+            260443851,
+            13640089196,
+            260443850,
+            13640089188,
+            13640116708,
+            260443849,
+            13640116706,
+            8438984339,
+            13640039278,
+            260443852,
+            13640112096,
+            13640112091,
+            8436374174,
+            4597154658,
+            13640112076,
+            8436374176,
+            13640112082,
+            8438984342,
+            13640042749,
+            260443859,
+            13640042750,
+            260443854,
+            260443858,
+            4597154671,
+            260443857,
+            13640054661,
+            8436374183,
+            8438984343,
+            3342471928,
+            4540514703,
+            13640042775,
+            260443855,
+            8436374185,
+            4893458893,
+            13640056713,
+            260443862,
+            13640056711,
+            260443861,
+            8438984344,
+            260443860,
+            260443774,
+            8438984345,
+            260443773,
+            260443772,
+            8438987403,
+            3344842781,
+            8438984346,
+            260443765,
+            4597154654,
+            260443767,
+            260443766,
+            8438984347,
+            260443769,
+            260443776,
+            3344161308,
+            3344161303,
+            3344161299,
+            260443768,
+            3344161297,
+            3344161296,
+            4766027925,
+            3344161295,
+            8438984348,
+            260443770,
+            260443771,
+            8438984349,
+            3344161306,
+            11779185486,
+            3344161311,
+            11779185480,
+            8436374187,
+            8438984350,
+            11779185411,
+            3344161316,
+            3344161317,
+            11779185404,
+            5252656133,
+            11779185391,
+            3344161321,
+            11779185385,
+            11779185376,
+            3344161325,
+            11779184968,
+            8438984351,
+            11779184955,
+            3344161328,
+            11779184962,
+            8438984352,
+            11779184943,
+            260443702,
+            11779184948,
+            11779184929,
+            260443701,
+            11779184934,
+            11779152104,
+            260443704,
+            11779152111,
+            4597154702,
+            8436374188,
+            11779152093,
+            260443703,
+            260443705,
+            3344187054,
+            11779152079,
+            3344187056,
+            11779152085,
+            8438984354,
+            260443707,
+            11779152070,
+            260443708,
+            11779150868,
+            8436374190,
+            8438984355,
+            11779150853,
+            260443634,
+            260443633,
+            11779150848,
+            260443635,
+            11779150835,
+            4496766346,
+            260443636,
+            11779150830,
+            8436374195,
+            8436374192,
+            11779150819,
+            260443637,
+            11779150813,
+            8436374196,
+            8438984356,
+            11779150807,
+            260443640,
+            11779150803,
+            11778457539,
+            260443639,
+            11778457534,
+            8438984357,
+            11778457526,
+            260443654,
+            11778457518,
+            11778457504,
+            260443653,
+            11778457512,
+            8438984358,
+            11778457496,
+            260443652,
+            11778457490,
+            11778457476,
+            260443651,
+            11778457483,
+            8438984359,
+            11778457469,
+            260443650,
+            11778455962,
+            11778455955,
+            260443649,
+            11778455948,
+            8438984360,
+            11778455942,
+            260443648,
+            11778455934,
+            260443647,
+            260443646,
+            8436374202,
+            260443645,
+            8438984361,
+            11778455928,
+            260443644,
+            260443643,
+            11778455924,
+            8436374198,
+            8438984362,
+            11778455904,
+            260443642,
+            11778455912,
+            260443641,
+            8436374208,
+            8438984363,
+            11778435316,
+            260443343,
+            11778435310,
+            11778435303,
+            260443342,
+            11778435296,
+            3344865711,
+            8438984364,
+            11778435288,
+            260443341,
+            11778435282,
+            8436374210,
+            260443340,
+            11778435276,
+            260443339,
+            11778435269,
+            8438984365,
+            11778420762,
+            260443338,
+            11778420756,
+            11778420749,
+            260443337,
+            11778420743,
+            4597154700,
+            11778420735,
+            260443335,
+            260443334,
+            11778420727,
+            11778420721,
+            260443235,
+            11778420713,
+            4763199721,
+            4349050560,
+            11778420707,
+            260443233,
+            11778420699,
+            8436374212,
+            11781412310,
+            260443231,
+            11778420689,
+            4349050558,
+            4349050559,
+            260443227,
+            13644455225,
+            8438984379,
+            8436374215,
+            354599136,
+            13500829528,
+            13500829527,
+            8436261913,
+            260443211,
+            8436261912,
+            8436261911,
+            13500829526,
+            13500829529,
+            8438984374,
+            8436261910,
+            13500829536,
+            13500829537,
+            13500829538,
+            13500829539,
+            8436261909,
+            13500829540,
+            13500829541,
+            8436261908,
+            13500829542,
+            13500829543,
+            13500829544,
+            8436261907,
+            13500829545,
+            13500829548,
+            13500829549,
+            13500829550,
+            13500829553,
+            13500829552,
+            13500829551,
+            8436261906,
+            13500829547,
+            8436261905,
+            13500829546,
+            8436261904,
+            13500829554,
+            8436261903,
+            13500829555,
+            13500829556,
+            8436261902,
+            13500829557,
+            13500829558,
+            13500829560,
+            13500829559,
+            8436261901,
+            8436261900,
+            13500829561,
+            13500829563,
+            13500829562,
+            8436261899,
+            13500829565,
+            8436261898,
+            13500829564,
+            13500829566,
+            8436261897,
+            13500829567,
+            8436261896,
+            13500829568,
+            13500829569,
+            8436261895
+          ],
+          "tags": {
+            "electrified": "contact_line",
+            "frequency": "0",
+            "gauge": "1588",
+            "name": "St Charles Streetcar",
+            "railway": "tram",
+            "railway:preferred_direction": "forward",
+            "voltage": "600",
+            "wikidata": "Q18155455",
+            "wikipedia": "en:St. Charles Streetcar Line"
+          }
+        }
+      ]
+    }
+  ]
+}
