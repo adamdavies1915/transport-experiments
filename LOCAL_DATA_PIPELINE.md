@@ -1,5 +1,10 @@
 # Two-source collection and local analysis
 
+[Daily workstation processing](DAILY_PROCESSING.md) is an optional deployment
+mode: the server seals durable captures and either workstation claims the daily
+job. That guide covers verified historical seeds, transfer, failover and schedule
+provenance. The combined local worker described below remains available.
+
 The collector retains every received RTA bus/streetcar observation in a durable
 local journal. A separate process ingests the journal into local DuckDB, runs OTP
 and the ROW/signal studies, and creates the dashboard snapshot. MotherDuck is the

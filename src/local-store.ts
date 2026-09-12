@@ -26,7 +26,9 @@ export function legacyValues(r: TransitRecord): string {
 
 export async function openLocalStore(directory: string) {
   await mkdir(directory, { recursive: true, mode: 0o700 });
-  const db = await DuckDBInstance.create(join(directory, 'transit.duckdb'), { threads: '2', memory_limit: process.env.LOCAL_DB_MEMORY || '1GB' });
+  const threads = process.env.LOCAL_DB_THREADS || '2';
+  if (!/^\d+$/.test(threads) || Number(threads) < 1 || Number(threads) > 256) throw new Error('LOCAL_DB_THREADS must be between 1 and 256');
+  const db = await DuckDBInstance.create(join(directory, 'transit.duckdb'), { threads, memory_limit: process.env.LOCAL_DB_MEMORY || '1GB' });
   const c = await db.connect();
   await initializeTransitSchema(c, 'transit');
   await initializeOtp(c);

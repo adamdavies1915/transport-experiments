@@ -1,6 +1,6 @@
 # NOLA transit dashboard
 
-The public server serves collector-produced JSON summaries from memory and a durable local snapshot. It has no MotherDuck connection, database token, or request-triggered query path. A background refresh requests the private collector endpoint once a minute; the collector computes summaries every 15 minutes. A snapshot older than 35 minutes, or a failed refresh, is marked stale without discarding usable data.
+The public server serves collector-produced JSON summaries from memory and a durable local snapshot. It has no MotherDuck connection, database token, or request-triggered query path. A background refresh requests the private collector endpoint once a minute. Analysis may run every 15 minutes or once daily on an authorized desktop or Mac worker while the server continues collecting observations. The dashboard's freshness threshold defaults to 35 minutes; configure it to match the analysis schedule. An analysis older than that threshold, or a failed refresh, is marked stale without discarding usable data.
 
 Configure only server-side environment variables:
 
@@ -9,9 +9,14 @@ Configure only server-side environment variables:
 | `TRANSIT_SUMMARY_URL` | Private collector URL, e.g. `http://collector:3100/internal/summary` |
 | `TRANSIT_SUMMARY_TOKEN` | Shared bearer secret; never use a `VITE_` prefix |
 | `TRANSIT_SUMMARY_CACHE_FILE` | Durable last-successful snapshot; Docker default `/app/data/transit-summary.json` |
+| `TRANSIT_SUMMARY_STALE_MS` | Positive integer milliseconds before an analysis is stale; default `2100000` (35 minutes). For daily processing, set `129600000` (36 hours). |
 | `PORT` | Public HTTP port, default `3000` |
 
 Mount a persistent volume at `/app/data` in Coolify. A container restart then restores the last successful snapshot even while the collector is unavailable. The private collector must be reachable on the internal network. Remove old MotherDuck credentials from the dashboard deployment. Credentials are not required in browser configuration.
+
+For a daily deployment, configure `TRANSIT_SUMMARY_STALE_MS=129600000` on the dashboard server. This changes the freshness warning, not collection or job scheduling. Last collection shows the current durable receipt clock separately from Last analysis, which uses the worker's `generated_at`. A live receipt or a later publication does not reset analysis age, and an older analysis does not turn a healthy collector into an outage.
+
+An optional envelope `processing` object records `mode: "daily"`, `job_id`, `service_date` (`YYYY-MM-DD`), `input_cutoff` and `completed_at` (ISO UTC timestamps), `worker_id`, `analysis_revision`, and `manifest_sha256` (64 hexadecimal characters). The public parser validates and preserves only these fields; extra coordinator fields are omitted. `completed_at` is server acceptance time. The existing source status panel labels the daily service date and puts input cutoff and acceptance time in expandable details. Job and worker identifiers remain provenance in the API and are not displayed as product diagnostics. Older envelopes without this metadata remain supported.
 
 For development, run `npm run dev:server` and `npm run dev` from this directory. Vite proxies `/api` to the local server on port 3000. `npm run build` creates the frontend; `npm start` serves it and the public API. The historical entry filename `server-motherduck.ts` is retained for deployment compatibility, but its implementation only starts the saved-summary server.
 

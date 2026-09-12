@@ -37,7 +37,12 @@ traffic/congestion data for buses is deferred to a later version.
 
 ## Run locally
 
-Use Node.js 20 or later. Copy `.env.example` to `.env`, set a random server-only
+For continuous server capture with automatic daily processing on either a
+desktop or Mac, see [DAILY_PROCESSING.md](DAILY_PROCESSING.md). That opt-in mode
+uses verified transfers, separate workstation databases and one server lease;
+the combined local mode below remains supported.
+
+Use Node.js 20.3 or later. Copy `.env.example` to `.env`, set a random server-only
 `TRANSIT_SUMMARY_TOKEN`, and choose a persistent `TRANSIT_DATA_DIR`. MotherDuck and
 Le Pass can be disabled while SSE collection continues.
 

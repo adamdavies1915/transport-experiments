@@ -2,11 +2,12 @@
 import 'dotenv/config';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { SummaryStore } from './server/summary-store';
+import { SummaryStore, summaryStaleMs } from './server/summary-store';
 import { createSummaryApp } from './server/summary-server';
 
 const store=new SummaryStore({url:process.env.TRANSIT_SUMMARY_URL,token:process.env.TRANSIT_SUMMARY_TOKEN,
-  cacheFile:process.env.TRANSIT_SUMMARY_CACHE_FILE??resolve('data/transit-summary.json')});
+  cacheFile:process.env.TRANSIT_SUMMARY_CACHE_FILE??resolve('data/transit-summary.json'),
+  staleMs:summaryStaleMs(process.env.TRANSIT_SUMMARY_STALE_MS)});
 await store.load();
 const app=createSummaryApp(store,fileURLToPath(new URL('./dist/',import.meta.url)));
 const server=app.listen(Number(process.env.PORT??3000),'0.0.0.0',()=>{
