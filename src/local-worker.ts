@@ -4,6 +4,7 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { DuckDBConnection } from '@duckdb/node-api';
 import { LocalJournal, DATA_DIR, diskBudget } from './local-journal';
+import { createWorkerJournalInput } from './local-worker-journal';
 import { openLocalStore, ingestBatch, query, sql, state, setState, loadObservations } from './local-store';
 import { bootstrapMotherDuck, cloudUpload, archiveDay, type CloudHealth } from './cloud-archive';
 import { refreshSchedule, processRecentDays, pendingOtpBackfillCount } from './otp-worker';
@@ -114,6 +115,8 @@ async function publish(c:DuckDBConnection,catalog:StudyCatalog){
 }
 async function main(){
   await journal.init();
+  const journalInput=await createWorkerJournalInput(journal,backfillMode);
+  if(backfillMode)console.log(`[Backfill] Fixed input: ${journalInput.snapshot_frames} journal frames present at startup; later arrivals remain pending`);
   if(!(await diskBudget(DATA_DIR)).allowed){console.error('[Worker] Disk ceiling reached; analysis/bootstrap paused');return;}
   const {c,db}=await openLocalStore(DATA_DIR);
   try{
@@ -128,11 +131,8 @@ async function main(){
     await publish(c,catalog);
     let lastAnalysis=0,lastCloud=0;
     while(!stopped){
-      for(const file of await journal.files()){
-        if(stopped)break;
-        try{const batch=await journal.read(file);await ingestBatch(c,batch);await journal.acknowledge(file);}
-        catch(e){console.error('[Journal ingest] Retained unacknowledged frame:',safeError(e));break;}
-      }
+      await journalInput.drain(batch=>ingestBatch(c,batch),{stopped:()=>stopped,
+        onError:e=>console.error('[Journal ingest] Retained unacknowledged frame:',safeError(e))});
       const now=Date.now();
       if(now-lastCloud>=Math.max(900_000,Number(process.env.UPLOAD_INTERVAL)||900_000)){
         try{await cloudUpload(c,DATA_DIR);}catch(e){console.error('[Cloud] Upload failed; local collection continues:',safeError(e));}lastCloud=now;

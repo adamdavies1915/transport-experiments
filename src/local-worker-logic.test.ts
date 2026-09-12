@@ -40,6 +40,61 @@ test('retained historical and normalized copies plus legacy points count one phy
   assert.equal(result.quality.reduce((n, q) => n + (q.excluded.legacy_receipt_overlap ?? 0), 0), 2);
   assert.deepEqual(analyzeStudyDay(catalog, DATE, { dense: [...dense].reverse(), historical: dense, legacy: [...legacy].reverse() }).passages, result.passages);
 });
+test('independent delayed recorder copies cannot replay a passage or double a detected wait', () => {
+  const dense = [observation(300, 0), ...[10, 20, 30].map(t => observation(500, 0, {
+    observation_id: `local-wait:${t}`, received_at: AT + t,
+  })), observation(700, 60)];
+  const historical = dense.map(o => ({ ...o, observation_id: `server:${o.observation_id}`,
+    received_at: o.received_at + 70, trip_id: 'legacy-trip-name', vehicle_id: '460' }));
+  const input = { dense, historical, legacy: [] }, before = JSON.stringify(input);
+  const local = analyzeStudyDay(catalog, DATE, { ...blank, dense });
+  const server = analyzeStudyDay(catalog, DATE, { ...blank, historical });
+  assert.equal(local.passages.length, 1); assert.equal(server.passages.length, 1);
+  assert.equal(local.encounters.length, 1); assert.equal(server.encounters.length, 1);
+  assert.equal(local.encounters[0].wait_events, 1); assert.equal(local.encounters[0].wait_seconds, 20);
+  assert.equal(server.encounters[0].wait_seconds, 20);
+  const result = analyzeStudyDay(catalog, DATE, input);
+  assert.deepEqual(result.passages, local.passages); assert.deepEqual(result.encounters, local.encounters);
+  assert.equal(result.quality.reduce((n, q) => n + (q.excluded.historical_dense_overlap ?? 0), 0), historical.length);
+  const reordered = analyzeStudyDay(catalog, DATE, { ...input, dense: [...dense].reverse(), historical: [...historical].reverse() });
+  assert.deepEqual(reordered.passages, result.passages); assert.deepEqual(reordered.encounters, result.encounters);
+  assert.equal(JSON.stringify(input), before, 'recorder selection must not rewrite raw evidence or clocks');
+});
+test('server snapshots fill long local recording gaps and entire missing dates without bridging recorder transitions', () => {
+  const dense = [observation(300, 0), observation(700, 60), observation(300, 600), observation(700, 660)];
+  const middle = [observation(300, 240), observation(700, 300)];
+  const historical = [...dense, ...middle, observation(800, 120)].map(o => ({ ...o,
+    observation_id: `server:${o.observation_id}`, received_at: o.received_at + 5 }));
+  const selected = prepareStudyDay(DATE, { ...blank, dense, historical });
+  const keptServer = selected.receipts.filter(o => o.observation_id.startsWith('server:'));
+  assert.deepEqual(keptServer.map(o => o.observed_at), [AT + 240, AT + 300]);
+  assert.equal(selected.excluded.historical_dense_overlap, 5, 'include the conservative 90-second transition margin');
+  const result = analyzeStudyDay(catalog, DATE, { ...blank, dense, historical });
+  assert.equal(result.passages.length, 3); assert.equal(result.encounters.length, 3);
+  const nextDate = '2026-09-09';
+  const nextDay = middle.map(o => ({ ...o, observed_at: o.observed_at! + 86400, received_at: o.received_at + 86400 }));
+  const recovered = analyzeStudyDay(catalog, nextDate, { ...blank, dense, historical: nextDay });
+  assert.equal(recovered.passages.length, 1); assert.equal(recovered.encounters.length, 1);
+  assert.ok(recovered.quality.every(q => q.date === nextDate));
+});
+test('recorder precedence is source, route, vehicle and provider-day specific, with valid local clocks required', () => {
+  const historical = [observation(300, 0, { observation_id: 'server' })];
+  for (const patch of [
+    { source: 'lepass' as const, vehicle_id: 'lepass:460' },
+    { route_id: '47' }, { provider_vehicle_id: '461', vehicle_id: 'sse:461' },
+    { received_at: AT + 121 }, { received_at: AT - 1 },
+  ]) {
+    const dense = [observation(300, 0, { observation_id: 'local', ...patch })];
+    assert.ok(prepareStudyDay(DATE, { ...blank, dense, historical }).receipts.some(o => o.observation_id === 'server'));
+  }
+  const midnight = Date.parse('2026-09-09T05:00:00Z') / 1000;
+  const server = observation(300, 0, { observation_id: 'server', observed_at: midnight - 30, received_at: midnight - 20 });
+  const local = { ...server, observation_id: 'local', received_at: midnight + 10 };
+  const selected = prepareStudyDay(DATE, { ...blank, dense: [local], historical: [server] });
+  assert.deepEqual(selected.receipts.map(o => o.observation_id), ['local']);
+  assert.equal(selected.receipts[0].received_at, midnight + 10);
+  assert.equal(prepareStudyDay('2026-09-09', { ...blank, dense: [local], historical: [server] }).receipts.length, 0);
+});
 test('overlap ranges sort provider time, ignore trip renaming and never suppress a different source', () => {
   const dense = [observation(600, 240), observation(300, 0), observation(400, 60)];
   const legacy = [observation(320, 20, { trip_id: null }), observation(650, 250), observation(900, 900)];
@@ -96,8 +151,14 @@ test('SQL revisions use local provider dates and invalidate the preceding day on
     assert.equal((await pending()).find(d => d.date === '2026-09-07')!.revision, prior);
     await c.run("INSERT INTO streetcar_snapshots VALUES ('2026-09-08T04:59:30Z','2026-09-08T05:00:05Z')");
     const after = await pending(); assert.notEqual(after.find(d => d.date === '2026-09-07')!.revision, prior);
+    assert.ok(after.find(d => d.date === '2026-09-07')!.revision.startsWith('historical-local-precedence-v1:'));
+    assert.ok(!after.find(d => d.date === '2026-09-08')!.revision.startsWith('historical-local-precedence-v1:'));
     for (const d of after) await c.run(`INSERT INTO study_dates VALUES ('${d.date}','${d.revision}','method')`);
     assert.equal((await pending()).length, 0);
+    // A deployment with previously imported overlap must rerun that date, but
+    // unchanged dates with only one recorder retain their accepted revision.
+    await c.run("UPDATE study_dates SET source_revision=replace(source_revision,'historical-local-precedence-v1:','') WHERE date='2026-09-07'");
+    assert.deepEqual((await pending()).map(d => d.date), ['2026-09-07']);
     assert.equal((await c.runAndReadAll("SELECT regexp_matches('not  in service','not\\s+in\\s+service') AS excluded")).getRowObjectsJS()[0].excluded, true);
   } finally { c.closeSync(); db.closeSync(); }
 });
