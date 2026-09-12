@@ -20,6 +20,7 @@ RUN npm ci --omit=dev
 COPY --chown=node:node tsconfig.json ./
 COPY --chown=node:node src ./src
 COPY --chown=node:node dashboard/src ./dashboard/src
+COPY --chown=node:node scripts/import-server-history.ts ./scripts/import-server-history.ts
 RUN mkdir -p /app/data && chown node:node /app/data
 ENV TRANSIT_DATA_DIR=/app/data PORT=3100
 EXPOSE 3100

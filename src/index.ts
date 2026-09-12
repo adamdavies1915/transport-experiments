@@ -14,6 +14,11 @@ import type { CollectionBatch, StudyObservation } from './observation-types';
 import { safeError } from './log-safety';
 import type { LePassHealth } from './lepass-collector';
 import { mergeSourceQuality, PersistedSourceClocks } from './source-quality';
+import { CaptureExchange } from './capture-exchange';
+import { ProcessingCoordinator } from './processing-coordinator';
+import { processingRequestHandler } from './processing-server';
+import { processingAnalysisRevision } from './processing-revision';
+import { sealCaptureFrontier } from './capture-frontier';
 
 const SSE_URL=process.env.SSE_URL||'https://nolatransit.fly.dev/sse';
 const journal=new LocalJournal(DATA_DIR);
@@ -26,6 +31,16 @@ let restartTimer:NodeJS.Timeout|undefined, reconnectTimer:NodeJS.Timeout|undefin
 let lepassStop:(()=>void)|undefined;
 let lepassHealth:LePassHealth|{status:'unavailable';message:string}={status:'unavailable',message:'LePass is starting'};
 const routes=new Set<string>();
+const processingServer=process.env.PROCESSING_SERVER_ENABLED==='true';
+let exchange:CaptureExchange|undefined,coordinator:ProcessingCoordinator|undefined;
+let processingHandler:ReturnType<typeof processingRequestHandler>|undefined;
+let maintenance:Promise<unknown>|undefined,scheduleRefresh:Promise<void>|undefined,lastScheduleRefresh=0;
+
+function sealCapture(frontier=false):Promise<unknown>{
+  if(!exchange)return Promise.resolve();
+  if(maintenance)return frontier?maintenance.then(()=>sealCapture(true)):maintenance;
+  return maintenance=(frontier?sealCaptureFrontier(exchange,journal):exchange.seal(journal)).finally(()=>{maintenance=undefined;});
+}
 
 async function loadRoutes(){
   try {
@@ -40,6 +55,8 @@ async function loadRoutes(){
     const rows=parse(strFromU8(zip['routes.txt']),{columns:true,bom:true,skip_empty_lines:true}) as Record<string,string>[];
     for(const r of rows)if(['0','3'].includes(r.route_type))routes.add(r.route_short_name);
     await atomicFile(join(DATA_DIR,'current-gtfs.zip'),bytes);
+    if(exchange)await exchange.recordSchedule(bytes,process.env.GTFS_URL||'https://www.norta.com/RTA/media/GTFS/GTFS.zip',new Date().toISOString());
+    lastScheduleRefresh=Date.now();
   }catch(e){console.error('[Routes] Using bundled validated routes:',safeError(e));}
   if(!routes.size)throw new Error('No validated RTA bus/streetcar routes available');
 }
@@ -86,10 +103,12 @@ function authorized(value:string|undefined){
   const a=Buffer.from(value.slice(7)),b=Buffer.from(token);return a.length===b.length&&timingSafeEqual(a,b);
 }
 const server=createServer(async(req,res)=>{
+  try{
   res.setHeader('Content-Type','application/json');res.setHeader('Cache-Control','no-store');
+  if(processingHandler&&await processingHandler(req,res))return;
   if(req.url==='/api/health'||req.url==='/health'){res.statusCode=paused?503:200;res.end(JSON.stringify({status:paused?'paused':'ready',last_persisted_at:lastPersisted?new Date(lastPersisted).toISOString():null}));return;}
   if(!authorized(req.headers.authorization)){res.statusCode=401;res.end('{"error":"Authentication required"}');return;}
-  if(req.url==='/internal/health'){res.end(JSON.stringify({paused,frames,pending,errors,analysis:{enabled:process.env.LOCAL_ANALYSIS_ENABLED!=='false',running:!!worker},last_received_at:lastReceived?new Date(lastReceived).toISOString():null,last_persisted_at:lastPersisted?new Date(lastPersisted).toISOString():null,lepass:lepassHealth,disk:await diskBudget(DATA_DIR)}));return;}
+  if(req.url==='/internal/health'){res.end(JSON.stringify({paused,frames,pending,errors,analysis:{enabled:process.env.LOCAL_ANALYSIS_ENABLED!=='false',running:!!worker},processing:coordinator?await coordinator.status():undefined,last_received_at:lastReceived?new Date(lastReceived).toISOString():null,last_persisted_at:lastPersisted?new Date(lastPersisted).toISOString():null,lepass:lepassHealth,disk:await diskBudget(DATA_DIR)}));return;}
   if(req.url!=='/internal/summary'){res.statusCode=404;res.end('{"error":"Not found"}');return;}
   try{
     const saved=JSON.parse(await readFile(join(DATA_DIR,'summary.json'),'utf8'));
@@ -97,6 +116,10 @@ const server=createServer(async(req,res)=>{
     saved.source_quality.collection={paused,pending_frames:pending,last_received_at:lastReceived?new Date(lastReceived).toISOString():null};
     res.end(JSON.stringify(saved));
   }catch{res.statusCode=503;res.end('{"error":"The first local analysis snapshot is being prepared"}');}
+  }catch(error){
+    console.error('[Collector HTTP]',safeError(error));
+    if(!res.headersSent){res.statusCode=503;res.end('{"error":"Collector status temporarily unavailable"}');}else res.destroy();
+  }
 });
 async function startLePass(){
   // Kept optional during bootstrap; an absent or invalid LePass configuration never blocks SSE.
@@ -109,18 +132,37 @@ async function startLePass(){
 let timer:NodeJS.Timeout;
 async function shutdown(){
   if(stopping)return;stopping=true;clearInterval(timer);clearTimeout(restartTimer);clearTimeout(reconnectTimer);es?.close();lepassStop?.();
-  await journal.drain();server.close();worker?.kill('SIGTERM');
+  await journal.drain();
+  await Promise.allSettled([maintenance,scheduleRefresh]);
+  server.close();worker?.kill('SIGTERM');
   const deadline=setTimeout(()=>process.exit(0),20_000);deadline.unref();
   if(worker)worker.once('exit',()=>process.exit(0));else process.exit(0);
 }
 async function main(){
   await mkdir(DATA_DIR,{recursive:true,mode:0o700});await journal.init();
+  if(processingServer){
+    if(process.env.LOCAL_ANALYSIS_ENABLED!=='false')throw new Error('Processing server must use LOCAL_ANALYSIS_ENABLED=false; workstation workers own the databases');
+    const baseline=process.env.PROCESSING_BASELINE_ID;
+    if(!baseline||!/^[a-f0-9]{64}$/.test(baseline))throw new Error('Set PROCESSING_BASELINE_ID from the verified workstation seed');
+    exchange=new CaptureExchange(DATA_DIR);await exchange.init();
+    coordinator=new ProcessingCoordinator({data_dir:DATA_DIR,baseline_id:baseline,analysis_revision:await processingAnalysisRevision(),
+      first_service_date:process.env.PROCESSING_FIRST_SERVICE_DATE,due_hour:Number(process.env.PROCESSING_DUE_HOUR||6),lease_seconds:Number(process.env.PROCESSING_LEASE_SECONDS||900)});
+    processingHandler=processingRequestHandler({exchange,coordinator,token:process.env.TRANSIT_PROCESSING_TOKEN||'',seal:()=>sealCapture(true)});
+    await coordinator.status();
+  }
   server.listen(Number(process.env.PORT)||3100,'0.0.0.0');
   await loadRoutes();supervise();
   if((await diskBudget(DATA_DIR)).allowed){connect();await startLePass();}else pause('Insufficient local disk headroom');
   timer=setInterval(()=>{
     if(!paused&&Date.now()-lastReceived>STALE_MS)connect();
     console.log(`[Collection] frames=${frames} pending=${pending} paused=${paused} errors=${errors}`);
+    if(exchange){
+      void sealCapture().catch(e=>console.error('[Capture packaging] Original data retained:',safeError(e)));
+      if(!scheduleRefresh&&Date.now()-lastScheduleRefresh>6*3600_000){
+        lastScheduleRefresh=Date.now()-5.5*3600_000;
+        scheduleRefresh=loadRoutes().catch(e=>console.error('[Capture schedule]',safeError(e))).finally(()=>{scheduleRefresh=undefined;});
+      }
+    }
   },60_000);
   process.on('SIGTERM',()=>void shutdown());process.on('SIGINT',()=>void shutdown());
 }

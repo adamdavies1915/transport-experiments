@@ -1,5 +1,10 @@
 # Transit pipeline deployment
 
+The optional [daily workstation mode](DAILY_PROCESSING.md) runs only capture and
+summary serving on this server. It keeps the historical database on the desktop
+and Mac, and adds a private transfer/job API. Follow that guide instead of copying
+the full database to the server. The combined deployment below remains supported.
+
 Deploy the collector and dashboard from the same revision. The collector owns
 local DuckDB and a durable journal; the dashboard serves saved summaries. R2 is
 not required. The full storage and research contract is in

@@ -117,9 +117,11 @@ async function main(){
   await journal.init();
   const journalInput=await createWorkerJournalInput(journal,backfillMode);
   if(backfillMode)console.log(`[Backfill] Fixed input: ${journalInput.snapshot_frames} journal frames present at startup; later arrivals remain pending`);
-  if(!(await diskBudget(DATA_DIR)).allowed){console.error('[Worker] Disk ceiling reached; analysis/bootstrap paused');return;}
+  if(!(await diskBudget(DATA_DIR)).allowed)throw new Error('Disk ceiling reached; analysis/bootstrap paused');
   const {c,db}=await openLocalStore(DATA_DIR);
+  const startedAt=new Date().toISOString();let completedBackfill=false;
   try{
+    if(backfillMode)await setState(c,'last_backfill_run',{job_id:process.env.PROCESSING_JOB_ID??null,started_at:startedAt,completed:false});
     const catalog=await loadCatalog(),legacyNetwork=await readStreetcarNetwork();
     const legacyRevision=[legacyNetwork.version,LEGACY_METHOD.name,WAIT_METHOD.name,'atomic-refresh-v1'].join(':');
     await restoreImportedStudyKeys(c);
@@ -138,7 +140,8 @@ async function main(){
         try{await cloudUpload(c,DATA_DIR);}catch(e){console.error('[Cloud] Upload failed; local collection continues:',safeError(e));}lastCloud=now;
       }
       if(backfillMode||now-lastAnalysis>=Math.max(60_000,Number(process.env.ANALYSIS_INTERVAL)||900_000)){
-        try{await refreshSchedule(c);}catch(e){console.error('[OTP] Schedule refresh unavailable; using retained schedules:',safeError(e));}
+        const analysisStarted=performance.now();
+        if(process.env.OTP_SCHEDULE_REFRESH!=='false')try{await refreshSchedule(c);}catch(e){console.error('[OTP] Schedule refresh unavailable; using retained schedules:',safeError(e));}
         let otpFailure:string|null=null;
         try{await processRecentDays(c);}catch(e){otpFailure=safeError(e);console.error('[OTP] Local cycle:',otpFailure);}
         const days=await pendingStudyDays(c,catalog);
@@ -166,13 +169,17 @@ async function main(){
           const failed=await failedLegacyStudyDays(c,legacyRevision);
           if(failed.length)throw new Error(`Legacy backfill remains incomplete for ${failed.join(', ')}`);
           const otpPending=await pendingOtpBackfillCount(c);
-          if(!otpPending)break;
+          if(!otpPending){completedBackfill=true;break;}
           if(otpFailure)throw new Error(`OTP backfill still has ${otpPending} requested dates pending: ${otpFailure}`);
         }
         lastAnalysis=Date.now();
+        console.log(`[Analysis timing] ${Math.round(performance.now()-analysisStarted)} ms; DuckDB threads=${process.env.LOCAL_DB_THREADS||'2'}, memory=${process.env.LOCAL_DB_MEMORY||'1GB'}`);
       }
-      await sleep(5000);
+      // Continuous collection polls for new input. A finite backfill already
+      // knows its queued work, so process its next batch without polling delays.
+      if(!backfillMode)await sleep(5000);
     }
+    if(backfillMode&&completedBackfill&&!stopped)await setState(c,'last_backfill_run',{job_id:process.env.PROCESSING_JOB_ID??null,started_at:startedAt,completed:true,completed_at:new Date().toISOString()});
     await c.run('CHECKPOINT');
   }finally{c.closeSync();db.closeSync();}
 }

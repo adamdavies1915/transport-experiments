@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+  <key>Label</key><string>dev.cargobay.transit-daily</string>
+  <key>ProgramArguments</key><array>
+    <string>/ABSOLUTE/PATH/TO/node</string><string>--import</string><string>tsx</string><string>scripts/process-daily.ts</string>
+  </array>
+  <key>WorkingDirectory</key><string>/Users/USER/projects/transport-experiments</string>
+  <key>EnvironmentVariables</key><dict>
+    <key>DOTENV_CONFIG_PATH</key><string>/Users/USER/.config/transit-processing.env</string>
+  </dict>
+  <key>RunAtLoad</key><true/>
+  <key>StartInterval</key><integer>900</integer>
+  <key>StandardOutPath</key><string>/Users/USER/Library/Logs/transit-daily.log</string>
+  <key>StandardErrorPath</key><string>/Users/USER/Library/Logs/transit-daily-error.log</string>
+</dict></plist>

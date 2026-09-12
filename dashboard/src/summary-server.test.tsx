@@ -8,12 +8,58 @@ import {IncomingMessage,ServerResponse} from 'node:http';
 import {gunzipSync} from 'node:zlib';
 import {renderToStaticMarkup} from 'react-dom/server';
 import SourceQuality from './SourceQuality';
-import {SummaryStore,parseSummary} from '../server/summary-store';
+import {SummaryStore,parseSummary,summaryStaleMs} from '../server/summary-store';
 import {createSummaryApp} from '../server/summary-server';
-import type {TransitSummaryEnvelope} from './summary-data';
+import type {SummaryProcessing,TransitSummaryEnvelope} from './summary-data';
 import {rowData,rowCell,signalData,signalCell} from './study-fixtures';
 import {buildLegacySummary} from './legacy-summary';
 const envelope:TransitSummaryEnvelope={schema_version:1,generated_at:'2026-09-03T12:00:00Z',source_quality:{status:'ready',sources:[{id:'sse',label:'Independent SSE',status:'ready'}]},row_study:rowData([rowCell(),rowCell({source:'lepass'})]),signal_study:signalData([signalCell(),signalCell({source:'lepass'})]),legacy:{otp:{status:'not_ready',days:[]}}};
+const processing:SummaryProcessing={mode:'daily',job_id:'daily-2026-09-02',service_date:'2026-09-02',input_cutoff:'2026-09-03T11:00:00Z',completed_at:'2026-09-03T13:00:00Z',worker_id:'desktop-worker',analysis_revision:'revision-1',manifest_sha256:'a'.repeat(64)};
+test('daily provenance validates public fields and omits extra coordinator data',()=>{
+  const parsed=parseSummary({...envelope,processing:{...processing,token:'private-token',local_path:'/private/coordinator',fence:3}});
+  assert.deepEqual(parsed.processing,processing);assert.doesNotMatch(JSON.stringify(parsed),/private-token|local_path|fence/);
+  assert.equal(parseSummary(envelope).processing,undefined);
+  for(const patch of [{mode:'hourly'},{job_id:''},{worker_id:'private\nheader'},{analysis_revision:'x'.repeat(201)},{service_date:'2026-02-30'},{input_cutoff:'not a timestamp'},{completed_at:'2026-02-30T13:00:00Z'},{manifest_sha256:'wrong'}]){
+    assert.throws(()=>parseSummary({...envelope,processing:{...processing,...patch}}),/processing metadata/);
+  }
+  assert.throws(()=>parseSummary({...envelope,processing:null}),/processing metadata/);
+});
+test('analysis freshness configuration retains the default and rejects invalid intervals',()=>{
+  assert.equal(summaryStaleMs(undefined),35*60000);
+  assert.equal(summaryStaleMs('129600000'),36*3600000);
+  for(const value of ['', '0', '-1', 'NaN', 'Infinity', '0.5', '9007199254740992'])assert.throws(()=>summaryStaleMs(value),/positive integer/);
+  assert.throws(()=>new SummaryStore({cacheFile:'/tmp/unused-dashboard-summary.json',staleMs:NaN}),/positive integer/);
+});
+test('daily analysis stays fresh for the configured window while live clocks remain separate',async()=>{
+  const directory=await mkdtemp(join(tmpdir(),'dashboard-daily-summary-'));
+  const analysisAt=Date.parse(envelope.generated_at);let now=analysisAt+24*3600000;
+  const receiptAt=new Date(now-1000).toISOString(),providerAt=new Date(now-60000).toISOString();
+  const daily:TransitSummaryEnvelope={...envelope,processing,source_quality:{status:'ready',sources:[{id:'sse',label:'Independent SSE',status:'ready',last_received_at:receiptAt,last_provider_at:providerAt,observations:45,from:'2026-09-02T00:00:00Z',to:processing.input_cutoff}]}};
+  const cacheFile=join(directory,'summary.json');
+  const store=new SummaryStore({url:'http://collector/internal/summary',token:'private-token',cacheFile,staleMs:summaryStaleMs('129600000'),now:()=>now,fetcher:async()=>Response.json(daily)});
+  try{
+    await store.refresh();assert.equal(store.status.stale,false);assert.deepEqual(store.status.processing,processing);
+    const defaultWindow=new SummaryStore({cacheFile,now:()=>now});await defaultWindow.load();assert.equal(defaultWindow.status.stale,true);
+    const restarted=new SummaryStore({cacheFile,staleMs:36*3600000,now:()=>now});await restarted.load();assert.equal(restarted.status.stale,false);assert.deepEqual(restarted.status.processing,processing);
+    const app=createSummaryApp(store);
+    const publicData=await new Promise<Record<string,unknown>>(resolve=>{
+      const req=new IncomingMessage(new Socket());req.url='/api/source-quality';req.method='GET';req.headers={};const res=new ServerResponse(req);
+      res.end=((chunk:unknown)=>{resolve(JSON.parse(String(chunk)));return res;}) as typeof res.end;app(req,res);
+    });
+    assert.deepEqual(publicData.sources,daily.source_quality!.sources);assert.deepEqual(publicData.snapshot,store.status);
+    const html=renderToStaticMarkup(<SourceQuality data={{...daily.source_quality!,snapshot:store.status}}/>);
+    assert.match(html,/last collection/);assert.match(html,/Last analysis/);assert.match(html,/Daily processing · service date 2026-09-02/);
+    assert.match(html,/dateTime="2026-09-03T12:00:00Z"/);assert.match(html,/Inputs collected through/);assert.match(html,/Result accepted/);
+    assert.match(html,/Saved analysis snapshot: 45 observation receipts/);assert.doesNotMatch(html,/older than expected|refresh is unavailable|private-token|desktop-worker/);
+    now=analysisAt+36*3600000;assert.equal(store.status.stale,false);
+    now++;assert.equal(store.status.stale,true);
+    // Freshly fetching the same analysis cannot reset its age or degrade source health.
+    await store.refresh();assert.equal(store.status.stale,true);assert.equal(store.snapshot?.source_quality?.sources[0].status,'ready');
+    assert.equal(store.snapshot?.source_quality?.sources[0].last_received_at,receiptAt);
+    const staleHtml=renderToStaticMarkup(<SourceQuality data={{...daily.source_quality!,snapshot:store.status}}/>);
+    assert.match(staleHtml,/older than expected/);assert.match(staleHtml,/Independent SSE<\/strong> · ready/);
+  }finally{await rm(directory,{recursive:true,force:true});}
+});
 test('private refresh is durable and failure or invalid data preserves the last good summary',async()=>{
   const directory=await mkdtemp(join(tmpdir(),'dashboard-summary-'));let calls=0;let mode='good';
   const store=new SummaryStore({url:'http://collector/internal/summary',token:'test-server-only-secret',cacheFile:join(directory,'summary.json'),now:()=>Date.parse(envelope.generated_at),fetcher:async(_url,options)=>{calls++;assert.equal((options?.headers as Record<string,string>).Authorization,'Bearer test-server-only-secret');return mode==='error'?new Response('Internal exception with private details',{status:500}):Response.json(mode==='invalid'?{schema_version:99}:envelope);}});

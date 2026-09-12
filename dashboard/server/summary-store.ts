@@ -1,24 +1,17 @@
 import { mkdir, open, readFile, rename } from 'node:fs/promises';
 import { dirname } from 'node:path';
 import type { SummarySnapshotStatus, TransitSummaryEnvelope } from '../src/summary-data';
+import { parseSummary } from '../src/summary-validation';
+export { parseSummary } from '../src/summary-validation';
 
 const MAX_BYTES = 64 * 1024 * 1024;
+export const DEFAULT_SUMMARY_STALE_MS = 35 * 60000;
 const object = (value: unknown): value is Record<string, unknown> => value != null && typeof value === 'object' && !Array.isArray(value);
-/** Accept only the public envelope; tokens and collector configuration never belong here. */
-export function parseSummary(value: unknown): TransitSummaryEnvelope {
-  if (!object(value) || value.schema_version !== 1 || typeof value.generated_at !== 'string' || !Number.isFinite(Date.parse(value.generated_at))) throw new Error('Invalid summary envelope');
-  for (const key of ['source_quality', 'row_study', 'signal_study', 'legacy']) if (value[key] != null && !object(value[key])) throw new Error('Invalid summary section');
-  for (const key of ['row_study', 'signal_study']) {
-    const study = value[key];
-    if (object(study) && (!Array.isArray(study.cells) || !object(study.network) || !Array.isArray(study.network.paths) || !Array.isArray(study.network.sites) || !Array.isArray(study.network.row_sections) || !Array.isArray(study.network.limitations) || !Array.isArray(study.limitations) || !Array.isArray(study.quality))) throw new Error('Invalid study section');
-    if (object(study) && study.coverage_cells != null && !Array.isArray(study.coverage_cells)) throw new Error('Invalid study coverage');
-  }
-  if (object(value.source_quality) && !Array.isArray(value.source_quality.sources)) throw new Error('Invalid source quality');
-  return { schema_version: 1, generated_at: value.generated_at,
-    source_quality: value.source_quality as TransitSummaryEnvelope['source_quality'],
-    row_study: value.row_study as TransitSummaryEnvelope['row_study'],
-    signal_study: value.signal_study as TransitSummaryEnvelope['signal_study'],
-    legacy: value.legacy as TransitSummaryEnvelope['legacy'] };
+export function summaryStaleMs(value: string | undefined): number {
+  if (value === undefined) return DEFAULT_SUMMARY_STALE_MS;
+  const milliseconds = Number(value);
+  if (!/^\d+$/.test(value) || !Number.isSafeInteger(milliseconds) || milliseconds <= 0) throw new Error('TRANSIT_SUMMARY_STALE_MS must be a positive integer in milliseconds');
+  return milliseconds;
 }
 export interface SummaryStoreOptions {
   url?: string; token?: string; cacheFile: string;
@@ -33,13 +26,16 @@ export class SummaryStore {
   private error: string | null = null;
   private pending: Promise<void> | null = null;
   private timer?: ReturnType<typeof setInterval>;
-  constructor(private options: SummaryStoreOptions) {}
+  constructor(private options: SummaryStoreOptions) {
+    if (options.staleMs !== undefined && (!Number.isSafeInteger(options.staleMs) || options.staleMs <= 0)) throw new Error('Summary stale interval must be a positive integer in milliseconds');
+  }
   get snapshot() { return this.value; }
   get status(): SummarySnapshotStatus {
     const now = (this.options.now ?? Date.now)();
     return { generated_at: this.value?.generated_at ?? null, received_at: this.receivedAt, origin: this.origin,
-      stale: !this.value || now - Date.parse(this.value.generated_at) > (this.options.staleMs ?? 35 * 60000) || this.error != null,
-      refresh_error: this.error };
+      stale: !this.value || now - Date.parse(this.value.generated_at) > (this.options.staleMs ?? DEFAULT_SUMMARY_STALE_MS) || this.error != null,
+      refresh_error: this.error,
+      ...(this.value?.processing ? { processing: this.value.processing } : {}) };
   }
   async load() {
     try {

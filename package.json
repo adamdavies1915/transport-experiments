@@ -13,7 +13,8 @@
     "otp:validate": "tsx src/otp-validation.ts",
     "streetcars:backfill": "tsx src/streetcar-worker.ts",
     "study:backfill": "node --import tsx src/local-worker.ts --backfill",
-    "history:import": "node --import tsx scripts/import-server-history.ts"
+    "history:import": "node --import tsx scripts/import-server-history.ts",
+    "process:daily": "node --import tsx scripts/process-daily.ts"
   },
   "dependencies": {
     "@duckdb/node-api": "^1.5.4-r.1",
@@ -30,6 +31,6 @@
     "typescript": "^5.7.2"
   },
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=20.3.0"
   }
 }

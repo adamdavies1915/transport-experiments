@@ -39,9 +39,21 @@ export interface LegacySummary {
   errors?: Record<string, string>;
 }
 /** Collector-produced public data only. Authentication stays outside this envelope. */
+export interface SummaryProcessing {
+  mode: 'daily';
+  job_id: string;
+  service_date: string;
+  input_cutoff: string;
+  /** Server acceptance time; generated_at remains the analysis generation time. */
+  completed_at: string;
+  worker_id: string;
+  analysis_revision: string;
+  manifest_sha256: string;
+}
 export interface TransitSummaryEnvelope {
   schema_version: 1;
   generated_at: string;
+  processing?: SummaryProcessing;
   source_quality?: SourceQualityData;
   row_study?: RowStudyData;
   signal_study?: SignalStudyData;
@@ -53,4 +65,5 @@ export interface SummarySnapshotStatus {
   origin: 'collector' | 'disk' | 'none';
   stale: boolean;
   refresh_error: string | null;
+  processing?: SummaryProcessing;
 }

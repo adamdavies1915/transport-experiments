@@ -1,0 +1,11 @@
+[Unit]
+Description=Claim and process the daily transit observation job
+After=network-online.target
+
+[Service]
+Type=oneshot
+# Replace paths for this workstation; use an absolute Node 20+ executable.
+WorkingDirectory=/home/USER/projects/transport-experiments
+EnvironmentFile=/home/USER/.config/transit-processing.env
+ExecStart=/usr/bin/node --import tsx scripts/process-daily.ts
+TimeoutStartSec=infinity

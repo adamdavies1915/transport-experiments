@@ -1,0 +1,11 @@
+[Unit]
+Description=Check for due transit work every 15 minutes
+
+[Timer]
+OnStartupSec=1min
+OnCalendar=*:0/15
+Persistent=true
+Unit=transit-daily.service
+
+[Install]
+WantedBy=timers.target
