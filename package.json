@@ -8,11 +8,12 @@
     "start": "tsx src/index.ts",
     "dev": "tsx watch src/index.ts",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test src/*.test.ts",
+    "test": "tsx --test src/*.test.ts scripts/import-server-history.test.ts",
     "otp:backfill": "tsx src/otp-worker.ts",
     "otp:validate": "tsx src/otp-validation.ts",
     "streetcars:backfill": "tsx src/streetcar-worker.ts",
-    "study:backfill": "node --import tsx src/local-worker.ts --backfill"
+    "study:backfill": "node --import tsx src/local-worker.ts --backfill",
+    "history:import": "node --import tsx scripts/import-server-history.ts"
   },
   "dependencies": {
     "@duckdb/node-api": "^1.5.4-r.1",

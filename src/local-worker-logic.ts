@@ -15,6 +15,29 @@ const sourceDate = (o: StudyObservation) => {
 };
 const canonicalVehicle = (o: StudyObservation): StudyObservation => ({ ...o,
   vehicle_id: o.provider_vehicle_id ? `${o.source}:${o.provider_vehicle_id}` : o.vehicle_id });
+const RECORDER_PRECEDENCE_REVISION = 'historical-local-precedence-v1';
+/** A complete GPS interval cannot span more than 90 seconds. The same margin
+ * around recorder transitions avoids reconstructing an overlapping trajectory
+ * from delayed copies at either edge. Long gaps remain available to history. */
+const COVERAGE_GAP_SECONDS = 90;
+function providerCoverage(observations: StudyObservation[]) {
+  const times = new Map<string, number[]>();
+  for (const o of observations) if (o.source === 'sse' && o.vehicle_id && o.observed_at != null && Number.isFinite(o.observed_at)) {
+    const key = identity(o), values = times.get(key) ?? []; values.push(o.observed_at); times.set(key, values);
+  }
+  const ranges = new Map<string, Array<[number, number]>>();
+  for (const [key, values] of times) {
+    const merged: Array<[number, number]> = [];
+    for (const at of values.sort((a, b) => a - b)) {
+      const last = merged.at(-1);
+      if (last && at - last[1] <= COVERAGE_GAP_SECONDS) last[1] = at; else merged.push([at, at]);
+    }
+    ranges.set(key, merged);
+  }
+  return ranges;
+}
+const covered = (o: StudyObservation, ranges: ReturnType<typeof providerCoverage>) => o.observed_at != null &&
+  (ranges.get(identity(o)) ?? []).some(([a, b]) => o.observed_at! >= a - COVERAGE_GAP_SECONDS && o.observed_at! <= b + COVERAGE_GAP_SECONDS);
 
 export interface LegacyStudyRow {
   vid: unknown; route: unknown; trip: unknown; instant: unknown; wall_time: unknown;
@@ -38,28 +61,28 @@ export interface StudyDayInputs { historical: StudyObservation[]; dense: StudyOb
 export function prepareStudyDay(date: string, input: StudyDayInputs) {
   const observed = new Map<string, StudyObservation>();
   const duplicateReceipts = { sse: 0, lepass: 0 };
-  // The normalized ledger wins if the same receipt also exists in the old table.
-  for (const original of [...input.historical, ...input.dense]) {
-    const o = canonicalVehicle(original);
-    if (sourceDate(o) !== date) continue;
-    const key = JSON.stringify([o.source, o.observation_id]);
-    if (observed.has(key)) duplicateReceipts[o.source]++;
-    observed.set(key, o);
+  const dense = input.dense.map(canonicalVehicle).filter(o => sourceDate(o) === date);
+  const denseKeys = new Set(dense.map(o => JSON.stringify([o.source, o.observation_id])));
+  // Independent server/local collectors give the same physical SSE evidence
+  // different receipt IDs. Prefer the normalized local recording over its
+  // continuous provider-time coverage; retain server snapshots in true gaps.
+  // Invalid local provider clocks must not suppress valid historical evidence.
+  const localCoverage = providerCoverage(dense.filter(o => o.observed_at != null &&
+    Number.isFinite(o.received_at) && o.received_at >= o.observed_at && o.received_at - o.observed_at <= 120));
+  let overlappingHistorical = 0;
+  for (const [historical, rows] of [[true, input.historical], [false, dense]] as const) {
+    for (const original of rows) {
+      const o = canonicalVehicle(original);
+      if (sourceDate(o) !== date) continue;
+      const key = JSON.stringify([o.source, o.observation_id]);
+      // Preserve exact-receipt diagnostics before the local copy replaces it.
+      if (historical && !denseKeys.has(key) && covered(o, localCoverage)) { overlappingHistorical++; continue; }
+      if (observed.has(key)) duplicateReceipts[o.source]++;
+      observed.set(key, o);
+    }
   }
   const receipts = [...observed.values()].sort((a, b) => a.received_at - b.received_at || a.observation_id.localeCompare(b.observation_id));
-  const times = new Map<string, number[]>();
-  for (const o of receipts) if (o.source === 'sse' && o.vehicle_id && o.observed_at != null && Number.isFinite(o.observed_at)) {
-    const key = identity(o), values = times.get(key) ?? []; values.push(o.observed_at); times.set(key, values);
-  }
-  const ranges = new Map<string, Array<[number, number]>>();
-  for (const [key, values] of times) {
-    const merged: Array<[number, number]> = [];
-    for (const at of values.sort((a, b) => a - b)) {
-      const last = merged.at(-1);
-      if (last && at - last[1] <= 90) last[1] = at; else merged.push([at, at]);
-    }
-    ranges.set(key, merged);
-  }
+  const ranges = providerCoverage(receipts);
   let overlappingLegacy = 0, duplicateLegacy = 0, ambiguousLegacy = 0;
   const samples = new Map<string, StudyObservation[]>();
   for (const original of input.legacy) {
@@ -67,7 +90,7 @@ export function prepareStudyDay(date: string, input: StudyDayInputs) {
     if (sourceDate(o) !== date || o.observed_at == null) continue;
     // Trip IDs may gain a GTFS mapping in the newer ledger. Vehicle/time overlap
     // still identifies duplicate physical evidence, so trip is deliberately absent.
-    if ((ranges.get(identity(o)) ?? []).some(([a, b]) => o.observed_at! >= a - 90 && o.observed_at! <= b + 90)) {
+    if (covered(o, ranges)) {
       overlappingLegacy++; continue;
     }
     const key = JSON.stringify([identity(o), o.observed_at]), list = samples.get(key) ?? [];
@@ -89,6 +112,7 @@ export function prepareStudyDay(date: string, input: StudyDayInputs) {
     providerOnly.push({ ...rows.sort((a, b) => a.observation_id.localeCompare(b.observation_id))[0], speed_mph: null });
   }
   return { receipts, provider_only: providerOnly, duplicate_receipts: duplicateReceipts, excluded: {
+    historical_dense_overlap: overlappingHistorical,
     legacy_receipt_overlap: overlappingLegacy,
     duplicate_legacy_sample: duplicateLegacy, ambiguous_legacy_provider_minute: ambiguousLegacy,
   } };
@@ -125,7 +149,9 @@ export function pendingStudyDaysSql(method: string): string {
     UNION ALL SELECT timezone('America/Chicago',received_at)::DATE-1,'dense_next_midnight',SUM(observations),MAX(epoch(received_at))
       FROM collection_batches WHERE observations>0 AND received_at < timezone('America/Chicago',timezone('America/Chicago',received_at)::DATE::TIMESTAMP)+INTERVAL '120 seconds' GROUP BY 1
     UNION ALL SELECT ${SNAPSHOT_STUDY_DATE_SQL},'snapshots',COUNT(*),MAX(epoch(received_at)) FROM streetcar_snapshots GROUP BY 1
-  ), revisions AS (SELECT service_date,string_agg(origin||':'||n||':'||last_at,',' ORDER BY origin) AS revision FROM days GROUP BY 1)
+  ), revisions AS (SELECT service_date,
+    CASE WHEN COUNT(*) FILTER (WHERE origin='snapshots')>0 AND COUNT(*) FILTER (WHERE origin IN ('dense','dense_next_midnight'))>0
+      THEN '${RECORDER_PRECEDENCE_REVISION}:' ELSE '' END || string_agg(origin||':'||n||':'||last_at,',' ORDER BY origin) AS revision FROM days GROUP BY 1)
   SELECT r.service_date::VARCHAR AS date,r.revision FROM revisions r LEFT JOIN study_dates s ON s.date=r.service_date
   WHERE r.service_date IS NOT NULL AND (s.date IS NULL OR s.source_revision<>r.revision OR s.method_revision<>${literal})
   ORDER BY CASE WHEN r.service_date>=timezone('America/Chicago',now())::DATE-2 THEN 0 ELSE 1 END,r.service_date DESC LIMIT 2`;

@@ -55,6 +55,47 @@ provenance, and [LIVE_FEED_COMPARISON.md](LIVE_FEED_COMPARISON.md) for the live 
 Run the dashboard from its directory using its own server-only summary endpoint
 and token configuration; see [dashboard/README.md](dashboard/README.md).
 
+## Import server history
+
+Use immutable local Parquet exports of `transit_data` and `streetcar_snapshots`.
+Restart the collector with `LOCAL_ANALYSIS_ENABLED=false` and wait for its old
+database worker to exit. The collector can keep journaling while the database
+is offline. Take a database backup with no writer running, then import:
+
+```bash
+npm run history:import -- \
+  --data-dir /path/to/persistent/data \
+  --transit-data /path/to/exports/transit_data.parquet \
+  --streetcar-snapshots /path/to/exports/streetcar_snapshots.parquet
+```
+
+All three paths are required. The command opens an existing local database and
+performs no network access, bootstrap or process management. It preserves local
+rows and exact duplicate multiplicity, rejects conflicting snapshot IDs, and
+verifies row counts, source containment and file hashes before committing.
+Reimporting the same files inserts zero rows. Each successful run writes a unique,
+atomic audit under the chosen data directory's `imports/`, including hashes,
+insert/replay counts and affected study dates. Imported raw-data dates are queued
+for OTP recalculation using only retained schedules that cover each date; the
+audit lists queued dates and dates without a covering schedule. It never assumes
+that today's schedule applies to an earlier date.
+
+Keep the collector in journal-only mode while the finite backfill runs:
+
+```bash
+TRANSIT_DATA_DIR=/path/to/persistent/data MOTHERDUCK_BOOTSTRAP=false MOTHERDUCK_CLOUD_WRITES=false npm run study:backfill
+```
+
+For larger local runs, set `LOCAL_DB_MEMORY` to the DuckDB memory allowance and
+`NODE_OPTIONS=--max-old-space-size=3072` to allow a 3 GiB JavaScript heap. These are
+separate limits: leave room for both processes and the operating system. The
+September 12 catchup completed with a 2 GB DuckDB allowance after the 1 GB default
+ran out of memory; this workstation's normal launcher now uses 4 GB for DuckDB.
+
+Wait for a successful exit, then restart the collector with
+`LOCAL_ANALYSIS_ENABLED=true` to resume its normal database worker. Never run the
+importer, backfill and normal worker concurrently against the same database.
+
 ## Storage and deployment
 
 The operating ceilings are 80% local filesystem use with at least 10 GB free,

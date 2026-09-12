@@ -64,6 +64,7 @@ function envelope(catalog: StudyCatalog, dates: string[], quality: StudyQuality[
   return { from: filters.from ?? sorted[0] ?? null, to: filters.to ?? sorted.at(-1) ?? null, network: catalog,
     quality: selectedQuality, method: TRANSIT_STUDY_METHOD, limitations: [...STUDY_LIMITATIONS, ...catalog.limitations,
       'Quality counts cover whole selected source dates. They are not restricted to the chosen route, direction or hour.',
+      'Where local and server SSE recordings overlap, local receipts take precedence over continuous provider-time coverage with 90-second transition margins. Server snapshots supplement longer gaps; original records remain preserved.',
       'ROW readiness requires at least 30 passages in each class on seven common dates. Signal headlines require 30 evaluable encounters on seven dates per directional site/context.',
       '95% bootstrap intervals resample whole service dates (2,000 deterministic draws), retaining within-day dependence. They describe sampled-day variability separately from GPS timing bounds; seven dates is still a small sample.',
       'Matched ROW strata hold route, direction, day type, four-hour band, stop count and signal count constant. Roadway locations still differ in geometry, operating rules and demand, so comparisons do not identify causal ROW effects.'] };

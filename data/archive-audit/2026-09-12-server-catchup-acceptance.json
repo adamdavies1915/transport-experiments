@@ -1,0 +1,431 @@
+{
+  "verified_at": "2026-09-12T19:32:27.860Z",
+  "location": "local collector and dashboard preview; original production SSE collector remains separate",
+  "export": {
+    "from_local_date": "2026-09-07",
+    "cutoff_utc": "2026-09-12 19:02:28.384778+00",
+    "files": [
+      {
+        "table": "transit_data",
+        "rows": "827568",
+        "bytes": 17072693,
+        "sha256": "5c4804429d141f4d63c7cfc1e1b64d4883bf065f8ef6796834b32fd66ec7361e",
+        "first_at": "2026-09-07 05:00:00+00",
+        "last_at": "2026-09-12 19:02:00+00"
+      },
+      {
+        "table": "streetcar_snapshots",
+        "rows": "456831",
+        "bytes": 20780865,
+        "sha256": "6d8de9a0e40ab475e0287e3f060a9c6ee3c9746ccf7b52c2b2ab173c1f2f37c4",
+        "first_at": "2026-09-07 22:01:10.751272+00",
+        "last_at": "2026-09-12 19:02:05.455+00"
+      }
+    ]
+  },
+  "import": {
+    "transit_data": {
+      "source_rows": 827568,
+      "source_distinct_rows": 827517,
+      "source_duplicate_rows": 51,
+      "target_rows_before": 7807333,
+      "inserted_rows": 670927,
+      "replay_rows": 156641,
+      "target_rows_after": 8478260,
+      "study_dates": [
+        "2026-09-07",
+        "2026-09-08",
+        "2026-09-09",
+        "2026-09-10",
+        "2026-09-11",
+        "2026-09-12"
+      ],
+      "rows_without_study_date": 0
+    },
+    "streetcar_snapshots": {
+      "source_rows": 456831,
+      "source_distinct_rows": 456831,
+      "source_duplicate_rows": 0,
+      "target_rows_before": 27575,
+      "inserted_rows": 429256,
+      "replay_rows": 27575,
+      "target_rows_after": 456831,
+      "study_dates": [
+        "2026-09-07",
+        "2026-09-08",
+        "2026-09-09",
+        "2026-09-10",
+        "2026-09-11",
+        "2026-09-12"
+      ],
+      "rows_without_study_date": 0
+    },
+    "replay_inserted": {
+      "transit_data": 0,
+      "streetcar_snapshots": 0
+    },
+    "otp_queue": {
+      "queued": [
+        {
+          "service_date": "2026-09-07",
+          "schedule_hash": "3b32471680f5736301fdcaa2ae98bf62ba6e108ea51589febb1d66114ee567f9"
+        },
+        {
+          "service_date": "2026-09-08",
+          "schedule_hash": "3b32471680f5736301fdcaa2ae98bf62ba6e108ea51589febb1d66114ee567f9"
+        },
+        {
+          "service_date": "2026-09-09",
+          "schedule_hash": "3b32471680f5736301fdcaa2ae98bf62ba6e108ea51589febb1d66114ee567f9"
+        },
+        {
+          "service_date": "2026-09-10",
+          "schedule_hash": "3b32471680f5736301fdcaa2ae98bf62ba6e108ea51589febb1d66114ee567f9"
+        },
+        {
+          "service_date": "2026-09-11",
+          "schedule_hash": "3b32471680f5736301fdcaa2ae98bf62ba6e108ea51589febb1d66114ee567f9"
+        },
+        {
+          "service_date": "2026-09-12",
+          "schedule_hash": "3b32471680f5736301fdcaa2ae98bf62ba6e108ea51589febb1d66114ee567f9"
+        }
+      ],
+      "no_covering_schedule": []
+    }
+  },
+  "verified_export_rows_missing": {
+    "transit_data": 0,
+    "streetcar_snapshots": 0
+  },
+  "pending": {
+    "study": [],
+    "legacy": [],
+    "legacy_failed": [],
+    "otp": 0
+  },
+  "database_counts": [
+    {
+      "dataset": "transit_data",
+      "rows": 8479511
+    },
+    {
+      "dataset": "streetcar_snapshots",
+      "rows": 456831
+    }
+  ],
+  "recovered_study_events": [
+    {
+      "date": "2026-09-07",
+      "kind": "encounter",
+      "source": "sse",
+      "rows": 1000
+    },
+    {
+      "date": "2026-09-07",
+      "kind": "passage",
+      "source": "sse",
+      "rows": 99751
+    },
+    {
+      "date": "2026-09-07",
+      "kind": "quality",
+      "source": "sse",
+      "rows": 68
+    },
+    {
+      "date": "2026-09-08",
+      "kind": "encounter",
+      "source": "lepass",
+      "rows": 2035
+    },
+    {
+      "date": "2026-09-08",
+      "kind": "encounter",
+      "source": "sse",
+      "rows": 6590
+    },
+    {
+      "date": "2026-09-08",
+      "kind": "passage",
+      "source": "lepass",
+      "rows": 6131
+    },
+    {
+      "date": "2026-09-08",
+      "kind": "passage",
+      "source": "sse",
+      "rows": 101121
+    },
+    {
+      "date": "2026-09-08",
+      "kind": "quality",
+      "source": "lepass",
+      "rows": 31
+    },
+    {
+      "date": "2026-09-08",
+      "kind": "quality",
+      "source": "sse",
+      "rows": 91
+    },
+    {
+      "date": "2026-09-09",
+      "kind": "encounter",
+      "source": "sse",
+      "rows": 3243
+    },
+    {
+      "date": "2026-09-09",
+      "kind": "passage",
+      "source": "sse",
+      "rows": 97799
+    },
+    {
+      "date": "2026-09-09",
+      "kind": "quality",
+      "source": "sse",
+      "rows": 37
+    },
+    {
+      "date": "2026-09-10",
+      "kind": "encounter",
+      "source": "sse",
+      "rows": 3396
+    },
+    {
+      "date": "2026-09-10",
+      "kind": "passage",
+      "source": "sse",
+      "rows": 102099
+    },
+    {
+      "date": "2026-09-10",
+      "kind": "quality",
+      "source": "sse",
+      "rows": 37
+    },
+    {
+      "date": "2026-09-11",
+      "kind": "encounter",
+      "source": "sse",
+      "rows": 4544
+    },
+    {
+      "date": "2026-09-11",
+      "kind": "passage",
+      "source": "sse",
+      "rows": 109724
+    },
+    {
+      "date": "2026-09-11",
+      "kind": "quality",
+      "source": "sse",
+      "rows": 37
+    },
+    {
+      "date": "2026-09-12",
+      "kind": "encounter",
+      "source": "lepass",
+      "rows": 2976
+    },
+    {
+      "date": "2026-09-12",
+      "kind": "encounter",
+      "source": "sse",
+      "rows": 5002
+    },
+    {
+      "date": "2026-09-12",
+      "kind": "passage",
+      "source": "lepass",
+      "rows": 9705
+    },
+    {
+      "date": "2026-09-12",
+      "kind": "passage",
+      "source": "sse",
+      "rows": 60185
+    },
+    {
+      "date": "2026-09-12",
+      "kind": "quality",
+      "source": "lepass",
+      "rows": 31
+    },
+    {
+      "date": "2026-09-12",
+      "kind": "quality",
+      "source": "sse",
+      "rows": 91
+    }
+  ],
+  "otp_coverage": [
+    {
+      "date": "2026-09-07",
+      "observed_timepoints": 5362,
+      "classified_timepoints": 4703
+    },
+    {
+      "date": "2026-09-08",
+      "observed_timepoints": 5288,
+      "classified_timepoints": 4693
+    },
+    {
+      "date": "2026-09-09",
+      "observed_timepoints": 5066,
+      "classified_timepoints": 4504
+    },
+    {
+      "date": "2026-09-10",
+      "observed_timepoints": 5353,
+      "classified_timepoints": 4687
+    },
+    {
+      "date": "2026-09-11",
+      "observed_timepoints": 5991,
+      "classified_timepoints": 5245
+    },
+    {
+      "date": "2026-09-12",
+      "observed_timepoints": 2871,
+      "classified_timepoints": 2491
+    }
+  ],
+  "summary": {
+    "generated_at": "2026-09-12T19:31:02.738Z",
+    "bytes": 43723568,
+    "sha256": "800fd6a9964672153b339e3ea80169980c09d37a707aecf081d23c513e0daf94",
+    "coverage": {
+      "passages": 4210030,
+      "classified_passages": 1822,
+      "unknown_passages": 4208208
+    },
+    "row_status": "collecting",
+    "signal_status": "collecting"
+  },
+  "memory": {
+    "successful_backfill_duckdb_limit": "2GB",
+    "successful_backfill_javascript_heap_mib": 1536,
+    "failed_duckdb_limit": "1GB",
+    "normal_local_duckdb_limit": "4GB",
+    "normal_local_javascript_heap_mib": 3072
+  },
+  "validation": [
+    "18 backend test files and the CLI OTP queue test pass",
+    "Backend and CLI TypeScript checks pass",
+    "Original files remain preserved; imported source content is verified after analysis",
+    "Both remote tables were read only; temporary server exports were removed after verified transfer",
+    "New live journal arrivals are retained for the normal worker after the finite backfill"
+  ],
+  "limitations": [
+    "No missing LePass or bus receipt-clock history was invented",
+    "Overlapping SSE recorders are selected by coverage before trajectory reconstruction",
+    "Neither roadway associations nor candidate waiting establishes causal effects or signal-priority effectiveness"
+  ],
+  "otp_coverage_basis": "Underlying observed/classified timepoint coverage includes block-match diagnostic events; accepted dashboard OTP excludes those events and can have lower totals.",
+  "resumed_local_runtime": {
+    "checked_at": "2026-09-12T19:36:14.723769+00:00",
+    "analysis": {
+      "enabled": true,
+      "running": true
+    },
+    "paused": false,
+    "pending_journal_writes": 0,
+    "write_errors": 0,
+    "last_persisted_at": "2026-09-12T19:36:14.152Z",
+    "lepass": {
+      "status": "collecting",
+      "queries": 70,
+      "successful_queries": 70,
+      "failing_queries": 0,
+      "responses": 696,
+      "observations": 690
+    },
+    "dashboard": {
+      "status": 200,
+      "body": {
+        "status": "ok",
+        "summary": {
+          "generated_at": "2026-09-12T19:34:06.394Z",
+          "received_at": "2026-09-12T19:36:00.134Z",
+          "origin": "collector",
+          "stale": false,
+          "refresh_error": null
+        }
+      }
+    },
+    "source_clocks": [
+      {
+        "id": "sse",
+        "status": "ready",
+        "last_received_at": "2026-09-12T19:35:53.782Z",
+        "last_provider_at": "2026-09-12T19:35:00.000Z"
+      },
+      {
+        "id": "lepass",
+        "status": "ready",
+        "last_received_at": "2026-09-12T19:35:58.758Z",
+        "last_provider_at": "2026-09-12T19:35:51.245Z"
+      }
+    ],
+    "process_memory": [
+      {
+        "role": "collector",
+        "LOCAL_DB_MEMORY": "4GB",
+        "NODE_OPTIONS": "--max-old-space-size=3072"
+      },
+      {
+        "role": "worker",
+        "LOCAL_DB_MEMORY": "4GB",
+        "NODE_OPTIONS": "--max-old-space-size=3072"
+      }
+    ],
+    "journal_files_awaiting_ingestion": 9,
+    "journal_note": "After the frozen backfill completed, the normal worker drained the accumulated journal; new live arrivals continue between cycles. Study summaries refresh every 15 minutes."
+  },
+  "preliminary_study_findings": {
+    "frozen_summary_at": "2026-09-12T19:31:02.738Z",
+    "route12_sse_from": "2026-09-08",
+    "route12_sse_through": "2026-09-12",
+    "route12_sse_passages": 21122,
+    "route12_sse_reserved": 930,
+    "route12_sse_shared": 838,
+    "strongest_matched_comparison": {
+      "source": "sse",
+      "route": "12",
+      "direction": "1",
+      "day_type": "weekday",
+      "hour_from": 8,
+      "hour_through": 11,
+      "context": "both",
+      "signals": 1,
+      "stops": 2,
+      "reserved_passages": 51,
+      "shared_passages": 94,
+      "matched_dates": 4,
+      "required_dates": 7
+    },
+    "isolated_streetcar_signals": {
+      "source": "sse",
+      "encounters": 1029,
+      "evaluable_encounters": 832,
+      "candidate_waits": 105,
+      "dates": 6
+    },
+    "example": {
+      "site": "Rampart / St. Bernard / Joseph Guillaume",
+      "site_id": "rampart:signal:osm-115983684",
+      "source": "sse",
+      "route": "46",
+      "direction": "0",
+      "encounters": 92,
+      "evaluable_encounters": 84,
+      "candidate_waits": 28,
+      "mean_seconds_per_detected_wait_rounded": 22.8,
+      "detected_wait_seconds_per_complete_encounter_rounded": 6.9,
+      "dates": 6
+    },
+    "interpretation": "Preliminary observed waiting near mapped signals; causal signal delay and recoverable transit-priority savings have not been established. No ROW or signal headline meets the seven-date threshold."
+  }
+}
