@@ -18,6 +18,10 @@ RUN npm run build
 # Production stage
 FROM node:20-slim
 
+# Coolify's generated HTTP health check invokes curl.
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates curl \
+    && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
 # Copy package files
