@@ -57,7 +57,8 @@ test('daily analysis stays fresh for the configured window while live clocks rem
     await store.refresh();assert.equal(store.status.stale,true);assert.equal(store.snapshot?.source_quality?.sources[0].status,'ready');
     assert.equal(store.snapshot?.source_quality?.sources[0].last_received_at,receiptAt);
     const staleHtml=renderToStaticMarkup(<SourceQuality data={{...daily.source_quality!,snapshot:store.status}}/>);
-    assert.match(staleHtml,/older than expected/);assert.match(staleHtml,/Independent SSE<\/strong> · ready/);
+    assert.match(staleHtml,/older than expected/);assert.match(staleHtml,/Independent SSE<\/strong><p[^>]*>ready · last collection/);
+    assert.ok(staleHtml.indexOf('older than expected')<staleHtml.indexOf('<details'));
   }finally{await rm(directory,{recursive:true,force:true});}
 });
 test('private refresh is durable and failure or invalid data preserves the last good summary',async()=>{
@@ -84,7 +85,10 @@ test('public routes use memory only and study/OTP availability is independent',a
     app(req,res);
   });
   {
-    const row=await request(`/api/row-study`).then(response=>response.json());const rowCells=row.cells as Array<{source:string}>;assert.equal(rowCells.length,1);assert.equal(rowCells[0].source,'sse');
+    const row=await request(`/api/row-study`).then(response=>response.json());const rowCells=row.cells as Array<{source:string}>;assert.equal(rowCells.length,2);assert.deepEqual(rowCells.map(cell=>cell.source).sort(),['lepass','sse']);
+    const comparisons=row.comparisons as Array<{source:string;matched_dates:number}>;
+    assert.equal(comparisons.length,2);assert.ok(comparisons.every(comparison=>comparison.matched_dates===0));
+    const sse=await request(`/api/row-study?source=sse`).then(response=>response.json());assert.deepEqual((sse.cells as Array<{source:string}>).map(cell=>cell.source),['sse']);
     const signal=await request(`/api/signal-study?source=lepass`).then(response=>response.json());const signalCells=signal.cells as Array<{source:string}>;assert.equal(signalCells.length,1);assert.equal(signalCells[0].source,'lepass');
     assert.equal((await request(`/api/row-study?source=all`)).status,400);assert.equal((await request(`/api/row-study?from=2026-08-01`)).status,400);
     assert.equal((await request(`/api/summary`)).status,503);assert.equal((await request(`/api/otp`)).status,200);assert.equal((await request(`/api/health`)).status,200);
@@ -113,7 +117,7 @@ test('large saved JSON negotiates lossless gzip while health and clients declini
 });
 test('source coverage keeps live clocks separate from the saved analysis inventory',()=>{
   const html=renderToStaticMarkup(<SourceQuality data={{status:'degraded',sources:[{id:'lepass',label:'LePass',status:'degraded',observations:45,from:'2026-09-01T00:00:00Z',to:'2026-09-08T07:00:00Z',last_received_at:'2026-09-08T07:15:00Z',last_provider_at:'2026-09-08T07:14:58Z',message:'Raw responses are retained; mappings require revalidation.'}]}}/>);
-  assert.match(html,/Data coverage and clocks/);assert.match(html,/Latest provider timestamp/);assert.match(html,/Saved analysis snapshot: 45 observation receipts/);
+  assert.match(html,/Data coverage and collection details/);assert.match(html,/Latest provider timestamp/);assert.match(html,/Saved analysis snapshot: 45 observation receipts/);
   assert.match(html,/not live counters or the sample size of the selected study/);assert.match(html,/Raw responses are retained/);
   assert.doesNotMatch(html,/<details open/);
 });

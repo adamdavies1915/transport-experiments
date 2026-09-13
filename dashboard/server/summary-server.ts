@@ -9,7 +9,9 @@ const emptyNetwork:StudyCatalog={version:'pending',generated_at:'',schedule_hash
 const pending={status:'collecting' as const,from:null,to:null,network:emptyNetwork,quality:[],method:'pending',limitations:['The collector has not published this study yet. Missing observations do not mean zero delay.']};
 const day=(value:unknown):value is string=>typeof value==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(value)&&Number.isFinite(Date.parse(value))&&new Date(value).toISOString().slice(0,10)===value;
 function studyFilters(query:Record<string,unknown>,from:string|null,to:string|null):StudyFilters {
-  const filters:StudyFilters={source:'sse',mode:'streetcar',hour_from:0,hour_to:23};
+  // Both feeds are available by default. Aggregators retain source-specific
+  // estimates; the UI chooses one estimate per result without pooling samples.
+  const filters:StudyFilters={mode:'streetcar',hour_from:0,hour_to:23};
   if(query.source!=null){if(query.source!=='sse'&&query.source!=='lepass')throw new Error('Choose one observation source.');filters.source=query.source;}
   if(query.mode!=null){if(query.mode!=='streetcar'&&query.mode!=='bus')throw new Error('Choose streetcar or bus.');filters.mode=query.mode;}
   for(const key of ['route_id','direction_id'] as const) if(query[key]!=null){if(typeof query[key]!=='string'||query[key].length>100)throw new Error('Invalid route or direction.');filters[key]=query[key];}
