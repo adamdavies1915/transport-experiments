@@ -22,11 +22,11 @@ COPY --chown=node:node src ./src
 COPY --chown=node:node dashboard/src ./dashboard/src
 COPY --chown=node:node scripts/import-server-history.ts ./scripts/import-server-history.ts
 RUN mkdir -p /app/data && chown node:node /app/data
-ENV TRANSIT_DATA_DIR=/app/data PORT=3100
-EXPOSE 3100
+ENV TRANSIT_DATA_DIR=/app/data
+EXPOSE 3100 3000
 
 # Run as the built-in non-root node user
 USER node
 
 # Run the TypeScript entrypoint directly via tsx (bundled in dependencies)
-CMD ["node", "--import", "tsx", "src/index.ts"]
+CMD ["node", "--import", "tsx", "src/collector-entry.ts"]

@@ -25,6 +25,7 @@ import type { StudyObservation } from './observation-types';
 import { buildLegacySummary } from '../dashboard/src/legacy-summary';
 import type { TransitSummaryEnvelope, SourceQualityData } from '../dashboard/src/summary-data';
 import { addDays, localDay } from './otp';
+import { publishSummaryIfConfigured } from './summary-transfer';
 
 let stopped=false;
 process.on('SIGTERM',()=>{stopped=true;});process.on('SIGINT',()=>{stopped=true;});
@@ -112,6 +113,7 @@ async function publish(c:DuckDBConnection,catalog:StudyCatalog){
   const envelope:TransitSummaryEnvelope={schema_version:1,generated_at:new Date().toISOString(),source_quality:await sourceQuality(c),row_study:compact.row,signal_study:compact.signal,legacy:await buildLegacySummary(statement=>query(c,statement),'transit')};
   const publication=await writeBoundedStudyPublication(join(DATA_DIR,'summary.json'),envelope,{available_dates:stored.map(d=>d.date),included_dates:days.retained_dates});
   await setState(c,'last_summary',{generated_at:envelope.generated_at,bytes:publication.bytes,omitted_dates:publication.omitted_dates});
+  await publishSummaryIfConfigured(join(DATA_DIR,'summary.json'));
 }
 async function main(){
   await journal.init();

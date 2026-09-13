@@ -99,44 +99,46 @@ function sqlString(value: string | null | undefined): string {
   return value == null ? 'NULL' : `'${value.replace(/'/g, "''")}'`;
 }
 
-// Batch insert records using bulk INSERT
+/** Build the same explicit-column insert for cloud writes and local verification. */
+export function transitInsertSql(records: TransitRecord[], database = DATABASE_NAME): string {
+  // Build bulk INSERT statement. Value order MUST match INSERT_COLUMNS.
+  const values = records.map(r =>
+    `(${[
+      sqlString(r.vid),
+      sqlString(r.timestamp),
+      r.lat,
+      r.lon,
+      r.heading,
+      sqlString(r.route),
+      sqlString(r.trip_id),
+      sqlString(r.destination),
+      r.speed ?? 'NULL',
+      r.is_delayed ?? 'NULL',
+      r.is_off_route,
+      r.segment_id ?? 'NULL',
+      sqlString(r.segment_name),
+      sqlString(r.segment_type),
+      r.pdist ?? 'NULL',
+      r.pid ?? 'NULL',
+      sqlString(r.rid),
+      sqlString(r.tablockid),
+      sqlString(r.srvtmstmp),
+      // Preserve offsets for DST-safe schedule comparisons. Legacy naive
+      // timestamps remain available but must not be cast using server timezone.
+      /(Z|[+-]\d\d:\d\d)$/.test(r.timestamp) ? sqlString(r.timestamp) : 'NULL',
+      sqlString(r.gtfs_trip_id)
+    ].join(', ')})`
+  ).join(',\n');
+
+  return `INSERT INTO ${database}.transit_data (${INSERT_COLUMNS.join(', ')}) VALUES\n${values}`;
+}
+
+// Batch insert records using bulk INSERT.
 export async function insertRecords(records: TransitRecord[]): Promise<void> {
   if (!records.length) return;
   return serializeDatabase(async () => {
     if (!connection) throw new Error('MotherDuck not initialized');
-
-    // Build bulk INSERT statement. Value order MUST match INSERT_COLUMNS.
-    const values = records.map(r =>
-      `(${[
-        sqlString(r.vid),
-        sqlString(r.timestamp),
-        r.lat,
-        r.lon,
-        r.heading,
-        sqlString(r.route),
-        sqlString(r.trip_id),
-        sqlString(r.destination),
-        r.speed,
-        r.is_delayed ?? 'NULL',
-        r.is_off_route,
-        r.segment_id ?? 'NULL',
-        sqlString(r.segment_name),
-        sqlString(r.segment_type),
-        r.pdist ?? 'NULL',
-        r.pid ?? 'NULL',
-        sqlString(r.rid),
-        sqlString(r.tablockid),
-        sqlString(r.srvtmstmp),
-        // Preserve offsets for DST-safe schedule comparisons. Legacy naive
-        // timestamps remain available but must not be cast using server timezone.
-        /(Z|[+-]\d\d:\d\d)$/.test(r.timestamp) ? sqlString(r.timestamp) : 'NULL',
-        sqlString(r.gtfs_trip_id)
-      ].join(', ')})`
-    ).join(',\n');
-
-    const sql = `INSERT INTO ${DATABASE_NAME}.transit_data (${INSERT_COLUMNS.join(', ')}) VALUES\n${values}`;
-
-    await connection.run(sql);
+    await connection.run(transitInsertSql(records));
     console.log(`Inserted ${records.length} records into MotherDuck`);
   });
 }

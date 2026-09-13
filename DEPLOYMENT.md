@@ -1,5 +1,61 @@
 # Transit pipeline deployment
 
+## Staged cloud collection and workstation summaries
+
+Use `COLLECTOR_MODE=cloud` for the existing small server while analysis and
+LePass collection continue on the workstation. This compatibility mode preserves
+the deployed SSE ingestion into `transit_data` and `streetcar_snapshots` in
+MotherDuck. It does not start the hourly OTP or streetcar workers, create a local
+DuckDB database, or retain raw capture files on the server. It retains the
+original minute watermark for raw records and every receipt for dense snapshots
+on routes 12, 46, 47 and 48. Local collection keeps its broader study coverage.
+
+Deploy the root Dockerfile with:
+
+```text
+COLLECTOR_MODE=cloud
+PORT=3000
+MOTHER_DUCK_API_KEY=<existing ingestion token>
+MOTHERDUCK_DATABASE=my_db
+UPLOAD_INTERVAL=60000
+TRANSIT_DATA_DIR=/app/data
+TRANSIT_SUMMARY_TOKEN=<read token, at least 32 characters>
+TRANSIT_SUMMARY_PUBLISH_TOKEN=<different publish token, at least 32 characters>
+PROCESSING_SERVER_ENABLED=false
+```
+
+Cloud mode writes the existing MotherDuck tables independently of the local
+archive's `MOTHERDUCK_CLOUD_WRITES` setting. This keeps the existing ingestion
+running; it does not establish a new free-tier billing allowance or change the
+account plan. Stopping hourly analysis removes that source of derived-table
+rewrites. Existing history/recovery retention is unchanged.
+
+Mount persistent `/app/data` owned by UID 1000 for the latest saved summary only.
+Summary publication is bounded and authenticated, with separate read and publish
+tokens; it does not activate raw-file transfer or daily processing jobs. Configure
+the existing local worker with `TRANSIT_SUMMARY_PUBLISH_URL` pointing to the
+collector's HTTPS `/internal/summary` endpoint and the same publish token. See
+[summary publication](SUMMARY_PUBLICATION.md) for publication limits and behavior.
+
+The current dashboard can then use the configuration below, changing its
+`TRANSIT_SUMMARY_URL` to `http://transit-collector:3000/internal/summary`. Verify a
+fresh, successfully published local summary before replacing the old dashboard.
+The old dashboard's cloud-derived OTP and streetcar metrics stop refreshing
+after this collector rollout; the new dashboard receives workstation results.
+The server's SSE health endpoint `/api/health` reports collection counters and
+last successful persistence independently of summary publication.
+
+The cloud collector's retry queues remain bounded **in memory**, as before.
+Graceful shutdown drains them, but an abrupt crash or prolonged cloud outage can
+lose unpersisted observations. It does not provide durable server buffering or
+move LePass collection off the workstation. Keep automatic daily job handoff
+disabled until its storage/retention prerequisites are satisfied. During rollout,
+avoid overlapping SSE collectors and verify successful MotherDuck inserts after
+restart. Do not deploy the local mode below onto a server that fails its disk
+reserve.
+
+## Local collection and analysis modes
+
 The optional [daily workstation mode](DAILY_PROCESSING.md) runs only capture and
 summary serving on this server. It keeps the historical database on the desktop
 and Mac, and adds a private transfer/job API. Follow that guide instead of copying
@@ -19,6 +75,7 @@ network alias, `transit-collector`.
 Required configuration:
 
 ```text
+COLLECTOR_MODE=local
 TRANSIT_DATA_DIR=/app/data
 PORT=3100
 TRANSIT_SUMMARY_TOKEN=<long server-only random value>

@@ -17,6 +17,13 @@ MotherDuck is an optional, guarded cloud archive. The public dashboard serves
 cached local summaries and makes no MotherDuck queries. R2 is retired from the
 new pipeline; its unique historical files have been preserved and verified.
 
+For the existing small server, `COLLECTOR_MODE=cloud` preserves its SSE ingestion
+into MotherDuck and disables cloud analysis. A workstation collects both feeds,
+calculates studies, and publishes the latest summary to the server. This staged
+deployment keeps only the summary on server disk; daily job handoff and moving
+Le Pass collection to the server remain separate steps. See
+[deployment](DEPLOYMENT.md) and [summary publication](SUMMARY_PUBLICATION.md).
+
 ## Research questions
 
 - **Roadway time:** compare complete 200 m passages on reviewed shared and
