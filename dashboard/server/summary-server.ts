@@ -53,8 +53,10 @@ export function createSummaryApp(store:Pick<SummaryStore,'snapshot'|'status'>,st
       const data=isRow?(store.snapshot?.row_study??{...pending,cells:[],comparisons:[],coverage:{passages:0,classified_passages:0,unknown_passages:0}}):(store.snapshot?.signal_study??{...pending,cells:[],signals:[]});
       const filters=studyFilters(req.query,data.from,data.to);
       const result=isRow?rowStudyFromCells(data as RowStudyData,filters):signalStudyFromCells(data as SignalStudyData,filters);
-      res.json({...result,available_from:data.from,available_to:data.to,filters,snapshot:store.status});
-    }catch(error){res.status(400).json({error:error instanceof Error?error.message:'Invalid study filters.'});}
+      // Reuse successful study responses across reloads for at most one minute.
+      // Express still validates ETags; changing freshness metadata changes the body.
+      res.set('Cache-Control','private, max-age=60').json({...result,available_from:data.from,available_to:data.to,filters,snapshot:store.status});
+    }catch(error){res.set('Cache-Control','no-store').status(400).json({error:error instanceof Error?error.message:'Invalid study filters.'});}
   });
   const legacyEndpoints={summary:'summary','segment-types':'segment_types',segments:'segments',routes:'routes',hourly:'hourly',daily:'daily','daily-segments':'daily_segments','daily-routes':'daily_routes'} as const;
   for(const [endpoint,key] of Object.entries(legacyEndpoints))app.get(`/api/${endpoint}`,(req,res)=>{

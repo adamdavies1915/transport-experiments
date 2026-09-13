@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import type { RowStudyData, SignalStudyData, StudyContext, StudyFilters, StudyRowComparison, StudySignalSummary, StudySource } from '../../src/transit-study-types';
 import type { SummarySnapshotStatus } from './summary-data';
 import { rowStudyFromCells, signalStudyFromCells } from './transit-study-filter';
 import { rankRowEvidence, rankSignalEvidence, selectRowEvidence, selectSignalEvidence } from './study-evidence';
 import StudyMap from './StudyMap';
+import { useCachedStudy } from './hooks/useCachedStudy';
 
 type Data = (RowStudyData | SignalStudyData) & { available_from?: string | null; available_to?: string | null; filters?: StudyFilters; snapshot?: SummarySnapshotStatus };
 const input = 'mt-1 block w-full rounded-lg border border-slate-600 bg-slate-900 px-3 py-2.5 text-sm text-slate-100';
@@ -69,23 +70,12 @@ function SignalDetail({ row, name }: { row: StudySignalSummary; name: string }) 
 export default function StudyPanel({ kind, data: supplied, initialFilters }: { kind: 'row' | 'signals'; data?: Data; initialFilters?: StudyFilters }) {
   const [filters, setFilters] = useState<StudyFilters>({ mode: 'streetcar', hour_from: 0, hour_to: 23, ...initialFilters });
   const [contextFilter, setContextFilter] = useState<StudyContext | ''>('');
-  const [remote, setRemote] = useState<{ key: string; data?: Data; error?: string }>({ key: '' });
-  const [attempt, setAttempt] = useState(0), [selected, setSelected] = useState(''), [siteId, setSiteId] = useState(''), [moreFilters, setMoreFilters] = useState(false), [showAllRows, setShowAllRows] = useState(false);
+  const [selected, setSelected] = useState(''), [siteId, setSiteId] = useState(''), [moreFilters, setMoreFilters] = useState(false), [showAllRows, setShowAllRows] = useState(false);
   const params = new URLSearchParams();
   for (const [key, value] of Object.entries(filters)) if (value != null && value !== '') params.set(key, String(value));
-  const url = `/api/${kind === 'row' ? 'row' : 'signal'}-study?${params}`, key = `${url}#${attempt}`;
-  useEffect(() => {
-    if (supplied) return;
-    const controller = new AbortController();
-    fetch(url, { signal: controller.signal }).then(async response => {
-      if (!response.ok) { const error = await response.json().catch(() => null); throw new Error(error?.error ?? 'The saved study could not be loaded.'); }
-      return response.json() as Promise<Data>;
-    }).then(data => { if (!controller.signal.aborted) setRemote({ key, data }); }).catch((error: Error) => { if (!controller.signal.aborted) setRemote(previous => ({ key, data: previous.data, error: error.message })); });
-    return () => controller.abort();
-  }, [supplied, url, key]);
-  const raw = supplied ?? remote.data;
+  const url = `/api/${kind === 'row' ? 'row' : 'signal'}-study?${params}`;
+  const { data: raw, loading, error, refreshing, retry } = useCachedStudy<Data>(url, supplied);
   const data: Data | undefined = useMemo(() => supplied ? ('comparisons' in supplied ? rowStudyFromCells(supplied, filters) : signalStudyFromCells(supplied, filters)) : raw, [supplied, raw, filters]);
-  const loading = !supplied && remote.key !== key, error = supplied ? undefined : remote.error;
   const from = filters.from ?? raw?.from ?? '', to = filters.to ?? raw?.to ?? '';
   const routes = [...new Set((raw?.network.paths ?? []).filter(path => path.mode === filters.mode).map(path => path.route_id))].sort((a, b) => Number(a) - Number(b) || a.localeCompare(b));
   const directions = [...new Set((raw?.network.paths ?? []).filter(path => path.mode === filters.mode && (!filters.route_id || path.route_id === filters.route_id)).map(path => path.direction_id))].sort();
@@ -134,8 +124,9 @@ export default function StudyPanel({ kind, data: supplied, initialFilters }: { k
       </div>}
     </div>
     {loading && <p className="rounded-xl bg-slate-800 p-10 text-center text-slate-300" role="status">Loading {kind === 'row' ? 'roadway' : 'signal'} observations…</p>}
-    {!loading && error && <div className="rounded-xl border border-amber-700 bg-slate-800 p-5" role="alert"><p>{error}</p><button type="button" className="text-blue-300 underline mt-3" onClick={() => setAttempt(value => value + 1)}>Retry this study</button></div>}
-    {!loading && !error && data && <>
+    {!loading && error && <div className="rounded-xl border border-amber-700 bg-slate-800 p-5 mb-4" role="alert"><p>{data ? 'Refresh unavailable; showing saved observations for this selection.' : error}</p><button type="button" className="text-blue-300 underline mt-3" onClick={retry}>Retry this study</button></div>}
+    {refreshing && <p className="text-xs text-slate-400 mb-3" role="status">Updating observations…</p>}
+    {!loading && data && <>
       {data.snapshot?.stale && <p className="text-sm text-amber-200 mb-4">Showing saved observations; the next collector summary is pending.</p>}
       {resultCount > 0 && <p className="text-xs text-slate-400 mb-3">{selected || siteId ? 'Selected result' : kind === 'signals' && signal?.context === 'signal_only' && signal.status === 'ready' ? 'Best-supported result away from passenger stops' : 'Best-supported result'} · {filters.source ? `${sourceName} observations` : 'Selected from both feeds by date coverage and sample size'}</p>}
       {kind === 'row' && comparison ? <ComparisonDetail row={comparison} /> : kind === 'signals' && signal ? <SignalDetail row={signal} name={name(signal.site_id)} /> : <div className="rounded-xl border border-slate-600 bg-slate-800 p-6" role="status"><h3 className="text-lg font-semibold">Collecting {sourceName} {kind === 'row' ? 'roadway comparisons' : 'signal encounters'}</h3><p className="text-slate-300 mt-2">{kind === 'row' ? 'A comparison needs reviewed roadway classifications and repeated passages in both classes on the same dates.' : 'No complete signal encounters are available for this selection yet. This does not mean there was no signal delay.'}</p></div>}

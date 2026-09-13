@@ -115,6 +115,32 @@ test('large saved JSON negotiates lossless gzip while health and clients declini
   const declined=await request('/api/row-study','gzip;q=0, identity');assert.equal(declined.encoding,undefined);assert.deepEqual(declined.body,plain.body);
   const health=await request('/api/health','gzip');assert.equal(health.encoding,undefined);assert.equal(JSON.parse(health.body.toString()).status,'ok');
 });
+test('only successful studies cache briefly and ETags revalidate gzip and plain responses with current freshness',async()=>{
+  const fixture={snapshot:{...envelope,row_study:{...envelope.row_study!,limitations:['A repeated public method note. '.repeat(1000)]}},status:{generated_at:envelope.generated_at,received_at:null,origin:'disk' as const,stale:false,refresh_error:null as string|null}};
+  const app=createSummaryApp(fixture);
+  const request=(url:string,headers:Record<string,string>={})=>new Promise<{status:number;body:Buffer;cache:unknown;etag:unknown;encoding:unknown;vary:unknown}>(resolve=>{
+    const req=new IncomingMessage(new Socket());req.url=url;req.method='GET';req.headers=headers;
+    const res=new ServerResponse(req);
+    res.end=((chunk:unknown)=>{resolve({status:res.statusCode,body:chunk==null?Buffer.alloc(0):Buffer.isBuffer(chunk)?chunk:Buffer.from(String(chunk)),cache:res.getHeader('Cache-Control'),etag:res.getHeader('ETag'),encoding:res.getHeader('Content-Encoding'),vary:res.getHeader('Vary')});return res;}) as typeof res.end;
+    app(req,res);
+  });
+  for(const url of ['/api/health','/api/source-quality','/api/row-study?source=all','/api/signal-study?hour_from=24','/api/summary']){
+    const response=await request(url);assert.equal(response.cache,'no-store',url);
+  }
+  const signal=await request('/api/signal-study?mode=bus');assert.equal(signal.status,200);assert.equal(signal.cache,'private, max-age=60');
+  for(const headers of [{},{'accept-encoding':'gzip'}] as Record<string,string>[]){
+    const first=await request('/api/row-study?mode=streetcar',headers);
+    assert.equal(first.status,200);assert.equal(first.cache,'private, max-age=60');assert.equal(typeof first.etag,'string');assert.equal(first.vary,'Accept-Encoding');
+    const unchanged=await request('/api/row-study?mode=streetcar',{...headers,'if-none-match':String(first.etag)});
+    assert.equal(unchanged.status,304);assert.equal(unchanged.body.length,0);assert.equal(unchanged.cache,'private, max-age=60');
+    fixture.status.stale=true;fixture.status.refresh_error='The next update is pending.';
+    const changed=await request('/api/row-study?mode=streetcar',{...headers,'if-none-match':String(first.etag)});
+    assert.equal(changed.status,200);assert.notEqual(changed.etag,first.etag);
+    const body=JSON.parse((changed.encoding==='gzip'?gunzipSync(changed.body):changed.body).toString());
+    assert.equal(body.snapshot.stale,true);assert.equal(body.snapshot.generated_at,envelope.generated_at);assert.equal(body.snapshot.received_at,null);
+    fixture.status.stale=false;fixture.status.refresh_error=null;
+  }
+});
 test('source coverage keeps live clocks separate from the saved analysis inventory',()=>{
   const html=renderToStaticMarkup(<SourceQuality data={{status:'degraded',sources:[{id:'lepass',label:'LePass',status:'degraded',observations:45,from:'2026-09-01T00:00:00Z',to:'2026-09-08T07:00:00Z',last_received_at:'2026-09-08T07:15:00Z',last_provider_at:'2026-09-08T07:14:58Z',message:'Raw responses are retained; mappings require revalidation.'}]}}/>);
   assert.match(html,/Data coverage and collection details/);assert.match(html,/Latest provider timestamp/);assert.match(html,/Saved analysis snapshot: 45 observation receipts/);

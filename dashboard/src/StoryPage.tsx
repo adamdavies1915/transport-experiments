@@ -1,26 +1,15 @@
-import { useEffect, useId, useMemo, useState, type ReactNode } from 'react';
+import { useId, useMemo, type ReactNode } from 'react';
 import type { RowStudyData, SignalStudyData, StudyMode, StudyRowComparison, StudySignalSummary } from '../../src/transit-study-types';
 import type { SummarySnapshotStatus } from './summary-data';
 import { rowStudyFromCells, signalStudyFromCells, ROW_MIN_DATES, ROW_MIN_PASSAGES, SIGNAL_MIN_DATES, SIGNAL_MIN_ENCOUNTERS } from './transit-study-filter';
 import { selectRowEvidence, selectSignalEvidence, studySourceName } from './study-evidence';
+import { useCachedStudy, type CachedStudyResult } from './hooks/useCachedStudy';
 
 type SnapshotStudy<T> = T & { snapshot?: SummarySnapshotStatus };
-type StudyResult<T> = { data?: SnapshotStudy<T>; error?: string; loading: boolean; retry: () => void };
+type StudyResult<T> = CachedStudyResult<SnapshotStudy<T>>;
 
 function useStudy<T>(url: string, supplied?: SnapshotStudy<T>): StudyResult<T> {
-  const [attempt, setAttempt] = useState(0);
-  const [result, setResult] = useState<{ attempt: number; data?: SnapshotStudy<T>; error?: string }>({ attempt: -1 });
-  useEffect(() => {
-    if (supplied) return;
-    const controller = new AbortController();
-    fetch(url, { signal: controller.signal }).then(async response => {
-      if (!response.ok) throw new Error('The saved observations could not be loaded.');
-      return response.json() as Promise<SnapshotStudy<T>>;
-    }).then(data => { if (!controller.signal.aborted) setResult({ attempt, data }); })
-      .catch(() => { if (!controller.signal.aborted) setResult({ attempt, error: 'The saved observations could not be loaded.' }); });
-    return () => controller.abort();
-  }, [attempt, supplied, url]);
-  return supplied ? { data: supplied, loading: false, retry: () => {} } : { ...result, loading: result.attempt !== attempt, retry: () => setAttempt(value => value + 1) };
+  return useCachedStudy<SnapshotStudy<T>>(url, supplied);
 }
 
 const count = (value: number) => value.toLocaleString();
@@ -35,7 +24,9 @@ function Status({ ready, children }: { ready: boolean; children?: ReactNode }) {
 
 function StudyLoadState({ result, label }: { result: StudyResult<unknown>; label: string }) {
   if (result.loading) return <p className="story-loading" role="status">Loading {label} observations…</p>;
+  if (result.error && result.data) return <p className="mb-4 text-sm text-amber-200" role="alert">Refresh unavailable; showing saved observations. <button type="button" onClick={result.retry} className="underline">Retry {label} observations</button></p>;
   if (result.error) return <div className="story-loading" role="alert"><p>{label[0].toUpperCase() + label.slice(1)} observations are temporarily unavailable.</p><button type="button" onClick={result.retry} className="story-link mt-3">Retry {label} observations <span aria-hidden="true">↻</span></button></div>;
+  if (result.refreshing) return <p className="mb-3 text-xs text-slate-400" role="status">Updating {label} observations…</p>;
   return null;
 }
 
@@ -79,7 +70,7 @@ function RowFinding({ row, data }: { row?: StudyRowComparison; data: RowStudyDat
 
 function RoadwayStory({ data: supplied }: { data?: SnapshotStudy<RowStudyData> }) {
   const result = useStudy<RowStudyData>('/api/row-study?mode=streetcar', supplied);
-  const row = useMemo(() => result.data ? selectRowEvidence(rowStudyFromCells(result.data, { mode: 'streetcar' }).comparisons)[0] : undefined, [result.data]);
+  const row = useMemo(() => result.data ? selectRowEvidence(supplied ? rowStudyFromCells(result.data, { mode: 'streetcar' }).comparisons : result.data.comparisons)[0] : undefined, [result.data, supplied]);
   return <section className="story-chapter" aria-labelledby="story-row-heading">
     <div className="story-chapter-intro">
       <span className="story-chapter-number" aria-hidden="true">01</span>
@@ -88,7 +79,7 @@ function RoadwayStory({ data: supplied }: { data?: SnapshotStudy<RowStudyData> }
       <p className="story-chapter-description">Some streetcars have their own track. Others share space with traffic. We compare completed stretches of travel to see how their times differ.</p>
       <a href="#row" className="story-link mt-5">Explore the roadway evidence <span aria-hidden="true">→</span></a>
     </div>
-    <div className="min-w-0"><StaleNotice data={result.data} /><StudyLoadState result={result} label="roadway" />{!result.loading && !result.error && result.data && <RowFinding row={row} data={result.data} />}</div>
+    <div className="min-w-0"><StaleNotice data={result.data} /><StudyLoadState result={result} label="roadway" />{!result.loading && result.data && <RowFinding row={row} data={result.data} />}</div>
   </section>;
 }
 
@@ -117,8 +108,8 @@ function SignalFinding({ row, data, mode }: { row?: StudySignalSummary; data: Si
 
 function SignalStory({ mode, data: supplied }: { mode: StudyMode; data?: SnapshotStudy<SignalStudyData> }) {
   const result = useStudy<SignalStudyData>(`/api/signal-study?mode=${mode}`, supplied);
-  const row = useMemo(() => result.data ? selectSignalEvidence(signalStudyFromCells(result.data, { mode }).signals.filter(row => row.context === 'signal_only'))[0] : undefined, [mode, result.data]);
-  return <div className="min-w-0"><StaleNotice data={result.data} /><StudyLoadState result={result} label={mode === 'streetcar' ? 'streetcar signal' : 'bus signal'} />{!result.loading && !result.error && result.data && <SignalFinding row={row} data={result.data} mode={mode} />}</div>;
+  const row = useMemo(() => result.data ? selectSignalEvidence((supplied ? signalStudyFromCells(result.data, { mode }).signals : result.data.signals).filter(row => row.context === 'signal_only'))[0] : undefined, [mode, result.data, supplied]);
+  return <div className="min-w-0"><StaleNotice data={result.data} /><StudyLoadState result={result} label={mode === 'streetcar' ? 'streetcar signal' : 'bus signal'} />{!result.loading && result.data && <SignalFinding row={row} data={result.data} mode={mode} />}</div>;
 }
 
 export default function StoryPage({ rowData, signalData }: { rowData?: SnapshotStudy<RowStudyData>; signalData?: SnapshotStudy<SignalStudyData> }) {
