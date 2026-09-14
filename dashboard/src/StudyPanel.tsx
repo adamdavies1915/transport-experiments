@@ -11,58 +11,73 @@ const input = 'mt-1 block w-full rounded-lg border border-slate-600 bg-slate-900
 const context: Record<StudyContext, string> = { signal_only: 'Signal only', both: 'Signal + passenger stop', stop_only: 'Passenger stop only', neither: 'No signal or passenger stop nearby' };
 const sourceLabel = (source: StudySource) => source === 'lepass' ? 'Le Pass' : 'SSE';
 const minutes = (seconds: number | null) => seconds == null ? 'Not available' : `${(seconds / 60).toFixed(seconds !== 0 && Math.abs(seconds) < 3 ? 2 : 1)} min`;
+const seconds = (value: number | null) => value == null ? 'Not available' : `${value === 0 ? '0' : Math.abs(value) < 1 ? value.toFixed(1) : Math.round(value).toLocaleString()} sec`;
 const percent = (value: number | null) => value == null ? 'Not available' : value > 0 && value < 0.01 ? '<1%' : `${(value * 100).toFixed(0)}%`;
 const count = (value: number) => value.toLocaleString();
 const comparisonKey = (row: StudyRowComparison) => `${row.source}:${row.id}`;
 const signalKey = (row: StudySignalSummary) => `${row.source}:${row.mode}:${row.site_id}:${row.route_id}:${row.direction_id}:${row.context}`;
 
 function ComparisonDetail({ row }: { row: StudyRowComparison }) {
+  const ready = row.status === 'ready';
+  const observed = ready ? row : row.observed;
+  const timingUncertain = observed && observed.shared_extra_lower_seconds_per_km != null && observed.shared_extra_upper_seconds_per_km != null
+    && observed.shared_extra_lower_seconds_per_km <= 0 && observed.shared_extra_upper_seconds_per_km >= 0;
   return <div className="rounded-xl border border-slate-600 bg-slate-800 p-5 sm:p-6" aria-label="Selected roadway evidence">
     <p className="text-sm text-slate-300">Route {row.route_id} · Direction {row.direction_id} · {sourceLabel(row.source)} observations</p>
     <h3 className="font-semibold text-xl mt-2">Time to travel one kilometre</h3>
-    {row.status === 'ready' ? <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mt-5">
-      <div><p className="text-sm text-emerald-300">Reserved right of way</p><p className="text-3xl font-semibold mt-2">{minutes(row.reserved_seconds_per_km)}</p></div>
-      <div><p className="text-sm text-orange-300">Shared roadway</p><p className="text-3xl font-semibold mt-2">{minutes(row.shared_seconds_per_km)}</p></div>
-      <div><p className="text-sm text-slate-300">Shared minus reserved</p><p className="text-3xl font-semibold mt-2">{minutes(row.shared_extra_seconds_per_km)}</p><p className="text-xs text-slate-400 mt-2">per km · negative means less recorded time</p></div>
-    </div> : <p className="text-amber-200 mt-4" role="status">Still building a comparable sample: {row.matched_dates} shared observation dates. Each roadway class needs 30 completed passages across at least 7 dates.</p>}
+    {!ready && observed && <p className="text-sm text-amber-200 mt-3"><strong>Preliminary observations</strong> · Below the repeated-observation threshold.</p>}
+    {observed ? <>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mt-5">
+        <div><p className="text-sm text-emerald-300">Reserved right of way</p><p className="text-3xl font-semibold mt-2">{minutes(observed.reserved_seconds_per_km)}</p></div>
+        <div><p className="text-sm text-orange-300">Shared roadway</p><p className="text-3xl font-semibold mt-2">{minutes(observed.shared_seconds_per_km)}</p></div>
+        <div><p className="text-sm text-slate-300">Shared minus reserved</p><p className="text-3xl font-semibold mt-2">{minutes(observed.shared_extra_seconds_per_km)}</p><p className="text-xs text-slate-400 mt-2">per km · negative means less recorded time</p></div>
+      </div>
+      <p className="text-sm text-slate-300 mt-4">{count(row.reserved_passages)} reserved and {count(row.shared_passages)} shared passages on {row.matched_dates} matched dates.{row.observed?.dates.length ? ` ${row.observed.dates[0]} to ${row.observed.dates[row.observed.dates.length - 1]}.` : ''}</p>
+      {timingUncertain && <p className="text-sm text-amber-200 mt-3">Timing uncertainty spans zero: these observations cannot yet establish which roadway class is quicker.</p>}
+      {!ready && <p className="text-xs text-slate-400 mt-3">We require 30 completed passages in each roadway class across at least 7 matched dates before publishing a day-to-day interval.</p>}
+    </> : <p className="text-amber-200 mt-4" role="status">No comparable shared observation dates yet. A comparison needs reserved and shared passages from the same feed on the same dates and under matched conditions.</p>}
     <p className="text-sm text-slate-300 mt-4">This compares different places under matched conditions; it does not isolate the causal effect of roadway design.</p>
     <details className="mt-5 border-t border-slate-700 pt-4 text-sm">
       <summary className="cursor-pointer text-blue-300">Sample and uncertainty</summary>
       <p className="mt-3 text-slate-300">{row.day_type}s · {String(row.time_band * 4).padStart(2, '0')}:00–{String(row.time_band * 4 + 3).padStart(2, '0')}:59 · {context[row.context]}. {row.signal_count} mapped signals and {row.stop_count} passenger stops per window.</p>
-      <p className="mt-3 text-slate-300">{count(row.reserved_passages)} reserved and {count(row.shared_passages)} shared passages on {row.matched_dates} matched dates.</p>
-      {row.status === 'ready' && <>
-        <p className="text-slate-300 mt-3">Timing range for the difference: {minutes(row.shared_extra_lower_seconds_per_km)} to {minutes(row.shared_extra_upper_seconds_per_km)} per km. Sampling and timestamp precision are included; GPS error is not.</p>
-        <p className="text-slate-300 mt-3">95% interval across service dates: {minutes(row.shared_extra_ci_lower_seconds_per_km)} to {minutes(row.shared_extra_ci_upper_seconds_per_km)} per km. This measures day-to-day variation separately from the clock range above.</p>
-      </>}
+      {row.observed?.dates.length ? <p className="mt-3 text-slate-300">Matched service dates: {row.observed.dates.join(', ')}.</p> : null}
+      {observed && <p className="text-slate-300 mt-3">Timing range for the difference: {minutes(observed.shared_extra_lower_seconds_per_km)} to {minutes(observed.shared_extra_upper_seconds_per_km)} per km. Sampling and timestamp precision are included; GPS error is not. This is not a confidence interval.</p>}
+      {ready && <p className="text-slate-300 mt-3">95% interval across service dates: {minutes(row.shared_extra_ci_lower_seconds_per_km)} to {minutes(row.shared_extra_ci_upper_seconds_per_km)} per km. This measures day-to-day variation separately from the clock range above.</p>}
     </details>
   </div>;
 }
 
 function SignalDetail({ row, name }: { row: StudySignalSummary; name: string }) {
   const ready = row.status === 'ready';
+  const sampled = row.evaluable_encounters > 0 && row.detected_wait_seconds_per_encounter != null;
+  const detected = row.detected_wait_encounters > 0 && row.wait_events > 0;
   return <div className="rounded-xl border border-slate-600 bg-slate-800 p-5 sm:p-6" aria-label="Selected signal evidence">
     <p className="text-sm text-slate-300">Route {row.route_id} · Direction {row.direction_id} · {sourceLabel(row.source)} observations</p>
     <h3 className="text-xl font-semibold mt-2">{name}</h3>
-    {ready ? <div className="mt-5">
-      <p className="text-sm text-slate-300">Detected wait per encounter</p>
-      <p className="text-4xl font-semibold mt-2">{minutes(row.evaluable_encounters ? row.detected_wait_seconds_per_encounter : null)}</p>
-      <p className="text-sm text-slate-300 mt-3">A wait was detected on {percent(row.evaluable_encounters ? row.detected_wait_probability : null)} of complete encounters.</p>
-      <p className="text-xs text-slate-400 mt-2">{count(row.evaluable_encounters)} of {count(row.encounters)} encounters had enough sampling to evaluate waiting, across {row.evaluable_dates} dates.</p>
-    </div> : <p className="mt-4 rounded-lg bg-slate-900 p-4 text-sm text-amber-200" role="status">Collecting a headline sample: {count(row.evaluable_encounters)} evaluable encounters across {row.evaluable_dates} dates. An estimate needs at least 30 evaluable encounters across 7 dates.</p>}
+    {!ready && sampled && <p className="text-sm text-amber-200 mt-3"><strong>Preliminary observations</strong> · Below the repeated-observation threshold.</p>}
+    {sampled && <div className="mt-5">
+      {detected ? <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+        <div><p className="text-sm text-slate-300">Detected wait per encounter</p><p className="text-4xl font-semibold mt-2">{seconds(row.detected_wait_seconds_per_encounter)}</p></div>
+        <div><p className="text-sm text-slate-300">Mean per detected wait</p><p className="text-3xl font-semibold mt-2">{seconds(row.mean_detected_wait_seconds)}</p></div>
+      </div> : <p className="text-2xl font-semibold">No waits detected</p>}
+      <p className="text-sm text-slate-300 mt-3">{count(row.detected_wait_encounters)} of {count(row.encounters)} complete encounters had a detected wait ({percent(row.detected_wait_probability)}). {count(row.wait_events)} detected waits.</p>
+      <p className="text-xs text-slate-400 mt-2">{count(row.evaluable_encounters)} of {count(row.encounters)} encounters had enough sampling to evaluate waiting, across {row.evaluable_dates} dates.{row.observed_from && row.observed_to ? ` Observed ${row.observed_from} to ${row.observed_to}.` : ''}</p>
+      <p className="text-xs text-slate-400 mt-2">{count(row.encounters - row.evaluable_encounters)} encounters had insufficient sampling; they remain in the per-encounter denominator. Short waits can be missed.</p>
+      {!ready && <p className="text-xs text-slate-400 mt-3">We require at least 30 evaluable encounters across 7 dates before publishing a day-to-day interval.</p>}
+    </div>}
     <p className="text-sm text-slate-300 mt-4">Stationary time near a signal is a candidate wait. It does not establish that a red light caused it.</p>
     {row.context === 'both' && <p className="mt-4 rounded-lg bg-purple-300/10 p-3 text-sm text-purple-200">A passenger stop overlaps this signal. Boarding and signal delay cannot be separated here, so a signal-priority saving is not calculated.</p>}
     {row.evaluable_encounters === 0 ? <p className="mt-4 text-sm text-amber-200">No encounter had enough sampling to evaluate waiting. More observations are needed before showing a priority scenario.</p> : !ready && row.context !== 'both' ? <p className="mt-4 text-sm text-slate-300">Priority scenarios remain unavailable until the headline sample threshold is met.</p> : null}
     <details className="mt-5 border-t border-slate-700 pt-4 text-sm">
       <summary className="cursor-pointer text-blue-300">Sample and uncertainty</summary>
       <p className="text-slate-300 mt-3">{count(row.encounters)} complete encounters · {count(row.detected_wait_encounters)} with a detected wait · {count(row.wait_events)} detected waits. {count(row.encounters - row.evaluable_encounters)} encounters had insufficient sampling; they remain in the per-encounter denominator.</p>
-      {ready && <><p className="text-slate-300 mt-3">Mean per detected wait: {minutes(row.mean_detected_wait_seconds)}. Approximate minutes, based on detected stationary time.</p><p className="text-slate-300 mt-3">95% interval across service dates: {minutes(row.detected_wait_seconds_per_encounter_ci_lower)} to {minutes(row.detected_wait_seconds_per_encounter_ci_upper)} per encounter. Clock uncertainty is separate.</p></>}
-      {!ready && row.evaluable_encounters > 0 && <p className="mt-3 text-slate-300"><strong>Preliminary observations:</strong> detected wait per encounter: {minutes(row.detected_wait_seconds_per_encounter)}. Mean per detected wait: {minutes(row.mean_detected_wait_seconds)}. Detected on {percent(row.detected_wait_probability)} of complete encounters. This sparse sample is not a headline estimate.</p>}
+      {ready && sampled && <p className="text-slate-300 mt-3">95% interval across service dates: {seconds(row.detected_wait_seconds_per_encounter_ci_lower)} to {seconds(row.detected_wait_seconds_per_encounter_ci_upper)} per encounter. Clock uncertainty is separate.</p>}
     </details>
     {ready && row.evaluable_encounters > 0 && row.context !== 'both' && <details className="mt-4 border-t border-slate-700 pt-4">
       <summary className="cursor-pointer text-sm text-blue-300">What could signal priority save here?</summary>
       <p className="text-sm text-slate-300 mt-3">If priority recovered some detected waiting time:</p>
-      <div className="grid grid-cols-3 gap-3 mt-3">{row.recovery_seconds_per_encounter.map(scenario => <div key={scenario.percent}><p className="text-xs text-slate-300">{scenario.percent}% recovered</p><p className="text-xl font-semibold text-amber-300 mt-1">{minutes(scenario.seconds)}</p></div>)}</div>
-      <p className="text-xs text-slate-400 mt-3">Illustrative minutes saved per encounter. These assumptions are not measured priority effects and do not prove signal control. Site figures are not summed into an end-to-end journey.</p>
+      <div className="grid grid-cols-3 gap-3 mt-3">{row.recovery_seconds_per_encounter.map(scenario => <div key={scenario.percent}><p className="text-xs text-slate-300">{scenario.percent}% recovered</p><p className="text-xl font-semibold text-amber-300 mt-1">{seconds(scenario.seconds)}</p></div>)}</div>
+      <p className="text-xs text-slate-400 mt-3">Illustrative seconds saved per encounter. These assumptions are not measured priority effects and do not prove signal control. Site figures are not summed into an end-to-end journey.</p>
     </details>}
   </div>;
 }
@@ -75,7 +90,13 @@ export default function StudyPanel({ kind, data: supplied, initialFilters }: { k
   for (const [key, value] of Object.entries(filters)) if (value != null && value !== '') params.set(key, String(value));
   const url = `/api/${kind === 'row' ? 'row' : 'signal'}-study?${params}`;
   const { data: raw, loading, error, refreshing, retry } = useCachedStudy<Data>(url, supplied);
-  const data: Data | undefined = useMemo(() => supplied ? ('comparisons' in supplied ? rowStudyFromCells(supplied, filters) : signalStudyFromCells(supplied, filters)) : raw, [supplied, raw, filters]);
+  const data: Data | undefined = useMemo(() => {
+    if (supplied) return 'comparisons' in supplied ? rowStudyFromCells(supplied, filters) : signalStudyFromCells(supplied, filters);
+    // Older saved HTTP responses predate descriptive comparison fields. Keep
+    // the shared request cache, deriving these rates once per response/filter.
+    if (raw && 'comparisons' in raw && raw.comparisons.some(row => row.matched_dates > 0 && !row.observed)) return rowStudyFromCells(raw, filters);
+    return raw;
+  }, [supplied, raw, filters]);
   const from = filters.from ?? raw?.from ?? '', to = filters.to ?? raw?.to ?? '';
   const routes = [...new Set((raw?.network.paths ?? []).filter(path => path.mode === filters.mode).map(path => path.route_id))].sort((a, b) => Number(a) - Number(b) || a.localeCompare(b));
   const directions = [...new Set((raw?.network.paths ?? []).filter(path => path.mode === filters.mode && (!filters.route_id || path.route_id === filters.route_id)).map(path => path.direction_id))].sort();
@@ -134,7 +155,7 @@ export default function StudyPanel({ kind, data: supplied, initialFilters }: { k
         <summary className="cursor-pointer font-medium">Explore {resultCount} {kind === 'row' ? 'matched comparisons' : 'site results'}</summary>
         <p className="text-sm text-slate-300 my-4">Select a result below. Routes, directions and stop contexts stay separate.{!filters.source && ' Each result uses one feed for the full date range; overlapping feeds are not added together.'}</p>
         <div className="overflow-x-auto"><table className="w-full text-left text-sm"><thead><tr className="border-b border-slate-600"><th className="p-2 pl-0">{kind === 'row' ? 'Route / matched context' : 'Site / route / context'}</th><th className="p-2">{kind === 'row' ? 'Shared extra / km' : 'Detected wait / encounter'}</th><th className="p-2">{kind === 'row' ? 'Matched dates' : 'Encounters'}</th></tr></thead><tbody>
-          {kind === 'row' ? (showAllRows ? comparisons : comparisons.slice(0, 12)).map(row => <tr key={comparisonKey(row)} className={comparison && comparisonKey(comparison) === comparisonKey(row) ? 'bg-slate-700/50' : 'border-b border-slate-700'}><td className="p-2 pl-0"><button type="button" className="text-left text-blue-300 underline" onClick={() => setSelected(comparisonKey(row))}>Route {row.route_id} · Direction {row.direction_id}</button><p className="text-xs text-slate-400 mt-1">{sourceLabel(row.source)} · {context[row.context]} · {row.signal_count} signals / {row.stop_count} stops · {row.day_type} · {row.time_band * 4}:00–{row.time_band * 4 + 3}:59</p></td><td className="p-2 whitespace-nowrap">{row.status === 'ready' ? minutes(row.shared_extra_seconds_per_km) : 'Collecting'}</td><td className="p-2">{row.matched_dates}</td></tr>) : (showAllRows ? signals : signals.slice(0, 12)).map(row => <tr key={signalKey(row)} className={signal && signalKey(signal) === signalKey(row) ? 'bg-slate-700/50' : 'border-b border-slate-700'}><td className="p-2 pl-0"><button type="button" className="text-left text-blue-300 underline" onClick={() => { setSelected(signalKey(row)); setSiteId(row.site_id); }}>{name(row.site_id)}</button><p className="text-xs text-slate-400 mt-1">{sourceLabel(row.source)} · Route {row.route_id} · Direction {row.direction_id} · {context[row.context]}</p></td><td className="p-2 whitespace-nowrap">{row.status === 'ready' ? minutes(row.detected_wait_seconds_per_encounter) : 'Preliminary'}</td><td className="p-2">{count(row.encounters)}</td></tr>)}
+          {kind === 'row' ? (showAllRows ? comparisons : comparisons.slice(0, 12)).map(row => <tr key={comparisonKey(row)} className={comparison && comparisonKey(comparison) === comparisonKey(row) ? 'bg-slate-700/50' : 'border-b border-slate-700'}><td className="p-2 pl-0"><button type="button" className="text-left text-blue-300 underline" onClick={() => setSelected(comparisonKey(row))}>Route {row.route_id} · Direction {row.direction_id}</button><p className="text-xs text-slate-400 mt-1">{sourceLabel(row.source)} · {context[row.context]} · {row.signal_count} signals / {row.stop_count} stops · {row.day_type} · {row.time_band * 4}:00–{row.time_band * 4 + 3}:59</p></td><td className="p-2 whitespace-nowrap">{row.status === 'ready' ? minutes(row.shared_extra_seconds_per_km) : row.observed ? <>{minutes(row.observed.shared_extra_seconds_per_km)}<span className="block text-xs text-amber-200">Preliminary</span></> : 'No matched dates'}</td><td className="p-2">{row.matched_dates}</td></tr>) : (showAllRows ? signals : signals.slice(0, 12)).map(row => <tr key={signalKey(row)} className={signal && signalKey(signal) === signalKey(row) ? 'bg-slate-700/50' : 'border-b border-slate-700'}><td className="p-2 pl-0"><button type="button" className="text-left text-blue-300 underline" onClick={() => { setSelected(signalKey(row)); setSiteId(row.site_id); }}>{name(row.site_id)}</button><p className="text-xs text-slate-400 mt-1">{sourceLabel(row.source)} · Route {row.route_id} · Direction {row.direction_id} · {context[row.context]}</p></td><td className="p-2 whitespace-nowrap">{row.evaluable_encounters > 0 && row.detected_wait_seconds_per_encounter != null ? <>{row.detected_wait_encounters > 0 ? seconds(row.detected_wait_seconds_per_encounter) : 'No waits detected'}{row.status !== 'ready' && <span className="block text-xs text-amber-200">Preliminary</span>}</> : 'Insufficient sampling'}</td><td className="p-2">{count(row.encounters)}</td></tr>)}
         </tbody></table></div>
         {resultCount > 12 && <button type="button" className="mt-4 text-sm text-blue-300 underline" aria-expanded={showAllRows} onClick={() => setShowAllRows(value => !value)}>{showAllRows ? 'Show fewer results' : `Show all ${resultCount} results`}</button>}
       </details>}

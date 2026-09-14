@@ -42,20 +42,28 @@ export function compareRowCells(cells: StudyRowCell[]): StudyRowComparison[] {
   for(const [id,group] of [...groups].sort(([a],[b])=>a.localeCompare(b))) {
     const first=group[0];
     const dates=[...new Set(group.map(cell=>cell.date))].sort();
-    const matched=dates.map(date=>({reserved:group.filter(cell=>cell.date===date&&cell.row_class==='reserved'),shared:group.filter(cell=>cell.date===date&&cell.row_class==='shared')})).filter(day=>day.reserved.length&&day.shared.length);
+    const matched=dates.map(date=>({date,reserved:group.filter(cell=>cell.date===date&&cell.row_class==='reserved'),shared:group.filter(cell=>cell.date===date&&cell.row_class==='shared')})).filter(day=>day.reserved.length&&day.shared.length);
     const reserved_passages=sum(matched,day=>sum(day.reserved,cell=>cell.passages)),shared_passages=sum(matched,day=>sum(day.shared,cell=>cell.passages));
     const ready=matched.length>=ROW_MIN_DATES&&reserved_passages>=ROW_MIN_PASSAGES&&shared_passages>=ROW_MIN_PASSAGES;
     const rate=(rows:StudyRowCell[],field:'duration_seconds'|'duration_lower_seconds'|'duration_upper_seconds')=>1000*sum(rows,cell=>cell[field])/sum(rows,cell=>cell.distance_meters);
-    const reserved=ready?mean(matched.map(day=>rate(day.reserved,'duration_seconds'))):null;
-    const shared=ready?mean(matched.map(day=>rate(day.shared,'duration_seconds'))):null;
+    let observed:StudyRowComparison['observed'];
+    if(matched.length) {
+      const reserved=mean(matched.map(day=>rate(day.reserved,'duration_seconds')));
+      const shared=mean(matched.map(day=>rate(day.shared,'duration_seconds')));
+      observed={dates:matched.map(day=>day.date),reserved_seconds_per_km:reserved,shared_seconds_per_km:shared,shared_extra_seconds_per_km:shared-reserved,
+        shared_extra_lower_seconds_per_km:mean(matched.map(day=>rate(day.shared,'duration_lower_seconds')-rate(day.reserved,'duration_upper_seconds'))),
+        shared_extra_upper_seconds_per_km:mean(matched.map(day=>rate(day.shared,'duration_upper_seconds')-rate(day.reserved,'duration_lower_seconds')))};
+    }
+    const reserved=ready?observed?.reserved_seconds_per_km??null:null;
+    const shared=ready?observed?.shared_seconds_per_km??null:null;
     const ci=ready?serviceDateBootstrap(matched.map(day=>({numerator:rate(day.shared,'duration_seconds')-rate(day.reserved,'duration_seconds'),denominator:1}))):null;
     comparisons.push({id,source:first.source,mode:first.mode,route_id:first.route_id,direction_id:first.direction_id,day_type:first.day_type,time_band:first.time_band,context:first.context,signal_count:first.signal_count,stop_count:first.stop_count,
-      status:ready?'ready':'insufficient_data',reserved_passages,shared_passages,matched_dates:matched.length,
+      status:ready?'ready':'insufficient_data',reserved_passages,shared_passages,matched_dates:matched.length,...(observed?{observed}:{}),
       reserved_seconds_per_km:reserved,shared_seconds_per_km:shared,
       reserved_speed_mph:reserved!=null&&reserved>0?2236.9362920544/reserved:null,shared_speed_mph:shared!=null&&shared>0?2236.9362920544/shared:null,
       shared_extra_seconds_per_km:shared!=null&&reserved!=null?shared-reserved:null,
-      shared_extra_lower_seconds_per_km:ready?mean(matched.map(day=>rate(day.shared,'duration_lower_seconds')-rate(day.reserved,'duration_upper_seconds'))):null,
-      shared_extra_upper_seconds_per_km:ready?mean(matched.map(day=>rate(day.shared,'duration_upper_seconds')-rate(day.reserved,'duration_lower_seconds'))):null,
+      shared_extra_lower_seconds_per_km:ready?observed?.shared_extra_lower_seconds_per_km??null:null,
+      shared_extra_upper_seconds_per_km:ready?observed?.shared_extra_upper_seconds_per_km??null:null,
       shared_extra_ci_lower_seconds_per_km:ci?.[0]??null,shared_extra_ci_upper_seconds_per_km:ci?.[1]??null});
   }
   return comparisons;
@@ -81,7 +89,7 @@ export function summarizeSignalCells(cells: StudySignalCell[]): StudySignalSumma
     const perEncounter=encounters>0&&evaluable_encounters>0?wait_seconds/encounters:null;
     const ci=ready?serviceDateBootstrap(dates.map(date=>({numerator:sum(rows.filter(row=>row.date===date),row=>row.wait_seconds),denominator:sum(rows.filter(row=>row.date===date),row=>row.encounters)}))):null;
     return{source:first.source,mode:first.mode,route_id:first.route_id,direction_id:first.direction_id,site_id:first.site_id,context:first.context,encounters,evaluable_encounters,detected_wait_encounters,wait_events,wait_seconds,
-      status:ready?'ready' as const:'insufficient_data' as const,observed_dates:dates.length,evaluable_dates,
+      status:ready?'ready' as const:'insufficient_data' as const,observed_dates:dates.length,evaluable_dates,observed_from:dates[0],observed_to:dates[dates.length-1],
       detected_wait_probability:encounters>0&&evaluable_encounters>0?detected_wait_encounters/encounters:null,mean_detected_wait_seconds:wait_events>0?wait_seconds/wait_events:null,detected_wait_seconds_per_encounter:perEncounter,
       detected_wait_seconds_per_encounter_ci_lower:ci?.[0]??null,detected_wait_seconds_per_encounter_ci_upper:ci?.[1]??null,
       recovery_seconds_per_encounter:([25,50,75] as const).map(percent=>({percent,seconds:first.context==='signal_only'&&perEncounter!=null?percent/100*perEncounter:null}))};

@@ -93,12 +93,26 @@ test('signal readiness requires thirty evaluable encounters across seven dates p
   assert.equal(signalStudyFromCells(signalData(days.map(d=>({...d,evaluable_encounters:0,wait_events:0,wait_seconds:0,detected_wait_encounters:0}))),{}).signals[0].detected_wait_seconds_per_encounter,null);
 });
 
-test('signal headline and priority scenarios wait for readiness and label service-date uncertainty',()=>{
+test('signal figures appear provisionally while priority scenarios and service-date intervals wait for readiness',()=>{
   const sparse=renderToStaticMarkup(<StudyPanel kind="signals" data={signalData([signalCell()])}/>);
-  assert.match(sparse,/Collecting a headline sample/);assert.match(sparse,/Preliminary observations/);assert.doesNotMatch(sparse,/25% recovered/);
+  const lead=sparse.match(/aria-label="Selected signal evidence"([\s\S]*?)<details/)?.[1]??'';
+  assert.match(lead,/Preliminary observations/);assert.match(lead,/Detected wait per encounter/);assert.match(lead,/>9 sec<\/p>/);
+  assert.match(lead,/Mean per detected wait/);assert.match(lead,/>30 sec<\/p>/);
+  assert.match(lead,/2 of 10 complete encounters had a detected wait \(20%\)/);
+  assert.match(lead,/6 of 10 encounters had enough sampling/);assert.match(lead,/Observed 2026-09-01 to 2026-09-01/);
+  assert.match(sparse,/<td[^>]*>9 sec<span[^>]*>Preliminary<\/span>/);
+  assert.doesNotMatch(sparse,/25% recovered|95% interval across service dates/);
   const cells=Array.from({length:7},(_,i)=>signalCell({date:`2026-09-${String(i+1).padStart(2,'0')}`,wait_seconds:i*30}));
   const ready=renderToStaticMarkup(<StudyPanel kind="signals" data={signalData(cells)}/>);
   assert.match(ready,/25% recovered/);assert.match(ready,/95% interval across service dates/);assert.doesNotMatch(ready,/Collecting a headline sample/);
+  assert.match(ready,/Illustrative seconds saved per encounter/);assert.doesNotMatch(ready,/\d(?:\.\d+)? min(?:<|[ .,])/);
+  const subsecond=renderToStaticMarkup(<StudyPanel kind="signals" data={signalData([signalCell({wait_seconds:3.28})])}/>);
+  assert.match(subsecond,/>0\.3 sec<\/p>/);assert.match(subsecond,/>1 sec<\/p>/);
+  assert.match(subsecond,/<td[^>]*>0\.3 sec<span[^>]*>Preliminary<\/span>/);
+  const repeatedSubsecond=renderToStaticMarkup(<StudyPanel kind="signals" data={signalData(cells.map(cell=>({...cell,wait_seconds:3.28})))}/>);
+  assert.match(repeatedSubsecond,/95% interval across service dates: 0\.3 sec to 0\.3 sec/);
+  assert.match(repeatedSubsecond,/25% recovered<\/p><p[^>]*>0\.1 sec<\/p>/);
+  assert.doesNotMatch(repeatedSubsecond,/\d(?:\.\d+)? min(?:<|[ .,])/);
 });
 
 
@@ -127,22 +141,60 @@ test('both-feed signal view leads with supported evidence rather than the larges
   const lepass=Array.from({length:8},(_,i)=>signalCell({date:`2026-09-${String(i+1).padStart(2,'0')}`,source:'lepass',wait_seconds:120}));
   const html=renderToStaticMarkup(<StudyPanel kind="signals" data={signalData([...sse,...lepass])}/>);
   const lead=html.match(/aria-label="Selected signal evidence"([\s\S]*?)<details/)?.[1]??'';
-  assert.match(lead,/Le Pass observations/);assert.match(lead,/>0\.2 min<\/p>/);
-  assert.match(lead,/48 of 80 encounters/);assert.doesNotMatch(lead,/150 encounters|16\.7 min/);
+  assert.match(lead,/Le Pass observations/);assert.match(lead,/>12 sec<\/p>/);
+  assert.match(lead,/48 of 80 encounters/);assert.doesNotMatch(lead,/150 encounters|1,000 sec/);
   assert.match(html,/Explore 1 site results/);
   assert.equal((html.match(/<tbody><tr/g)??[]).length,1);
   const explicit=renderToStaticMarkup(<StudyPanel kind="signals" data={signalData([...sse,...lepass])} initialFilters={{source:'sse'}}/>);
-  assert.match(explicit,/SSE observations/);assert.match(explicit,/>16\.7 min<\/p>/);
+  assert.match(explicit,/SSE observations/);assert.match(explicit,/>1,000 sec<\/p>/);
   assert.doesNotMatch(explicit,/Le Pass observations/);
 });
 
 test('two sparse feeds cannot make a ready signal estimate or erase stop overlap',()=>{
   const cells=(['sse','lepass'] as const).flatMap(source=>Array.from({length:4},(_,i)=>signalCell({source,date:`2026-09-${String(i+1+(source==='lepass'?4:0)).padStart(2,'0')}`,context:'both',evaluable_encounters:10})));
   const html=renderToStaticMarkup(<StudyPanel kind="signals" data={signalData(cells)}/>);
-  assert.match(html,/Collecting a headline sample: 40 evaluable encounters across 4 dates/);
+  assert.match(html,/Preliminary observations/);assert.match(html,/40 of 40 encounters had enough sampling to evaluate waiting, across 4 dates/);
+  assert.match(html,/Observed 2026-09-01 to 2026-09-04/);assert.doesNotMatch(html,/Observed 2026-09-01 to 2026-09-08|across 8 dates/);
   assert.match(html,/Explore 1 site results/);
   assert.match(html,/Boarding and signal delay cannot be separated/);
   assert.doesNotMatch(html,/25% recovered|What could signal priority save here/);
+});
+
+test('preliminary roadway detail exposes real paired figures with visible dates and timing uncertainty',()=>{
+  const html=renderToStaticMarkup(<StudyPanel kind="row" data={rowData([
+    ...pairs.slice(0,4),rowCell({date:'2026-09-10',passages:10000,duration_seconds:999999}),
+    rowCell({source:'lepass',passages:10000}),rowCell({source:'lepass',row_class:'shared',passages:10000,duration_seconds:999999}),
+  ])}/>);
+  const lead=html.match(/aria-label="Selected roadway evidence"([\s\S]*?)<details/)?.[1]??'';
+  assert.match(lead,/Preliminary observations/);assert.match(lead,/SSE observations/);
+  assert.match(lead,/>1\.7 min<\/p>/);assert.match(lead,/>4\.2 min<\/p>/);assert.match(lead,/>2\.5 min<\/p>/);
+  assert.match(lead,/110 reserved and 20 shared passages on 2 matched dates/);
+  assert.match(lead,/2026-09-01 to 2026-09-02/);assert.doesNotMatch(lead,/Le Pass|10,000|2026-09-10/);
+  assert.match(lead,/Timing uncertainty spans zero/);assert.match(lead,/cannot yet establish which roadway class is quicker/);
+  assert.match(html,/<td[^>]*>2\.5 min<span[^>]*>Preliminary<\/span>/);
+  assert.match(html,/Timing range for the difference/);assert.doesNotMatch(html,/95% interval across service dates/);
+});
+
+test('unpaired roadway dates or complementary feeds cannot produce a displayed roadway figure',()=>{
+  for(const cells of [
+    [rowCell(),rowCell({row_class:'shared',date:'2026-09-02'})],
+    [rowCell(),rowCell({row_class:'shared',source:'lepass'})],
+  ]) {
+    const html=renderToStaticMarkup(<StudyPanel kind="row" data={rowData(cells)}/>);
+    assert.match(html,/No comparable shared observation dates yet/);assert.match(html,/No matched dates/);
+    assert.doesNotMatch(html,/Shared minus reserved|\d\.\d min|Preliminary observations|95% interval across service dates/);
+  }
+});
+
+test('no detected signal waits display no detection rather than a fictional zero wait duration',()=>{
+  const html=renderToStaticMarkup(<StudyPanel kind="signals" data={signalData([
+    signalCell({wait_seconds:0,wait_events:0,detected_wait_encounters:0}),
+  ])}/>);
+  const lead=html.match(/aria-label="Selected signal evidence"([\s\S]*?)<details/)?.[1]??'';
+  assert.match(lead,/No waits detected/);assert.match(lead,/0 of 10 complete encounters had a detected wait \(0%\)/);
+  assert.match(lead,/6 of 10 encounters had enough sampling/);assert.match(lead,/Short waits can be missed/);
+  assert.match(html,/<td[^>]*>No waits detected<span[^>]*>Preliminary<\/span>/);
+  assert.doesNotMatch(html,/Mean per detected wait|0\.0 min|25% recovered|95% interval across service dates/);
 });
 
 
@@ -152,7 +204,7 @@ test('signal exploration starts with ready evidence away from stops and retains 
   const html=renderToStaticMarkup(<StudyPanel kind="signals" data={signalData([...isolated,...overlap])}/>);
   const lead=html.match(/aria-label="Selected signal evidence"([\s\S]*?)<details/)?.[1]??'';
   assert.match(html,/Best-supported result away from passenger stops/);
-  assert.match(lead,/>0\.2 min<\/p>/);
+  assert.match(lead,/>12 sec<\/p>/);
   assert.doesNotMatch(lead,/passenger stop overlaps/);
   assert.match(html,/Explore 2 site results/);assert.match(html,/Signal \+ passenger stop/);
   const onlyOverlap=renderToStaticMarkup(<StudyPanel kind="signals" data={signalData(overlap)}/>);

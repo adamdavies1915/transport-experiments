@@ -71,6 +71,14 @@ export interface StudyRowComparison {
   day_type: 'weekday' | 'weekend'; time_band: number; context: StudyContext;
   signal_count: number; stop_count: number; status: 'ready' | 'insufficient_data';
   reserved_passages: number; shared_passages: number; matched_dates: number;
+  /** Descriptive same-source, same-date comparison, equally weighted by matched date.
+   * Available before readiness; timing bounds are not a confidence interval. */
+  observed?: {
+    dates: string[];
+    reserved_seconds_per_km: number; shared_seconds_per_km: number;
+    shared_extra_seconds_per_km: number;
+    shared_extra_lower_seconds_per_km: number; shared_extra_upper_seconds_per_km: number;
+  };
   reserved_seconds_per_km: number | null; shared_seconds_per_km: number | null;
   reserved_speed_mph: number | null; shared_speed_mph: number | null;
   shared_extra_seconds_per_km: number | null;
@@ -89,6 +97,8 @@ export interface StudySignalSummary {
   site_id: string; context: 'signal_only' | 'both'; encounters: number; evaluable_encounters: number;
   detected_wait_encounters: number; wait_events: number; wait_seconds: number;
   status: 'ready' | 'insufficient_data'; observed_dates: number; evaluable_dates: number;
+  /** Actual service dates for this site's observations, not the archive-wide range. */
+  observed_from?: string; observed_to?: string;
   detected_wait_probability: number | null; mean_detected_wait_seconds: number | null;
   /** Detected time / all complete encounters; not total true signal delay. */
   detected_wait_seconds_per_encounter: number | null;
