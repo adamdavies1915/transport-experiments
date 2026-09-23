@@ -126,10 +126,22 @@ export async function calculateDay(connection: DuckDBConnection, day: string, sc
   console.log(`[OTP] ${day}: ${events.length} observed timepoints; ${reported} events classified for dashboard OTP (${events.filter(e => e.status !== 'uncertain' && e.match_method === 'sequence').length} use historical sequence inference)`);
 }
 
+/** A queue created before a schedule refresh must not overwrite a newer eligible
+ * calculation. Retained first-observed dates still forbid retroactive use. */
+export async function reconcileBackfillSchedules(connection: DuckDBConnection): Promise<void> {
+  await connection.run(`UPDATE otp_backfill_days AS b SET schedule_hash=chosen.hash,applied_revision=NULL
+    FROM (SELECT b.service_date,s.hash,row_number() OVER (
+      PARTITION BY b.service_date ORDER BY s.usable_from DESC,s.fetched_at DESC,s.hash) AS priority
+      FROM otp_backfill_days b JOIN otp_schedules s
+      ON s.usable_from<=b.service_date AND s.valid_to>=b.service_date) chosen
+    WHERE chosen.priority=1 AND b.service_date=chosen.service_date AND b.schedule_hash IS DISTINCT FROM chosen.hash`);
+}
+
 export async function processRecentDays(connection: DuckDBConnection): Promise<void> {
+  await reconcileBackfillSchedules(connection);
   const snapshots = await rows<{ usable_from: string; valid_to: string; hash: string }>(connection,
     `SELECT CAST(usable_from AS VARCHAR) AS usable_from,
-      CAST(valid_to AS VARCHAR) AS valid_to, hash FROM otp_schedules ORDER BY usable_from DESC, fetched_at DESC`);
+      CAST(valid_to AS VARCHAR) AS valid_to, hash FROM otp_schedules ORDER BY usable_from DESC, fetched_at DESC, hash`);
   const parsed = new Map<string, Schedule>();
   const load = async(hash: string) => {
     if (parsed.has(hash)) return parsed.get(hash)!;

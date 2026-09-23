@@ -52,7 +52,10 @@ The existing cloud credential is used only for SELECT/COPY reads. It is not
 claimed to be a provider-enforced read-only credential. Exported Parquet is kept
 under the data directory's `imports/cloud-*` with hashes and counts. The importer
 verifies exact content and replay multiplicity. OTP uses historically retained
-schedules, not today's schedule retroactively. A separate native worker lock
+schedules, not today's schedule retroactively. Before processing the queue, it
+reconciles requested dates with the latest eligible retained schedule. This
+prevents an import queued before refresh from overwriting a newer calculation
+with the old schedule. A separate native worker lock
 prevents overlapping catchup/daily jobs; DuckDB also prevents concurrent writers.
 Do not run the combined collector worker against this database.
 
@@ -73,8 +76,9 @@ under `runtime-data/recovery-2026-09-22`.
 ## Freshness and alerts
 
 `/api/health` remains web-server liveness. The dashboard's `/api/readiness`
-returns 503 when its saved analysis is stale; the production dashboard uses a
-36-hour analysis window for daily processing. The scheduled checks independently
+returns 503 when its saved analysis is stale. The prepared dashboard deployment
+sets a 36-hour analysis window for daily processing; the running dashboard keeps
+its previous window until that rollout is approved. The scheduled checks independently
 require collection, persistence and successful summary transport within five
 minutes. Repeatedly fetching an old summary never resets its analysis age.
 
