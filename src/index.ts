@@ -8,7 +8,8 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { unzipSync, strFromU8 } from 'fflate';
 import { parse } from 'csv-parse/sync';
-import { LocalJournal, DATA_DIR, atomicFile, diskBudget } from './local-journal';
+import { LocalJournal, DATA_DIR, atomicFile } from './local-journal';
+import { captureBudget } from './capture-budget';
 import { captureStreetcarSnapshots, snapshotSourceUrl } from './streetcar-snapshots';
 import type { CollectionBatch, StudyObservation } from './observation-types';
 import { safeError } from './log-safety';
@@ -21,7 +22,8 @@ import { processingAnalysisRevision } from './processing-revision';
 import { sealCaptureFrontier } from './capture-frontier';
 
 const SSE_URL=process.env.SSE_URL||'https://nolatransit.fly.dev/sse';
-const journal=new LocalJournal(DATA_DIR);
+const storageBudget=captureBudget(DATA_DIR);
+const journal=new LocalJournal(DATA_DIR,storageBudget);
 const STALE_MS=Number(process.env.STALE_FEED_THRESHOLD)||300_000;
 const token=process.env.TRANSIT_SUMMARY_TOKEN;
 let es:EventSource|undefined, worker:ChildProcess|undefined, stopping=false, paused=false;
@@ -108,7 +110,10 @@ const server=createServer(async(req,res)=>{
   if(processingHandler&&await processingHandler(req,res))return;
   if(req.url==='/api/health'||req.url==='/health'){res.statusCode=paused?503:200;res.end(JSON.stringify({status:paused?'paused':'ready',last_persisted_at:lastPersisted?new Date(lastPersisted).toISOString():null}));return;}
   if(!authorized(req.headers.authorization)){res.statusCode=401;res.end('{"error":"Authentication required"}');return;}
-  if(req.url==='/internal/health'){res.end(JSON.stringify({paused,frames,pending,errors,analysis:{enabled:process.env.LOCAL_ANALYSIS_ENABLED!=='false',running:!!worker},processing:coordinator?await coordinator.status():undefined,last_received_at:lastReceived?new Date(lastReceived).toISOString():null,last_persisted_at:lastPersisted?new Date(lastPersisted).toISOString():null,lepass:lepassHealth,disk:await diskBudget(DATA_DIR)}));return;}
+  if(req.url==='/internal/health'){
+    const motherduck_capture=await readFile(join(DATA_DIR,'motherduck-capture-health.json'),'utf8').then(JSON.parse).catch(()=>null);
+    res.end(JSON.stringify({paused,frames,pending,errors,analysis:{enabled:process.env.LOCAL_ANALYSIS_ENABLED!=='false',running:!!worker},processing:coordinator?await coordinator.status():undefined,last_received_at:lastReceived?new Date(lastReceived).toISOString():null,last_persisted_at:lastPersisted?new Date(lastPersisted).toISOString():null,lepass:lepassHealth,motherduck_capture,disk:await storageBudget()}));return;
+  }
   if(req.url!=='/internal/summary'){res.statusCode=404;res.end('{"error":"Not found"}');return;}
   try{
     const saved=JSON.parse(await readFile(join(DATA_DIR,'summary.json'),'utf8'));
@@ -152,7 +157,7 @@ async function main(){
   }
   server.listen(Number(process.env.PORT)||3100,'0.0.0.0');
   await loadRoutes();supervise();
-  if((await diskBudget(DATA_DIR)).allowed){connect();await startLePass();}else pause('Insufficient local disk headroom');
+  if((await storageBudget()).allowed){connect();await startLePass();}else pause('Insufficient local disk headroom');
   timer=setInterval(()=>{
     if(!paused&&Date.now()-lastReceived>STALE_MS)connect();
     console.log(`[Collection] frames=${frames} pending=${pending} paused=${paused} errors=${errors}`);

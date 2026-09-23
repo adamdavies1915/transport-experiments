@@ -19,7 +19,9 @@
     "capture:workstation": "node --import tsx scripts/capture-workstation.ts",
     "capture:server": "node --import tsx scripts/capture-server.ts",
     "process:server-history": "node --import tsx scripts/process-server-history.ts",
-    "archive:motherduck": "node --import tsx scripts/archive-motherduck.ts"
+    "archive:motherduck": "node --import tsx scripts/archive-motherduck.ts",
+    "upload:server-capture": "node --import tsx scripts/upload-server-capture.ts",
+    "process:motherduck": "node --import tsx scripts/process-motherduck-capture.ts"
   },
   "dependencies": {
     "@duckdb/node-api": "^1.5.4-r.1",

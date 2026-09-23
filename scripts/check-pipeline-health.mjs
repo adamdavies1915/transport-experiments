@@ -8,8 +8,9 @@ export function clockCheck(timestamp, maximumAgeMs, now = Date.now()) {
   return { status: Number.isFinite(age) && age >= -60_000 && age <= maximumAgeMs ? 'ok' : 'stale',
     timestamp: timestamp ?? null, age_seconds: Number.isFinite(age) ? Math.round(age / 1000) : null };
 }
-export async function checkPipeline({ collectorUrl, dashboardUrl, localUrl, localToken, fetcher = fetch, now = Date.now() }) {
+export async function checkPipeline({ collectorUrl, dashboardUrl, localUrl, localToken, requireCloudCapture = false, fetcher = fetch, now = Date.now() }) {
   const checks = {};
+  if (requireCloudCapture) checks.cloud_handoff = { status: 'unavailable' };
   async function get(url, token) {
     const r = await fetcher(url, { headers: token ? { Authorization: `Bearer ${token}` } : {}, redirect: 'error', signal: AbortSignal.timeout(15_000) });
     if (!r.ok) throw new Error('unavailable');
@@ -41,6 +42,11 @@ export async function checkPipeline({ collectorUrl, dashboardUrl, localUrl, loca
         checks.lepass = { ...clockCheck(lastSuccess, 5 * 60_000, now), reason: d.lepass?.reason ?? null };
         if (d.lepass?.status !== 'collecting') checks.lepass.status = 'degraded';
         if (d.paused) checks.durable_capture.status = 'paused';
+        if (requireCloudCapture) {
+          checks.cloud_handoff = clockCheck(d.motherduck_capture?.checked_at, 45 * 60_000, now);
+          if (d.motherduck_capture?.status !== 'ready') checks.cloud_handoff.status = 'unavailable';
+          else if (d.motherduck_capture.published_sequence < d.motherduck_capture.captured_sequence) checks.cloud_handoff.status = 'backlogged';
+        }
       } catch { checks.durable_capture = { status: 'unavailable' }; checks.lepass = { status: 'unavailable' }; }
     })()] : []),
   ]);
@@ -52,6 +58,7 @@ async function main() {
     collectorUrl: process.env.TRANSIT_COLLECTOR_HEALTH_URL || 'https://nola-transit.cargobay.dev/api/health',
     dashboardUrl: process.env.TRANSIT_DASHBOARD_HEALTH_URL || 'https://nola-transit-dashboard.cargobay.dev/api/health',
     localUrl: process.env.TRANSIT_LOCAL_HEALTH_URL,
+    requireCloudCapture: process.env.TRANSIT_REQUIRE_CLOUD_CAPTURE === 'true',
     localToken: process.env.TRANSIT_LOCAL_TOKEN_FILE ? (await readFile(process.env.TRANSIT_LOCAL_TOKEN_FILE, 'utf8')).trim() : undefined,
   });
   if (process.env.TRANSIT_HEALTH_FILE) {

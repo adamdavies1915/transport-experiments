@@ -1,5 +1,12 @@
 # Server capture, daily workstation processing
 
+**Current deployment:** the desktop now downloads capture from **MotherDuck**,
+not directly from this server API. See `OPERATIONS.md`,
+`scripts/upload-server-capture.ts`, and `scripts/process-motherduck-capture.ts`.
+The leased two-workstation/direct-server workflow below is retained as an
+alternative, but its desktop timer is disabled. Do not reenable it against the
+active server spool: verified older payloads are now retained in MotherDuck.
+
 The server continuously captures both RTA/SSE and LePass. Either workstation
 can process the daily job and publish the dashboard. Each workstation keeps its
 own historical database and raw archive; no live DuckDB file is shared.
@@ -15,10 +22,7 @@ flowchart LR
   S --> D[Public dashboard]
 ```
 
-This mode was activated for the desktop on September 22–23, 2026; see
-`OPERATIONS.md` for the actual deployment and timers. A second workstation has
-not been provisioned. MotherDuck archiving is a separate guarded workstation
-service and does not change the lease-based processing protocol or billing.
+This alternative mode is inactive. A second workstation has not been provisioned.
 
 ## Daily workflow
 

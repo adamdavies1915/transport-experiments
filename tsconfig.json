@@ -12,5 +12,5 @@
     "resolveJsonModule": true,
     "noEmit": true
   },
-  "include": ["src/**/*.ts", "scripts/process-daily.ts", "scripts/process-cloud-history.ts", "scripts/capture-workstation.ts", "scripts/capture-server.ts", "scripts/process-server-history.ts", "scripts/archive-motherduck.ts", "scripts/review-route12-geometry.ts", "scripts/export-focused-study.ts"]
+  "include": ["src/**/*.ts", "scripts/process-daily.ts", "scripts/process-cloud-history.ts", "scripts/capture-workstation.ts", "scripts/capture-server.ts", "scripts/process-server-history.ts", "scripts/process-motherduck-capture.ts", "scripts/upload-server-capture.ts", "scripts/archive-motherduck.ts", "scripts/review-route12-geometry.ts", "scripts/export-focused-study.ts"]
 }

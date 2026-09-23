@@ -25,13 +25,14 @@ export async function diskBudget(directory: string, reserveBytes = 10_000_000_00
 export class LocalJournal {
   readonly pending: string;
   private chain: Promise<void> = Promise.resolve();
-  constructor(readonly directory: string) { this.pending = join(directory, 'incoming'); }
+  constructor(readonly directory: string, private readonly budget?: (bytes: number) => Promise<{ allowed: boolean }>) { this.pending = join(directory, 'incoming'); }
   async init() { await mkdir(this.pending, { recursive: true, mode: 0o700 }); }
   append(batch: CollectionBatch): Promise<void> {
     const operation = this.chain.then(async () => {
-      if (!(await diskBudget(this.directory)).allowed) throw new Error('Local storage ceiling reached; collection must pause');
+      const compressed = gzipSync(JSON.stringify(batch), { level: 6 });
+      if (!(await (this.budget ? this.budget(compressed.length) : diskBudget(this.directory))).allowed) throw new Error('Local storage ceiling reached; collection must pause');
       const path = join(this.pending, `${batch.received_at.replace(/[^0-9]/g, '')}-${batch.batch_id}.json.gz`);
-      await atomicFile(path, gzipSync(JSON.stringify(batch), { level: 6 }));
+      await atomicFile(path, compressed);
     });
     this.chain = operation.catch(() => {});
     return operation;

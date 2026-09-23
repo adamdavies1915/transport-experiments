@@ -1,0 +1,10 @@
+[Unit]
+Description=Check for a daily MotherDuck processing job every fifteen minutes
+
+[Timer]
+OnStartupSec=2min
+OnCalendar=*:0/15
+Persistent=true
+
+[Install]
+WantedBy=timers.target

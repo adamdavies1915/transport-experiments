@@ -77,7 +77,7 @@ export async function localProcessingLock(directory: string): Promise<() => Prom
     return async()=>{db.closeSync();localLocks.delete(lock);};
   } catch(error){localLocks.delete(lock);throw error;}
 }
-async function defaultAnalysis(directory: string, jobId: string, signal: AbortSignal): Promise<void> {
+export async function defaultAnalysis(directory: string, jobId: string, signal: AbortSignal): Promise<void> {
   const root = dirname(dirname(fileURLToPath(import.meta.url)));
   await new Promise<void>((resolvePromise, reject) => {
     signal.throwIfAborted();
@@ -98,7 +98,7 @@ async function defaultAnalysis(directory: string, jobId: string, signal: AbortSi
     if(signal.aborted)stop();
   });
 }
-async function ingestManifest(directory: string, manifest: CaptureManifest, client: ProcessingClient, signal: AbortSignal, log: (s: string) => void) {
+export async function ingestManifest(directory: string, manifest: CaptureManifest, client: Pick<ProcessingClient,'download'>, signal: AbortSignal, log: (s: string) => void) {
   const archive = join(directory, 'processing', 'capture', manifest.capture_id);
   await mkdir(archive,{recursive:true,mode:0o700});
   const store = await openLocalStore(directory);

@@ -1,18 +1,40 @@
 # Current operating mode — server cutover September 22–23, 2026
 
-The server now captures **both SSE and Le Pass** into durable, verified bundles.
-This PC does not record either feed. It downloads server bundles, performs finite
-daily analysis, and publishes completed results to the existing public gateway.
-The original SSE-to-MotherDuck collector remains running independently.
+The active input path is **server → MotherDuck → this PC**. The server captures
+both SSE and Le Pass, journals them durably, and uploads original compressed
+bundles plus first-observed GTFS versions to MotherDuck. This PC downloads only
+committed MotherDuck inputs, processes them in local DuckDB, and publishes
+completed results to the public gateway. It does not record either feed.
+The original SSE-to-MotherDuck collector remains running for compatibility.
+
+MotherDuck tables `my_db.transit_capture_assets` and
+`my_db.transit_capture_manifests` are the durable handoff. Assets contain the exact
+compressed raw bytes, hashes, descriptors and sequence IDs; a manifest becomes
+visible only after remote readback verification. These are raw archive bundles,
+not a claim that each raw frame is already normalized into SQL observation rows.
+Existing normalized observation/result archive tables remain available too.
+Server bundle payloads older than the latest sealed bundle are released only
+after verifying their committed MotherDuck copies; sidecars/GTFS are retained.
+The latest bundle stays on the server for seal crash recovery. Quota/network
+failure leaves uncommitted input queued; no processing runs on the server.
+
+The real handoff was verified September 23: 48 server bundles (3,689 frames)
+were committed to MotherDuck and imported into the PC without direct raw
+server downloads. Daily analysis is scheduled at 06:00 Chicago; it refuses
+to mark a date complete if the cloud input has not reached that date's end.
 
 At the user's request, Hermes agent and web UI containers/images were removed;
-their volumes/configuration were retained. This freed about 4.1 GiB and left
-10.9 GiB available (70% disk utilization). The 10 GB reserve remains enforced.
-Headroom above that reserve is modest: server bundles are not automatically
-pruned, so monitor growth and arrange verified retention or more storage.
+their volumes/configuration were retained. OpenClaw is explicitly retained.
+Server capture uses a 512 MiB temporary queue ceiling (including 64 MiB
+packaging headroom) and a 2 GB free-space reserve, configured through
+`CAPTURE_QUEUE_MAX_BYTES` and `CAPTURE_FREE_RESERVE_BYTES`. Verified older
+bundles are released after upload. Quota/network failures retain queued data;
+capture pauses at either ceiling and must be restarted after pressure clears.
+This bounds the feed spool, not other applications, logs or GTFS storage.
+The workstation's default 10 GB / 80% disk guard is unchanged.
 
-The leased workflow in `DAILY_PROCESSING.md` is now active for this PC. A second
-workstation has not been provisioned. The verified baseline is retained at
+The direct-server leased workflow in `DAILY_PROCESSING.md` is now inactive.
+A second workstation has not been provisioned. The verified baseline is retained at
 `runtime-data/server-capture-seed-2026-09-22`; final PC journal receipts were
 also copied to `runtime-data/cutover-journal-2026-09-22` before ingestion.
 
@@ -30,11 +52,11 @@ continuing. Inspect `processing/motherduck-archive-health.json` and the service
 journal; a scheduled attempt is not proof of a successful upload. Cloud
 retention is bounded; verified disk archives remain necessary.
 
-The first no-card cycle on September 23 at 05:29 UTC was verified remotely:
+The first normalized no-card cycle on September 23 at 05:29 UTC was verified remotely:
 12,389 SSE observations, 2,248 Le Pass observations and 10 closed daily results.
 843,237 locally queued observations remained after that bounded cycle. The
-archive uploader currently runs on this PC; server capture continues while it
-is asleep, but new archive uploads await an awake workstation.
+normalized/result archive uploader runs on this PC. Raw capture upload now
+runs independently on the server, including while the PC is asleep.
 
 ## Active services
 
@@ -44,13 +66,18 @@ is asleep, but new archive uploads await an awake workstation.
   `/data/transit-capture`. The compose template reuses the existing dependency
   image (unchanged package lock) with explicitly staged read-only source mounts.
   Source updates must preserve the server/worker analysis digest match.
-- Workstation `transit-capture.service` and `transit-cloud-history.timer`:
+- Workstation `transit-capture.service`, `transit-cloud-history.timer`, and
+  `transit-server-history.timer`:
   disabled. Do not restart PC capture with the transferred Le Pass session.
-- Workstation `transit-capture-tunnel.service`: private SSH tunnel on port 13102.
-- Workstation `transit-server-history.timer`: polls every fifteen minutes;
-  the server makes the previous day's job due at 06:00 Chicago. The first
+- Workstation `transit-capture-tunnel.service`: port 13102, now for authenticated
+  health checks only, not raw-data transfer or processing.
+- Server `transit-capture-upload.timer`: uploads a bounded batch every fifteen
+  minutes, exact readback verification, then releases verified older spool files.
+- Workstation `transit-motherduck-processing.timer`: polls every fifteen minutes;
+  the previous day's job is due at 06:00 Chicago. The first
   scheduled service date is September 22, due September 23 at 06:00.
-  Failed public gateway uploads retry even after the leased job is completed.
+  Failed analysis/publication leaves the day due for retry. Raw downloads are
+  checksum-verified and imports are idempotent; each attempt has finite input.
 - Workstation `transit-motherduck-archive.timer`: hourly bounded upload attempt;
   shares the native database-worker lock with daily processing.
 - Workstation `transit-health.timer`: checks public pipeline clocks and the

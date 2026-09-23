@@ -29,3 +29,13 @@ test('live SSE cannot hide a Le Pass collector whose successful requests stopped
   assert.equal(result.checks.lepass.status, 'stale');
   assert.equal(result.status, 'degraded');
 });
+test('fresh capture cannot hide failed MotherDuck handoff', async () => {
+  const now=Date.parse('2026-09-23T05:00:00Z'),current=new Date(now).toISOString();
+  const result=await checkPipeline({now,collectorUrl:'collector',dashboardUrl:'dashboard',localUrl:'local',requireCloudCapture:true,
+    fetcher:async url=>Response.json(url==='collector'?{last_received_at:current,last_persisted_at:current}:
+      url==='dashboard'?{summary:{generated_at:current,received_at:current}}:
+      {last_persisted_at:current,lepass:{status:'collecting',queries:[{lastSuccess:current}]},motherduck_capture:{status:'error',checked_at:current}})});
+  assert.equal(result.checks.durable_capture.status,'ok');
+  assert.equal(result.checks.cloud_handoff.status,'unavailable');
+  assert.equal(result.status,'degraded');
+});

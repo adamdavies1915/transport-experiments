@@ -1,0 +1,9 @@
+[Unit]
+Description=Upload durable server capture to MotherDuck
+After=docker.service network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/docker exec -e MOTHERDUCK_CAPTURE_UPLOAD_ENABLED=true -e MOTHERDUCK_BILLING_MODE=free_no_card -e MOTHER_DUCK_API_KEY_FILE=/run/transit-secrets/motherduck-token capture-hogc8wwcsk48c88kkcsgkog4 node --import tsx scripts/upload-server-capture.ts
+TimeoutStartSec=15min
+

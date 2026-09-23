@@ -1,0 +1,11 @@
+[Unit]
+Description=Download MotherDuck capture and process on this PC
+After=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/home/adam/projects/transport-experiments
+EnvironmentFile=/home/adam/projects/transport-experiments/runtime-data/private/motherduck-processing.env
+ExecStart=/home/adam/.nvm/versions/node/v25.2.1/bin/node --import tsx scripts/process-motherduck-capture.ts
+TimeoutStartSec=infinity
+TimeoutStopSec=120
