@@ -1,0 +1,14 @@
+[Unit]
+Description=Durable workstation transit capture
+After=network-online.target
+
+[Service]
+WorkingDirectory=/home/USER/projects/transport-experiments
+EnvironmentFile=/home/USER/.config/transit-capture.env
+ExecStart=/usr/bin/node --import tsx scripts/capture-workstation.ts
+Restart=on-failure
+RestartSec=30
+TimeoutStopSec=120
+
+[Install]
+WantedBy=default.target

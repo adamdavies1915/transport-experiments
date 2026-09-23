@@ -1,0 +1,11 @@
+[Unit]
+Description=Retry daily transit catchup every hour
+
+[Timer]
+OnStartupSec=2min
+OnCalendar=hourly
+Persistent=true
+Unit=transit-cloud-history.service
+
+[Install]
+WantedBy=timers.target

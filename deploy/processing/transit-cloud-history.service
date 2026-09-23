@@ -1,0 +1,12 @@
+[Unit]
+Description=Recover cloud transit history, analyze and publish
+After=network-online.target transit-capture.service
+
+[Service]
+Type=oneshot
+# Replace USER, checkout, environment file and Node paths before installing.
+WorkingDirectory=/home/USER/projects/transport-experiments
+EnvironmentFile=/home/USER/.config/transit-cloud-history.env
+ExecStart=/usr/bin/node --import tsx scripts/process-cloud-history.ts
+TimeoutStartSec=infinity
+TimeoutStopSec=120

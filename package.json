@@ -8,13 +8,15 @@
     "start": "tsx src/collector-entry.ts",
     "dev": "tsx watch src/collector-entry.ts",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test src/*.test.ts scripts/import-server-history.test.ts",
+    "test": "node --import tsx --test src/*.test.ts scripts/import-server-history.test.ts scripts/check-pipeline-health.test.mjs",
     "otp:backfill": "tsx src/otp-worker.ts",
     "otp:validate": "tsx src/otp-validation.ts",
     "streetcars:backfill": "tsx src/streetcar-worker.ts",
     "study:backfill": "node --import tsx src/local-worker.ts --backfill",
     "history:import": "node --import tsx scripts/import-server-history.ts",
-    "process:daily": "node --import tsx scripts/process-daily.ts"
+    "process:daily": "node --import tsx scripts/process-daily.ts",
+    "process:cloud-history": "node --import tsx scripts/process-cloud-history.ts",
+    "capture:workstation": "node --import tsx scripts/capture-workstation.ts"
   },
   "dependencies": {
     "@duckdb/node-api": "^1.5.4-r.1",

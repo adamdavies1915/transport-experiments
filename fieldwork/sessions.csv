@@ -1,0 +1,1 @@
+session_id,observer,section_or_site_id,planned_start_at,planned_end_at,actual_start_at,actual_end_at,clock_offset_before_seconds,clock_offset_after_seconds,weather,restrictions,vehicles_seen,incomplete_observations,notes

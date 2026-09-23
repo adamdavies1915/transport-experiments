@@ -1,0 +1,8 @@
+[Unit]
+Description=Check transit collection, persistence, analysis and summary delivery
+After=docker.service network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/docker exec -e TRANSIT_HEALTH_FILE=/app/data/pipeline-health.json qogwcwsc8cgooo4osk0ccw08 node /app/data/check-pipeline-health.mjs
+TimeoutStartSec=60

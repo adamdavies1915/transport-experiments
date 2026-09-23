@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
-  "fetched_at": "2026-09-09T02:18:08.386Z",
+  "fetched_at": "2026-09-23T02:44:24.182Z",
   "metro_id": 1504,
-  "metro_revision": "1788853747615",
-  "gtfs_sha256": "3b32471680f5736301fdcaa2ae98bf62ba6e108ea51589febb1d66114ee567f9",
-  "query_count": 70,
+  "metro_revision": "1789967507635",
+  "gtfs_sha256": "8529e409ed5d558485d9fad278613008f30aa8da0a978a1def6c37f4e0529110",
+  "query_count": 72,
   "routes": [
     "3",
     "8",
@@ -46,16 +46,9 @@
       "route_name": "TEST ROUTE"
     }
   ],
-  "verified_patterns": 74,
+  "verified_patterns": 76,
   "candidate_patterns": 5,
   "exclusions": [
-    {
-      "groupId": 740760,
-      "routeId": "12",
-      "lineId": 9140135,
-      "patternId": 17096327,
-      "reason": "nonpassenger_line"
-    },
     {
       "groupId": 740761,
       "routeId": "47",
@@ -90,7 +83,7 @@
       "groupId": 740727,
       "routeId": "11",
       "lineId": 6711844,
-      "patternId": 17096277,
+      "patternId": 18622503,
       "queryStopId": 4539638,
       "gtfsStopId": "198",
       "matchedStops": 33,
@@ -98,7 +91,7 @@
       "directionId": "0",
       "scores": {
         "0": 0.9166666666666666,
-        "1": 0.024390243902439025
+        "1": 0.025
       },
       "confidence": "verified"
     },
@@ -106,15 +99,15 @@
       "groupId": 740727,
       "routeId": "11",
       "lineId": 7171579,
-      "patternId": 17096290,
+      "patternId": 18622486,
       "queryStopId": 35668053,
       "gtfsStopId": "2098",
-      "matchedStops": 40,
-      "totalStops": 41,
+      "matchedStops": 39,
+      "totalStops": 40,
       "directionId": "1",
       "scores": {
-        "0": 0.024390243902439025,
-        "1": 0.975609756097561
+        "0": 0.025,
+        "1": 0.975
       },
       "confidence": "verified"
     },
@@ -154,15 +147,15 @@
       "groupId": 740732,
       "routeId": "32",
       "lineId": 3237617,
-      "patternId": 17096336,
+      "patternId": 18622487,
       "queryStopId": 4539638,
       "gtfsStopId": "198",
-      "matchedStops": 61,
-      "totalStops": 61,
+      "matchedStops": 62,
+      "totalStops": 62,
       "directionId": "0",
       "scores": {
         "0": 1,
-        "1": 0.01639344262295082
+        "1": 0.016129032258064516
       },
       "confidence": "verified"
     },
@@ -170,14 +163,14 @@
       "groupId": 740732,
       "routeId": "32",
       "lineId": 3237618,
-      "patternId": 17096320,
+      "patternId": 18622494,
       "queryStopId": 4540113,
       "gtfsStopId": "2422",
-      "matchedStops": 61,
-      "totalStops": 61,
+      "matchedStops": 60,
+      "totalStops": 60,
       "directionId": "1",
       "scores": {
-        "0": 0.01639344262295082,
+        "0": 0.016129032258064516,
         "1": 1
       },
       "confidence": "verified"
@@ -240,7 +233,7 @@
       "totalStops": 71,
       "directionId": "1",
       "scores": {
-        "0": 0.013888888888888888,
+        "0": 0.014084507042253521,
         "1": 1
       },
       "confidence": "verified"
@@ -248,15 +241,15 @@
     {
       "groupId": 740736,
       "routeId": "52",
-      "lineId": 10967837,
-      "patternId": 17937525,
+      "lineId": 11181492,
+      "patternId": 18622485,
       "queryStopId": 4538798,
       "gtfsStopId": "229",
-      "matchedStops": 68,
-      "totalStops": 69,
+      "matchedStops": 70,
+      "totalStops": 71,
       "directionId": "0",
       "scores": {
-        "0": 0.9444444444444444,
+        "0": 0.9859154929577465,
         "1": 0.014084507042253521
       },
       "confidence": "verified"
@@ -329,7 +322,7 @@
       "groupId": 740738,
       "routeId": "57",
       "lineId": 3237629,
-      "patternId": 17096289,
+      "patternId": 18622491,
       "queryStopId": 35668051,
       "gtfsStopId": "2069",
       "matchedStops": 76,
@@ -337,7 +330,7 @@
       "directionId": "0",
       "scores": {
         "0": 0.987012987012987,
-        "1": 0.012658227848101266
+        "1": 0.01282051282051282
       },
       "confidence": "verified"
     },
@@ -345,14 +338,14 @@
       "groupId": 740738,
       "routeId": "57",
       "lineId": 3237630,
-      "patternId": 17096278,
+      "patternId": 18622507,
       "queryStopId": 35667823,
       "gtfsStopId": "1603",
-      "matchedStops": 79,
-      "totalStops": 79,
+      "matchedStops": 78,
+      "totalStops": 78,
       "directionId": "1",
       "scores": {
-        "0": 0.012658227848101266,
+        "0": 0.01282051282051282,
         "1": 1
       },
       "confidence": "verified"
@@ -425,15 +418,15 @@
       "groupId": 740745,
       "routeId": "84",
       "lineId": 3237644,
-      "patternId": 17096287,
+      "patternId": 18622501,
       "queryStopId": 1838039,
       "gtfsStopId": "779",
-      "matchedStops": 49,
-      "totalStops": 49,
+      "matchedStops": 48,
+      "totalStops": 48,
       "directionId": "0",
       "scores": {
         "0": 1,
-        "1": 0.02040816326530612
+        "1": 0.020833333333333332
       },
       "confidence": "verified"
     },
@@ -441,14 +434,14 @@
       "groupId": 740745,
       "routeId": "84",
       "lineId": 3237645,
-      "patternId": 17096276,
+      "patternId": 18622496,
       "queryStopId": 46011098,
       "gtfsStopId": null,
       "matchedStops": 44,
       "totalStops": 46,
       "directionId": "1",
       "scores": {
-        "0": 0.02040816326530612,
+        "0": 0.020833333333333332,
         "1": 0.9565217391304348
       },
       "confidence": "candidate"
@@ -457,15 +450,15 @@
       "groupId": 740748,
       "routeId": "91",
       "lineId": 3237650,
-      "patternId": 17096271,
+      "patternId": 18622504,
       "queryStopId": 4538648,
       "gtfsStopId": "53",
-      "matchedStops": 58,
-      "totalStops": 59,
+      "matchedStops": 57,
+      "totalStops": 58,
       "directionId": "0",
       "scores": {
-        "0": 0.9830508474576272,
-        "1": 0.01694915254237288
+        "0": 0.9827586206896551,
+        "1": 0.017241379310344827
       },
       "confidence": "verified"
     },
@@ -480,7 +473,7 @@
       "totalStops": 49,
       "directionId": "1",
       "scores": {
-        "0": 0.01694915254237288,
+        "0": 0.017241379310344827,
         "1": 1
       },
       "confidence": "verified"
@@ -520,32 +513,64 @@
     {
       "groupId": 740760,
       "routeId": "12",
-      "lineId": 7171595,
-      "patternId": 17096268,
-      "queryStopId": 4539313,
-      "gtfsStopId": "1039",
-      "matchedStops": 52,
-      "totalStops": 54,
-      "directionId": "1",
+      "lineId": 8697788,
+      "patternId": 18622483,
+      "queryStopId": 4539150,
+      "gtfsStopId": "1269",
+      "matchedStops": 6,
+      "totalStops": 6,
+      "directionId": "0",
       "scores": {
-        "0": 0.01818181818181818,
-        "1": 0.9629629629629629
+        "0": 1,
+        "1": 0.16666666666666666
       },
       "confidence": "verified"
     },
     {
       "groupId": 740760,
       "routeId": "12",
-      "lineId": 8697788,
-      "patternId": 17096284,
-      "queryStopId": 4539150,
-      "gtfsStopId": "1269",
-      "matchedStops": 55,
-      "totalStops": 55,
+      "lineId": 11181489,
+      "patternId": 18622481,
+      "queryStopId": 4539154,
+      "gtfsStopId": "734",
+      "matchedStops": 6,
+      "totalStops": 6,
+      "directionId": "1",
+      "scores": {
+        "0": 0.16666666666666666,
+        "1": 1
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 740760,
+      "routeId": "12",
+      "lineId": 11181490,
+      "patternId": 17096327,
+      "queryStopId": 4539313,
+      "gtfsStopId": "1039",
+      "matchedStops": 47,
+      "totalStops": 49,
+      "directionId": "1",
+      "scores": {
+        "0": 0.02040816326530612,
+        "1": 0.9591836734693877
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 740760,
+      "routeId": "12",
+      "lineId": 11181491,
+      "patternId": 18622493,
+      "queryStopId": 4539467,
+      "gtfsStopId": "1265",
+      "matchedStops": 50,
+      "totalStops": 50,
       "directionId": "0",
       "scores": {
         "0": 1,
-        "1": 0.01818181818181818
+        "1": 0.02
       },
       "confidence": "verified"
     },
@@ -617,14 +642,14 @@
       "groupId": 82576087,
       "routeId": "86",
       "lineId": 7957132,
-      "patternId": 17096330,
+      "patternId": 18622484,
       "queryStopId": 1838039,
       "gtfsStopId": "779",
-      "matchedStops": 42,
-      "totalStops": 42,
+      "matchedStops": 43,
+      "totalStops": 43,
       "directionId": "1",
       "scores": {
-        "0": 0.023809523809523808,
+        "0": 0.023255813953488372,
         "1": 1
       },
       "confidence": "verified"
@@ -641,7 +666,23 @@
       "directionId": "0",
       "scores": {
         "0": 1,
-        "1": 0.023809523809523808
+        "1": 0.023255813953488372
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 82648303,
+      "routeId": "49",
+      "lineId": 9140138,
+      "patternId": 13947588,
+      "queryStopId": 4540595,
+      "gtfsStopId": "1625",
+      "matchedStops": 7,
+      "totalStops": 8,
+      "directionId": "0",
+      "scores": {
+        "0": 0.875,
+        "1": 0.125
       },
       "confidence": "verified"
     },
@@ -660,22 +701,6 @@
         "1": 0.75
       },
       "confidence": "candidate"
-    },
-    {
-      "groupId": 82648303,
-      "routeId": "49",
-      "lineId": 10732026,
-      "patternId": 13947588,
-      "queryStopId": 4540595,
-      "gtfsStopId": "1625",
-      "matchedStops": 7,
-      "totalStops": 8,
-      "directionId": "0",
-      "scores": {
-        "0": 0.875,
-        "1": 0.125
-      },
-      "confidence": "verified"
     },
     {
       "groupId": 99839740,
@@ -704,7 +729,7 @@
       "totalStops": 43,
       "directionId": "1",
       "scores": {
-        "0": 0.022222222222222223,
+        "0": 0.022727272727272728,
         "1": 0.813953488372093
       },
       "confidence": "verified"
@@ -713,31 +738,31 @@
       "groupId": 99839740,
       "routeId": "3",
       "lineId": 10369755,
-      "patternId": 17096335,
+      "patternId": 18622505,
       "queryStopId": 37677017,
       "gtfsStopId": "2711",
       "matchedStops": 33,
-      "totalStops": 45,
+      "totalStops": 44,
       "directionId": null,
       "scores": {
-        "0": 0.6888888888888889,
-        "1": 0.022222222222222223
+        "0": 0.7045454545454546,
+        "1": 0.022727272727272728
       },
       "confidence": "candidate"
     },
     {
       "groupId": 99839740,
       "routeId": "3",
-      "lineId": 10992438,
-      "patternId": 18024133,
+      "lineId": 10369758,
+      "patternId": 18622482,
       "queryStopId": 35667622,
       "gtfsStopId": "1843",
-      "matchedStops": 42,
-      "totalStops": 48,
+      "matchedStops": 43,
+      "totalStops": 49,
       "directionId": "1",
       "scores": {
-        "0": 0.020833333333333332,
-        "1": 0.8163265306122449
+        "0": 0.02040816326530612,
+        "1": 0.8367346938775511
       },
       "confidence": "verified"
     },
@@ -809,15 +834,15 @@
       "groupId": 99839745,
       "routeId": "31",
       "lineId": 6505253,
-      "patternId": 17096333,
+      "patternId": 18622498,
       "queryStopId": 4539638,
       "gtfsStopId": "198",
-      "matchedStops": 71,
-      "totalStops": 71,
+      "matchedStops": 72,
+      "totalStops": 72,
       "directionId": "0",
       "scores": {
         "0": 1,
-        "1": 0.014084507042253521
+        "1": 0.013888888888888888
       },
       "confidence": "verified"
     },
@@ -825,14 +850,14 @@
       "groupId": 99839745,
       "routeId": "31",
       "lineId": 6505273,
-      "patternId": 17096322,
+      "patternId": 18622502,
       "queryStopId": 4538869,
       "gtfsStopId": "1407",
-      "matchedStops": 70,
-      "totalStops": 70,
+      "matchedStops": 69,
+      "totalStops": 69,
       "directionId": "1",
       "scores": {
-        "0": 0.014084507042253521,
+        "0": 0.013888888888888888,
         "1": 1
       },
       "confidence": "verified"
@@ -848,8 +873,24 @@
       "totalStops": 47,
       "directionId": "1",
       "scores": {
-        "0": 0.015625,
+        "0": 0.015384615384615385,
         "1": 1
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 99839752,
+      "routeId": "61",
+      "lineId": 9893884,
+      "patternId": 18622499,
+      "queryStopId": 4540709,
+      "gtfsStopId": "1953",
+      "matchedStops": 64,
+      "totalStops": 65,
+      "directionId": "0",
+      "scores": {
+        "0": 0.9846153846153847,
+        "1": 0.015384615384615385
       },
       "confidence": "verified"
     },
@@ -866,22 +907,6 @@
       "scores": {
         "0": 0.9861111111111112,
         "1": 0.013888888888888888
-      },
-      "confidence": "verified"
-    },
-    {
-      "groupId": 99839752,
-      "routeId": "61",
-      "lineId": 10376367,
-      "patternId": 17937524,
-      "queryStopId": 4540709,
-      "gtfsStopId": "1953",
-      "matchedStops": 58,
-      "totalStops": 59,
-      "directionId": "0",
-      "scores": {
-        "0": 0.90625,
-        "1": 0.01694915254237288
       },
       "confidence": "verified"
     },
@@ -929,7 +954,7 @@
       "directionId": "0",
       "scores": {
         "0": 1,
-        "1": 0.041666666666666664
+        "1": 0.04
       },
       "confidence": "verified"
     },
@@ -937,14 +962,14 @@
       "groupId": 99839755,
       "routeId": "67",
       "lineId": 9140144,
-      "patternId": 17096273,
+      "patternId": 18622492,
       "queryStopId": 1838016,
       "gtfsStopId": "2739",
-      "matchedStops": 24,
-      "totalStops": 24,
+      "matchedStops": 25,
+      "totalStops": 25,
       "directionId": "1",
       "scores": {
-        "0": 0.041666666666666664,
+        "0": 0.04,
         "1": 1
       },
       "confidence": "verified"
@@ -1032,15 +1057,15 @@
       "groupId": 99839761,
       "routeId": "103",
       "lineId": 10369764,
-      "patternId": 17096337,
+      "patternId": 18622510,
       "queryStopId": 37650349,
       "gtfsStopId": "1436",
-      "matchedStops": 54,
-      "totalStops": 56,
+      "matchedStops": 58,
+      "totalStops": 62,
       "directionId": "1",
       "scores": {
         "0": 0.014492753623188406,
-        "1": 0.9642857142857143
+        "1": 0.9354838709677419
       },
       "confidence": "verified"
     },
@@ -1048,39 +1073,7 @@
       "groupId": 99839761,
       "routeId": "103",
       "lineId": 10369764,
-      "patternId": 17096328,
-      "queryStopId": 37650349,
-      "gtfsStopId": "1436",
-      "matchedStops": 55,
-      "totalStops": 57,
-      "directionId": "1",
-      "scores": {
-        "0": 0.014492753623188406,
-        "1": 0.9649122807017544
-      },
-      "confidence": "verified"
-    },
-    {
-      "groupId": 99839761,
-      "routeId": "103",
-      "lineId": 10369764,
-      "patternId": 17096281,
-      "queryStopId": 37650349,
-      "gtfsStopId": "1436",
-      "matchedStops": 56,
-      "totalStops": 59,
-      "directionId": "1",
-      "scores": {
-        "0": 0.014492753623188406,
-        "1": 0.9491525423728814
-      },
-      "confidence": "verified"
-    },
-    {
-      "groupId": 99839761,
-      "routeId": "103",
-      "lineId": 10369764,
-      "patternId": 17096334,
+      "patternId": 18622508,
       "queryStopId": 37650349,
       "gtfsStopId": "1436",
       "matchedStops": 57,
@@ -1089,6 +1082,38 @@
       "scores": {
         "0": 0.014492753623188406,
         "1": 0.95
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 99839761,
+      "routeId": "103",
+      "lineId": 10369764,
+      "patternId": 18622512,
+      "queryStopId": 37650349,
+      "gtfsStopId": "1436",
+      "matchedStops": 59,
+      "totalStops": 63,
+      "directionId": "1",
+      "scores": {
+        "0": 0.014492753623188406,
+        "1": 0.9365079365079365
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 99839761,
+      "routeId": "103",
+      "lineId": 10369764,
+      "patternId": 18622509,
+      "queryStopId": 37650349,
+      "gtfsStopId": "1436",
+      "matchedStops": 56,
+      "totalStops": 59,
+      "directionId": "1",
+      "scores": {
+        "0": 0.014492753623188406,
+        "1": 0.9491525423728814
       },
       "confidence": "verified"
     },
@@ -1128,22 +1153,6 @@
       "groupId": 99839765,
       "routeId": "114A",
       "lineId": 9140140,
-      "patternId": 17096293,
-      "queryStopId": 37650349,
-      "gtfsStopId": "1436",
-      "matchedStops": 46,
-      "totalStops": 48,
-      "directionId": "1",
-      "scores": {
-        "0": 0.02040816326530612,
-        "1": 0.9583333333333334
-      },
-      "confidence": "verified"
-    },
-    {
-      "groupId": 99839765,
-      "routeId": "114A",
-      "lineId": 9140140,
       "patternId": 17096315,
       "queryStopId": 37650349,
       "gtfsStopId": "1436",
@@ -1153,6 +1162,22 @@
       "scores": {
         "0": 0.02040816326530612,
         "1": 0.9782608695652174
+      },
+      "confidence": "verified"
+    },
+    {
+      "groupId": 99839765,
+      "routeId": "114A",
+      "lineId": 9140140,
+      "patternId": 18622500,
+      "queryStopId": 37650349,
+      "gtfsStopId": "1436",
+      "matchedStops": 46,
+      "totalStops": 48,
+      "directionId": "1",
+      "scores": {
+        "0": 0.02040816326530612,
+        "1": 0.9583333333333334
       },
       "confidence": "verified"
     },
@@ -1192,15 +1217,15 @@
       "groupId": 99839766,
       "routeId": "114B",
       "lineId": 6505252,
-      "patternId": 17096292,
+      "patternId": 18622490,
       "queryStopId": 37650349,
       "gtfsStopId": "1436",
       "matchedStops": 48,
-      "totalStops": 50,
+      "totalStops": 49,
       "directionId": "1",
       "scores": {
-        "0": 0.02,
-        "1": 0.96
+        "0": 0.02040816326530612,
+        "1": 0.9795918367346939
       },
       "confidence": "verified"
     },
@@ -1232,7 +1257,7 @@
       "directionId": "0",
       "scores": {
         "0": 0.9782608695652174,
-        "1": 0.02
+        "1": 0.02040816326530612
       },
       "confidence": "verified"
     },
@@ -1248,7 +1273,7 @@
       "directionId": "0",
       "scores": {
         "0": 0.9791666666666666,
-        "1": 0.02
+        "1": 0.02040816326530612
       },
       "confidence": "verified"
     },
@@ -1256,7 +1281,7 @@
       "groupId": 99839767,
       "routeId": "53-O",
       "lineId": 6505242,
-      "patternId": 17096344,
+      "patternId": 18622511,
       "queryStopId": 4538798,
       "gtfsStopId": "229",
       "matchedStops": 71,
@@ -1288,15 +1313,15 @@
       "groupId": 99839768,
       "routeId": "62-O",
       "lineId": 6505274,
-      "patternId": 17096339,
+      "patternId": 18622488,
       "queryStopId": 35667754,
       "gtfsStopId": "2283",
-      "matchedStops": 67,
-      "totalStops": 68,
+      "matchedStops": 65,
+      "totalStops": 66,
       "directionId": "0",
       "scores": {
-        "0": 0.9852941176470589,
-        "1": 0.014705882352941176
+        "0": 0.9848484848484849,
+        "1": 0.015151515151515152
       },
       "confidence": "verified"
     },
@@ -1311,7 +1336,7 @@
       "totalStops": 52,
       "directionId": "1",
       "scores": {
-        "0": 0.014705882352941176,
+        "0": 0.015151515151515152,
         "1": 1
       },
       "confidence": "verified"

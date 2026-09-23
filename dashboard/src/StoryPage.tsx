@@ -45,6 +45,9 @@ function EvidenceProgress({ days, minimumDays, sample, minimumSample, sampleLabe
 }
 
 function RowFinding({ row, data }: { row?: StudyRowComparison; data: RowStudyData }) {
+  const coverage = useMemo(() => row ? rowStudyFromCells(data, { source: row.source, mode: row.mode,
+    route_id: row.route_id, direction_id: row.direction_id, day_type: row.day_type,
+    hour_from: row.time_band * 4, hour_to: row.time_band * 4 + 3 }).coverage : undefined, [data, row]);
   const path = row && data.network.paths.find(path => path.route_id === row.route_id && path.direction_id === row.direction_id && path.mode === row.mode);
   const observed = row?.observed;
   const ready = row?.status === 'ready';
@@ -52,6 +55,7 @@ function RowFinding({ row, data }: { row?: StudyRowComparison; data: RowStudyDat
   const observedPeriod = observed?.dates.length ? `${date(observed.dates[0])}–${date(observed.dates.at(-1)!)}` : undefined;
   return <div className="story-finding">
     <Status ready={ready}>{observed ? ready ? 'Observed figures' : 'Preliminary figures' : 'Building the evidence'}</Status>
+    {coverage && <p className="mt-3 text-xs text-slate-400">Roadway review coverage: {count(coverage.classified_passages)} of {count(coverage.passages)} completed passages in this source, route, direction and time selection have a reviewed roadway class. The comparison below uses only matched dates and stop/signal conditions.</p>}
     {row && observed ? <>
       <h4 className="mt-4 text-xl sm:text-2xl font-semibold tracking-tight">Observed time to travel one kilometre</h4>
       <p className="mt-2 text-sm text-slate-300">{path ? `Route ${row.route_id} · ${path.name}` : `Route ${row.route_id}`} · {row.day_type === 'weekday' ? 'Weekdays' : 'Weekends'}, {String(row.time_band * 4).padStart(2, '0')}:00–{String(row.time_band * 4 + 3).padStart(2, '0')}:59</p>

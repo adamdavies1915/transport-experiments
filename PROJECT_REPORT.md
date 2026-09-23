@@ -4,6 +4,10 @@
 
 Last updated: 2026-08-04
 
+> Historical report: the architecture and completion claims below describe
+> August, not the current deployment. See [OPERATIONS.md](OPERATIONS.md) and
+> [README.md](README.md) for current services, limitations and research status.
+
 > **Note for the reviewing agent:** This document describes what transitExp is
 > intended to do and its current state. Section **1.1 Aims & Success Criteria**
 > lists the goals to evaluate the project against. Please assess whether the

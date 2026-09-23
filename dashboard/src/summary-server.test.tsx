@@ -92,6 +92,7 @@ test('public routes use memory only and study/OTP availability is independent',a
     const signal=await request(`/api/signal-study?source=lepass`).then(response=>response.json());const signalCells=signal.cells as Array<{source:string}>;assert.equal(signalCells.length,1);assert.equal(signalCells[0].source,'lepass');
     assert.equal((await request(`/api/row-study?source=all`)).status,400);assert.equal((await request(`/api/row-study?from=2026-08-01`)).status,400);
     assert.equal((await request(`/api/summary`)).status,503);assert.equal((await request(`/api/otp`)).status,200);assert.equal((await request(`/api/health`)).status,200);
+    assert.equal((await request(`/api/readiness`)).status,503);
     assert.equal(networkCalls,0);
   }
 });

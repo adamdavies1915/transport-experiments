@@ -1,0 +1,182 @@
+{
+  "checked_at": "2026-09-23T02:49:35.426Z",
+  "historical_catalog": "transit-study-network-v1-193a4631fc6b70de",
+  "current_gtfs_sha256": "8529e409ed5d558485d9fad278613008f30aa8da0a978a1def6c37f4e0529110",
+  "sections": [
+    {
+      "section_id": "shp-12-05|12|1:row:median-pleasant",
+      "row_class": "reserved",
+      "entry": {
+        "lat": 29.928020116494206,
+        "lon": -90.09179754926531
+      },
+      "exit": {
+        "lat": 29.92869471771032,
+        "lon": -90.08998655662191
+      },
+      "represented_in_current_schedule": false,
+      "candidates": [
+        {
+          "path_id": "shp-12-07|12|1",
+          "matched_points": 0,
+          "checked_points": 21,
+          "maximum_distance_meters": null,
+          "complete": false
+        },
+        {
+          "path_id": "shp-12-03|12|1",
+          "matched_points": 19,
+          "checked_points": 21,
+          "maximum_distance_meters": 9.61676180886612,
+          "complete": false
+        }
+      ]
+    },
+    {
+      "section_id": "shp-12-05|12|1:row:median-jackson",
+      "row_class": "reserved",
+      "entry": {
+        "lat": 29.933393930399724,
+        "lon": -90.08155387980614
+      },
+      "exit": {
+        "lat": 29.934435720062453,
+        "lon": -90.0799425240252
+      },
+      "represented_in_current_schedule": true,
+      "candidates": [
+        {
+          "path_id": "shp-12-07|12|1",
+          "matched_points": 0,
+          "checked_points": 21,
+          "maximum_distance_meters": null,
+          "complete": false
+        },
+        {
+          "path_id": "shp-12-03|12|1",
+          "matched_points": 21,
+          "checked_points": 21,
+          "maximum_distance_meters": 5.051738020451143,
+          "complete": true
+        }
+      ]
+    },
+    {
+      "section_id": "shp-12-05|12|1:row:osm-way-24008477",
+      "row_class": "shared",
+      "entry": {
+        "lat": 29.944336328656274,
+        "lon": -90.0734926267539
+      },
+      "exit": {
+        "lat": 29.949686323841618,
+        "lon": -90.0719060292917
+      },
+      "represented_in_current_schedule": true,
+      "candidates": [
+        {
+          "path_id": "shp-12-07|12|1",
+          "matched_points": 0,
+          "checked_points": 68,
+          "maximum_distance_meters": null,
+          "complete": false
+        },
+        {
+          "path_id": "shp-12-03|12|1",
+          "matched_points": 68,
+          "checked_points": 68,
+          "maximum_distance_meters": 8.134313590206292,
+          "complete": true
+        }
+      ]
+    },
+    {
+      "section_id": "shp-12-55|12|0:row:osm-way-329181616",
+      "row_class": "shared",
+      "entry": {
+        "lat": 29.948235960461165,
+        "lon": -90.07099521186164
+      },
+      "exit": {
+        "lat": 29.946009466331514,
+        "lon": -90.07166202051076
+      },
+      "represented_in_current_schedule": true,
+      "candidates": [
+        {
+          "path_id": "shp-12-52|12|0",
+          "matched_points": 31,
+          "checked_points": 31,
+          "maximum_distance_meters": 9.070224966804778,
+          "complete": true
+        },
+        {
+          "path_id": "shp-12-53|12|0",
+          "matched_points": 0,
+          "checked_points": 31,
+          "maximum_distance_meters": null,
+          "complete": false
+        }
+      ]
+    },
+    {
+      "section_id": "shp-12-55|12|0:row:median-jackson",
+      "row_class": "reserved",
+      "entry": {
+        "lat": 29.934227431251248,
+        "lon": -90.08061623670709
+      },
+      "exit": {
+        "lat": 29.93314591600092,
+        "lon": -90.08227389583173
+      },
+      "represented_in_current_schedule": true,
+      "candidates": [
+        {
+          "path_id": "shp-12-52|12|0",
+          "matched_points": 21,
+          "checked_points": 21,
+          "maximum_distance_meters": 6.622015827588258,
+          "complete": true
+        },
+        {
+          "path_id": "shp-12-53|12|0",
+          "matched_points": 0,
+          "checked_points": 21,
+          "maximum_distance_meters": null,
+          "complete": false
+        }
+      ]
+    },
+    {
+      "section_id": "shp-12-55|12|0:row:median-pleasant",
+      "row_class": "reserved",
+      "entry": {
+        "lat": 29.929407820389024,
+        "lon": -90.08891799250515
+      },
+      "exit": {
+        "lat": 29.928630394729204,
+        "lon": -90.0906492105416
+      },
+      "represented_in_current_schedule": true,
+      "candidates": [
+        {
+          "path_id": "shp-12-52|12|0",
+          "matched_points": 21,
+          "checked_points": 21,
+          "maximum_distance_meters": 5.776019858097839,
+          "complete": true
+        },
+        {
+          "path_id": "shp-12-53|12|0",
+          "matched_points": 0,
+          "checked_points": 21,
+          "maximum_distance_meters": null,
+          "complete": false
+        }
+      ]
+    }
+  ],
+  "interpretation": "10 m-spaced geographic checks with a 10 m tolerance. Correspondence does not verify traffic restrictions, signal control, stop exposure, or historical service. Unmatched sections require review; no roadway classifications were expanded."
+}

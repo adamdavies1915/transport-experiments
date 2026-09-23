@@ -52,9 +52,9 @@ async function fixture(run: (f: {
   append: (id: string) => Promise<void>; advanceDay: () => void;
   worker: (directory: string, id: string, analysis?: DailyProcessingOptions['runAnalysis']) => DailyProcessingOptions;
   analyze: NonNullable<DailyProcessingOptions['runAnalysis']>;
-}) => Promise<void>) {
+}) => Promise<void>, start = START) {
   const root = await mkdtemp(join(tmpdir(), 'transit-processing-flow-'));
-  const server = join(root, 'server'), desktop = join(root, 'desktop'), mac = join(root, 'mac'); let now = START;
+  const server = join(root, 'server'), desktop = join(root, 'desktop'), mac = join(root, 'mac'); let now = start;
   const journal = new LocalJournal(server), exchange = new CaptureExchange(server);
   try {
     await journal.init(); await exchange.init();
@@ -185,5 +185,5 @@ test('real backfill subprocess completes an empty seeded database and publishes 
     assert.equal(summary.row_study.coverage.passages, 0); assert.equal(summary.signal_study.cells.length, 0);
     assert.ok(summary.row_study.network.paths.length > 0, 'the real analysis loads its checked-in route catalog');
     assert.equal((await coordinator.status()).last_completed!.job_id, result.job_id);
-  });
+  }, Date.now()); // The real child uses wall time; do not compare it to the frozen protocol-fixture clock.
 });

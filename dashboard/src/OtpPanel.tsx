@@ -58,7 +58,7 @@ export default function OtpPanel({ data }: { data: OtpData }) {
             </select></label>
           </div>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-            <div><p className="text-slate-400">On time</p><p className="text-2xl">{pct(summary.on_time_pct)}</p></div>
+            <div><p className="text-slate-400">On time among classified events</p><p className="text-2xl">{pct(summary.on_time_pct)}</p><p className="text-xs text-slate-400 mt-1">{pct(summary.coverage_pct)} of scheduled timepoints classified</p></div>
             <div><p className="text-slate-400">Early / late</p><p className="text-xl">{pct(percentage(summary.early, summary.classified))} / {pct(percentage(summary.late, summary.classified))}</p></div>
             <div><p className="text-slate-400">Classified events</p><p className="text-2xl">{summary.classified.toLocaleString()}</p></div>
             <div><p className="text-slate-400">Schedule coverage</p><p className="text-2xl">{pct(summary.coverage_pct)}</p></div>
@@ -82,10 +82,12 @@ export default function OtpPanel({ data }: { data: OtpData }) {
               <CartesianGrid strokeDasharray="3 3" stroke="#475569" />
               <XAxis dataKey="date" stroke="#94a3b8" tickFormatter={d => String(d).slice(5)} />
               <YAxis stroke="#94a3b8" domain={[0, 100]} unit="%" />
-              <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: 'none' }} formatter={value => [value == null ? 'Unavailable' : `${Number(value).toFixed(1)}%`, 'On time']} />
+              <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: 'none' }} formatter={(value, name) => [value == null ? 'Unavailable' : `${Number(value).toFixed(1)}%`, name === 'coverage_pct' ? 'Scheduled timepoints classified' : 'On time among classified events']} />
               <Line type="linear" dataKey="on_time_pct" stroke="#3b82f6" dot connectNulls={false} />
+              <Line type="linear" dataKey="coverage_pct" stroke="#fbbf24" strokeDasharray="4 4" dot={false} connectNulls={false} />
             </LineChart>
           </ResponsiveContainer>
+          <p className="text-xs text-slate-400 mt-2">Blue: on time among classified events. Dashed amber: percentage of scheduled timepoints classified. Gaps remain unmeasured.</p>
           <div className="overflow-x-auto mt-4">
             <table className="w-full text-left">
               <caption className="text-left text-lg mb-3">On-Time Performance by Route — {month}</caption>

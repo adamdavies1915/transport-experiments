@@ -1,0 +1,10 @@
+[Unit]
+Description=Check transit pipeline freshness every ten minutes
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=10min
+Unit=transit-health-server.service
+
+[Install]
+WantedBy=timers.target

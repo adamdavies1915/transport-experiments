@@ -4,6 +4,10 @@ Independent observations of New Orleans RTA buses and streetcars, using the RTA
 relay SSE feed and Le Pass. The dashboard studies roadway travel time and
 candidate signal waits, alongside independently calculated schedule-based OTP.
 
+Current services, recovery and freshness checks are documented in
+[operations](OPERATIONS.md). The [focused study plan](STUDY_PLAN.md) defines the
+next Route 12 collection period and the manual validation still to be performed.
+
 ## How it works
 
 The collector preserves source identities, raw responses, provider sample times

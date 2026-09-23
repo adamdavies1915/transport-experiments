@@ -1,0 +1,1 @@
+session_id,observer,clock_error_seconds,route_id,vehicle_id,direction,section_or_site_id,entry_at,exit_at,wait_started_at,wait_ended_at,observed_signal_phase,boarding_alighting,queue_present,cause,view_complete,notes

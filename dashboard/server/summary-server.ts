@@ -46,6 +46,8 @@ export function createSummaryApp(store:Pick<SummaryStore,'snapshot'|'status'>,st
     next();
   });
   app.get('/api/health',(_req,res)=>res.json({status:'ok',summary:store.status}));
+  // Keep liveness independent: restarting a healthy web server cannot repair stale analysis.
+  app.get('/api/readiness',(_req,res)=>res.status(store.status.stale?503:200).json({status:store.status.stale?'degraded':'ready',summary:store.status}));
   app.get('/api/source-quality',(_req,res)=>res.json({...store.snapshot?.source_quality??{status:'collecting',sources:[]},snapshot:store.status}));
   app.get(['/api/row-study','/api/signal-study'],(req,res)=>{
     try {
