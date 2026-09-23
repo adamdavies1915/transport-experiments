@@ -1,0 +1,90 @@
+{
+  "verified_at": "2026-09-23T03:22:22.632Z",
+  "scope": "Existing staged cloud collector and persistent workstation processing",
+  "server_imports": {
+    "runs": 2,
+    "transit_records_inserted": 1375656,
+    "streetcar_snapshots_inserted": 961249
+  },
+  "completion": {
+    "cutoff": "2026-09-23T02:59:30.952Z",
+    "completed_at": "2026-09-23T03:19:41.414Z",
+    "published": true,
+    "bytes": 62218939
+  },
+  "summary": {
+    "generated_at": "2026-09-23T03:19:16.499Z",
+    "row_status": "ready",
+    "signal_status": "ready",
+    "from": "2026-09-09",
+    "to": "2026-09-22"
+  },
+  "health": {
+    "checked_at": "2026-09-23T03:20:44.024Z",
+    "status": "ok",
+    "checks": {
+      "workstation_capture": {
+        "status": "ok",
+        "timestamp": "2026-09-23T03:20:43.867Z",
+        "age_seconds": 0
+      },
+      "lepass": {
+        "status": "ok",
+        "timestamp": "2026-09-23T03:20:43.855Z",
+        "age_seconds": 0,
+        "reason": null
+      },
+      "collection": {
+        "status": "ok",
+        "timestamp": "2026-09-23T03:20:35.725Z",
+        "age_seconds": 8
+      },
+      "persistence": {
+        "status": "ok",
+        "timestamp": "2026-09-23T03:20:05.296Z",
+        "age_seconds": 39
+      },
+      "analysis": {
+        "status": "ok",
+        "timestamp": "2026-09-23T03:19:16.499Z",
+        "age_seconds": 88
+      },
+      "summary_delivery": {
+        "status": "ok",
+        "timestamp": "2026-09-23T03:20:21.343Z",
+        "age_seconds": 23
+      }
+    }
+  },
+  "full_history_report": "reports/route12-recovery-2026-09-22.json",
+  "primary": [
+    {
+      "source": "sse",
+      "matched_dates": 10,
+      "reserved_passages": 137,
+      "shared_passages": 257,
+      "shared_minus_reserved_seconds_per_km": -105.51721079042125,
+      "timing_bounds": [
+        -1017.6068086325438,
+        833.1543507991994
+      ]
+    }
+  ],
+  "validation": {
+    "backend_tests": 220,
+    "dashboard_tests": "passed",
+    "typechecks": "passed",
+    "dashboard_lint": "passed",
+    "dashboard_build": "passed",
+    "dashboard_readiness_http": 200,
+    "daily_repeat": "already completed today; no export or analysis",
+    "dashboard_deployment": "6318b63af1e39d06bacbc08ca53cae992090092d"
+  },
+  "remaining_constraints": [
+    "Server free space remains below the durable-capture reserve; Le Pass capture and analysis require this workstation to be awake.",
+    "No external notification recipient is configured; freshness failures appear in systemd status/logs and the website.",
+    "Field validation and additional roadway classifications require new observations/review; templates are empty.",
+    "Historical Le Pass gaps were not reconstructed. Very low OTP matching coverage remains for September 20–21.",
+    "Timing uncertainty does not establish a causal roadway effect."
+  ]
+}
