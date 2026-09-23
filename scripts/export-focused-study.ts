@@ -23,7 +23,7 @@ try {
     const dates = await query<{ date: string }>(c, `SELECT date::VARCHAR AS date FROM study_daily_results WHERE date BETWEEN ${sql(values.from)}::DATE AND ${sql(values.to)}::DATE AND method_revision=${sql(catalog.version + ':' + TRANSIT_STUDY_METHOD)} ORDER BY date`);
     const cells: StudyRowCell[] = [];
     for (const { date } of dates) {
-      const [saved] = await query<{ body: string }>(c, `SELECT body FROM study_daily_results WHERE date=${sql(date)}::DATE`);
+      const [saved] = await query<{ body: string }>(c, `SELECT body::VARCHAR AS body FROM study_daily_results WHERE date=${sql(date)}::DATE`);
       const day = JSON.parse(saved.body) as { row_cells: StudyRowCell[] };
       cells.push(...day.row_cells.filter(cell => cell.route_id === '12' && cell.mode === 'streetcar'));
     }

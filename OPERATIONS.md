@@ -76,9 +76,8 @@ under `runtime-data/recovery-2026-09-22`.
 ## Freshness and alerts
 
 `/api/health` remains web-server liveness. The dashboard's `/api/readiness`
-returns 503 when its saved analysis is stale. The prepared dashboard deployment
-sets a 36-hour analysis window for daily processing; the running dashboard keeps
-its previous window until that rollout is approved. The scheduled checks independently
+returns 503 when its saved analysis is stale. The approved dashboard deployment
+uses a 36-hour analysis window for daily processing. The scheduled checks independently
 require collection, persistence and successful summary transport within five
 minutes. Repeatedly fetching an old summary never resets its analysis age.
 
