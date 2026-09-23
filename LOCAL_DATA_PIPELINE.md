@@ -40,6 +40,16 @@ they are hypotheses, not measured intervention effects.
 
 Cloud uploads default **off**. Collection, analysis and the public dashboard keep
 working without a MotherDuck connection. No paid service upgrade is performed.
+For an account whose owner explicitly confirms **no credit card is linked**, set
+`MOTHERDUCK_BILLING_MODE=free_no_card` alongside `MOTHERDUCK_CLOUD_WRITES=true`.
+This policy uses an 8 GB active/live-data ceiling, retains total-accounted bytes
+as a separate diagnostic, and relies on provider quota enforcement. It does not
+require a fabricated monthly compute measurement: CU usage remains unknown.
+Connection/quota failures leave batches unacknowledged for a later retry.
+Remove this mode and review the budget if payment details are ever added.
+This is an application policy, not a statement about provider billing rules.
+
+Without that explicit no-card setting, the conservative policy below applies.
 The operating ceilings are 8 GB of total accounted storage and 8 CU-hours/month.
 Historical, clone-retained and failsafe bytes count too. Deleting a cloud row does
 not immediately reclaim its retained storage.

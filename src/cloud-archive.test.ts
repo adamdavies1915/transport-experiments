@@ -16,8 +16,9 @@ function batch(id:string,offset=0,empty=false):CollectionBatch{
 }
 async function fixture(run:(value:{directory:string;local:DuckDBConnection;remote:DuckDBConnection;commands:string[];connection:DuckDBConnection})=>Promise<void>){
   const directory=await mkdtemp(join(tmpdir(),'transit-cloud-')),store=await openLocalStore(directory),db=await DuckDBInstance.create(':memory:'),remote=await db.connect(),commands:string[]=[];
-  const previous=Object.fromEntries(['MOTHERDUCK_CLOUD_WRITES','MOTHER_DUCK_API_KEY','MOTHERDUCK_DATABASE','TRANSIT_RESULTS_DATABASE','MOTHERDUCK_USAGE_FILE'].map(key=>[key,process.env[key]]));
+  const previous=Object.fromEntries(['MOTHERDUCK_BILLING_MODE','MOTHERDUCK_CLOUD_WRITES','MOTHER_DUCK_API_KEY','MOTHERDUCK_DATABASE','TRANSIT_RESULTS_DATABASE','MOTHERDUCK_USAGE_FILE'].map(key=>[key,process.env[key]]));
   try{
+    delete process.env.MOTHERDUCK_BILLING_MODE;
     process.env.MOTHERDUCK_CLOUD_WRITES='true';process.env.MOTHER_DUCK_API_KEY='offline-'+randomUUID();process.env.MOTHERDUCK_DATABASE='my_db';process.env.TRANSIT_RESULTS_DATABASE='transit_results';process.env.MOTHERDUCK_USAGE_FILE=join(directory,'usage.json');
     const now=new Date();await writeFile(process.env.MOTHERDUCK_USAGE_FILE,JSON.stringify({measured_at:now.toISOString(),month:now.toISOString().slice(0,7),compute_cu_hours:1,plan:'lite',billing_mode:'free'}));
     await remote.run("ATTACH ':memory:' AS my_db; CREATE SCHEMA MD_INFORMATION_SCHEMA; CREATE TABLE MD_INFORMATION_SCHEMA.STORAGE_INFO(active_bytes BIGINT,historical_bytes BIGINT,retained_for_clone_bytes BIGINT,failsafe_bytes BIGINT,computed_ts TIMESTAMPTZ); INSERT INTO MD_INFORMATION_SCHEMA.STORAGE_INFO VALUES (1000,0,0,0,now()); CREATE TABLE MD_INFORMATION_SCHEMA.DATABASES(name VARCHAR,transient BOOLEAN)");
@@ -44,6 +45,34 @@ test('remote connection failure returns sanitized cloud health and local collect
   await ingestBatch(local,batch('a'));const health=await cloudUpload(local,directory,{connect:async()=>{throw new Error('sensitive connection string');}});
   assert.equal(health.status,'error');assert.doesNotMatch(health.reason,/sensitive/);assert.equal(health.pending_records,1);
   await ingestBatch(local,batch('b',10));assert.equal((await query<{n:number}>(local,'SELECT COUNT(*) AS n FROM collection_receipts'))[0].n,2);
+}));
+test('explicit no-card mode uses live storage without inventing monthly CU usage',async()=>fixture(async({directory,local,remote,connection})=>{
+  process.env.MOTHERDUCK_BILLING_MODE='free_no_card';
+  await rm(process.env.MOTHERDUCK_USAGE_FILE!);
+  await remote.run('UPDATE MD_INFORMATION_SCHEMA.STORAGE_INFO SET historical_bytes=11000000000,failsafe_bytes=77000000000');
+  await ingestBatch(local,batch('no-card'));
+  const health=await cloudUpload(local,directory,{connect:async()=>({c:connection,close:()=>{}})});
+  assert.equal(health.status,'ready');assert.equal(health.storage_basis,'active');
+  assert.equal(health.storage_bytes,1000);assert.equal(health.total_accounted_storage_bytes,88000001000);
+  assert.equal(health.compute_cu_hours,null);assert.equal(health.pending_records,0);
+}));
+test('no-card mode still pauses for live storage ceiling or stale accounting',async()=>fixture(async({directory,local,remote,connection})=>{
+  process.env.MOTHERDUCK_BILLING_MODE='free_no_card';
+  await ingestBatch(local,batch('no-card'));
+  const deps={connect:async()=>({c:connection,close:()=>{}})};
+  await remote.run('UPDATE MD_INFORMATION_SCHEMA.STORAGE_INFO SET active_bytes=8000000000');
+  assert.match((await cloudUpload(local,directory,deps)).reason,/Storage ceiling/);
+  await remote.run("UPDATE MD_INFORMATION_SCHEMA.STORAGE_INFO SET active_bytes=1000,computed_ts=now()-INTERVAL 7 HOURS");
+  assert.match((await cloudUpload(local,directory,deps)).reason,/stale/);
+  assert.equal((await query<{n:number}>(local,'SELECT COUNT(*) AS n FROM cloud_batches'))[0].n,0);
+}));
+test('provider quota failure in no-card mode retains pending records for later retry',async()=>fixture(async({directory,local})=>{
+  process.env.MOTHERDUCK_BILLING_MODE='free_no_card';
+  await ingestBatch(local,batch('quota'));
+  const health=await cloudUpload(local,directory,{connect:async()=>{throw new Error('quota exceeded secret-token');}});
+  assert.equal(health.status,'error');assert.equal(health.pending_records,1);
+  assert.doesNotMatch(health.reason,/secret-token/);
+  assert.equal((await query<{n:number}>(local,'SELECT COUNT(*) AS n FROM cloud_batches'))[0].n,0);
 }));
 test('archive supersession preserves cold receipts after compaction and late arrival',async()=>fixture(async({directory,local})=>{
   await ingestBatch(local,batch('a'));await ingestBatch(local,batch('b',10));await archiveDay(local,directory,'2026-07-01');

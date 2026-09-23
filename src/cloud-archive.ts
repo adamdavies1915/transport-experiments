@@ -12,6 +12,7 @@ export interface CloudUsage { measured_at:string; month:string; compute_cu_hours
 export interface CloudHealth {
   status:'paused'|'ready'|'error'; reason:string; checked_at:string; storage_bytes:number|null;
   budget_bytes:number; compute_cu_hours:number|null; last_uploaded_at:string|null; pending_records:number;
+  storage_basis?:'active'|'total_accounted'; total_accounted_storage_bytes?:number|null;
 }
 export const STORAGE_BUDGET=8_000_000_000;
 export const UPLOAD_LIMITS={batches:10_000,rows:100_000,bytes:32*1024*1024};
@@ -277,25 +278,35 @@ export async function cloudUpload(local:DuckDBConnection,directory:string,depend
   let remote:CloudRemote|undefined,cacheKey='';
   try{
     if(process.env.MOTHERDUCK_CLOUD_WRITES!=='true'||!process.env.MOTHER_DUCK_API_KEY)return health;
+    // Explicit account-owner attestation, not a change to MotherDuck billing.
+    // No-card accounts rely on provider quota enforcement; unavailable monthly
+    // CU telemetry must not be replaced with an invented usage measurement.
+    const noCard=process.env.MOTHERDUCK_BILLING_MODE==='free_no_card';
+    health.storage_basis=noCard?'active':'total_accounted';
     let usage:CloudUsage|undefined;try{usage=JSON.parse(await readFile(process.env.MOTHERDUCK_USAGE_FILE||join(directory,'motherduck-usage.json'),'utf8'));}catch{}
-    health.compute_cu_hours=usage?.compute_cu_hours??null;const usageProblem=usageAllowsCloud(usage,0,now());if(usageProblem){health.reason=usageProblem;return health;}
+    health.compute_cu_hours=noCard?null:usage?.compute_cu_hours??null;
+    if(!noCard){const usageProblem=usageAllowsCloud(usage,0,now());if(usageProblem){health.reason=usageProblem;return health;}}
     const database=process.env.MOTHERDUCK_DATABASE||'my_db',resultsDatabase=process.env.TRANSIT_RESULTS_DATABASE||'transit_results';
     cacheKey=digest(database+':'+process.env.MOTHER_DUCK_API_KEY);
     if(resultsDatabase===database){health.reason='Results database must be separate from the original archive';return health;}
     remote=await (dependencies.connect??connectCloud)(database,process.env.MOTHER_DUCK_API_KEY);const c=remote.c;
-    const [storage]=await query<{bytes:number|null;computed_at:string|null}>(c,'SELECT SUM(active_bytes+historical_bytes+retained_for_clone_bytes+failsafe_bytes) AS bytes,MIN(computed_ts)::VARCHAR AS computed_at FROM MD_INFORMATION_SCHEMA.STORAGE_INFO');
-    health.storage_bytes=storage?.bytes??null;
-    if(!storageAccountingFresh(storage?.computed_at,now())){health.reason='Storage accounting is missing or stale';return health;}
-    if(health.storage_bytes==null||!Number.isFinite(health.storage_bytes)||health.storage_bytes<0){health.reason='Total accounted storage is unavailable';return health;}
+    const [storage]=await query<{bytes:number|null;active_bytes:number|null;computed_at_epoch:number|null}>(c,'SELECT SUM(active_bytes) AS active_bytes,SUM(active_bytes+historical_bytes+retained_for_clone_bytes+failsafe_bytes) AS bytes,MIN(epoch(computed_ts)) AS computed_at_epoch FROM MD_INFORMATION_SCHEMA.STORAGE_INFO');
+    health.total_accounted_storage_bytes=storage?.bytes??null;
+    health.storage_bytes=(noCard?storage?.active_bytes:storage?.bytes)??null;
+    // Metadata timestamps are UTC; do not parse a zone-less SQL string in the
+    // workstation's Chicago timezone, which can make a fresh sample look future.
+    const computedAt=storage?.computed_at_epoch;
+    if(computedAt==null||!Number.isFinite(computedAt)||!storageAccountingFresh(new Date(computedAt*1000).toISOString(),now())){health.reason='Storage accounting is missing or stale';return health;}
+    if(health.storage_bytes==null||!Number.isFinite(health.storage_bytes)||health.storage_bytes<0){health.reason='Storage accounting is unavailable';return health;}
     // Reclaim only exact, locally verified copies. Never assume DELETE immediately frees billed storage.
     const mayNeedPrune=health.storage_bytes>=STORAGE_BUDGET-UPLOAD_LIMITS.bytes*4;
     if(mayNeedPrune){
       const tableExists=(await query(c,`SELECT 1 FROM information_schema.tables WHERE table_catalog=${sql(database)} AND table_name='observation_receipts'`)).length;
       const cutoff=addDays(localDay(now()/1000,'America/Chicago'),-28);
       const date=tableExists?await pruneVerifiedRemoteDay(local,c,directory,database,cutoff):null;
-      health.reason=date?`Verified detailed receipts for ${date} are retained locally; waiting for billed storage to be reclaimed`:'Storage ceiling reached; no eligible verified detail can be removed safely';return health;
+      health.reason=date?`Verified detailed receipts for ${date} are retained locally; waiting for storage accounting to update`:'Storage ceiling reached; no eligible verified detail can be removed safely';return health;
     }
-    const usageAgain=usageAllowsCloud(usage,health.storage_bytes,now());if(usageAgain){health.reason=usageAgain;return health;}
+    if(!noCard){const usageAgain=usageAllowsCloud(usage,health.storage_bytes,now());if(usageAgain){health.reason=usageAgain;return health;}}
     const upload=await prepareObservationUpload(local,directory);let bytes=0;
     if(upload){
       if(health.storage_bytes+upload.bytes*4>=STORAGE_BUDGET){health.reason='Upload would consume storage headroom';return health;}

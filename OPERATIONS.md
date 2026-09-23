@@ -18,13 +18,23 @@ also copied to `runtime-data/cutover-journal-2026-09-22` before ingestion.
 
 MotherDuck is the requested destination for both feeds and closed daily results.
 `transit-motherduck-archive.timer` attempts one guarded upload cycle hourly.
-It is **not proof of a successful upload**: missing/stale billing evidence pauses
-the uploader before connecting. The current plan/free billing mode and measured
-monthly CU-hours must be supplied in `runtime-data/private/motherduck-usage.json`
-as documented in `LOCAL_DATA_PIPELINE.md`. Never invent a usage checkpoint or
-enable paid overage. Inspect `processing/motherduck-archive-health.json` and
-the service journal. Cloud retention is bounded; full verified disk archives
-remain necessary and are not deleted by this cutover.
+The account owner confirmed that no credit card is linked. The active uploader
+uses `MOTHERDUCK_BILLING_MODE=free_no_card`: an 8 GB **live-data** guard and
+MotherDuck's own quota enforcement, without requiring unavailable monthly CU
+telemetry. Retained/historical/failsafe storage is still reported separately;
+this is our explicit no-card operating policy, not a claim that MotherDuck
+never counts retained bytes. Quota errors retain pending data for the next
+hourly attempt. Never add payment details or upgrade billing automatically.
+If billing becomes enabled, remove this mode and reverify the budget before
+continuing. Inspect `processing/motherduck-archive-health.json` and the service
+journal; a scheduled attempt is not proof of a successful upload. Cloud
+retention is bounded; verified disk archives remain necessary.
+
+The first no-card cycle on September 23 at 05:29 UTC was verified remotely:
+12,389 SSE observations, 2,248 Le Pass observations and 10 closed daily results.
+843,237 locally queued observations remained after that bounded cycle. The
+archive uploader currently runs on this PC; server capture continues while it
+is asleep, but new archive uploads await an awake workstation.
 
 ## Active services
 
