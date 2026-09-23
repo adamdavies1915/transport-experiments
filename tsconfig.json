@@ -12,5 +12,5 @@
     "resolveJsonModule": true,
     "noEmit": true
   },
-  "include": ["src/**/*.ts", "scripts/process-daily.ts", "scripts/process-cloud-history.ts", "scripts/capture-workstation.ts", "scripts/review-route12-geometry.ts"]
+  "include": ["src/**/*.ts", "scripts/process-daily.ts", "scripts/process-cloud-history.ts", "scripts/capture-workstation.ts", "scripts/review-route12-geometry.ts", "scripts/export-focused-study.ts"]
 }

@@ -29,6 +29,19 @@ of classified passages, all completed passages, matched dates and excluded dates
 beside the effect. Zero-spanning timing bounds remain unresolved even if a
 bootstrap interval excludes zero. A faster shared section is a valid observation.
 
+The public snapshot may omit older whole dates to fit its size limit. Evaluate
+the fixed study period from retained daily research results after the database
+worker exits, rather than silently shortening it to the current browser window:
+
+```bash
+node --import tsx scripts/export-focused-study.ts \
+  --data-dir /absolute/path/to/transit-data \
+  --from 2026-09-23 --to 2026-10-20 --output /private/route12-followup.json
+```
+
+This exports source-specific coverage and comparisons using the same estimator,
+with actual available dates and no filling of missing days.
+
 ## Geometry and review queue
 
 The GTFS fetched September 22 changed Route 12 shape IDs. The retained study
