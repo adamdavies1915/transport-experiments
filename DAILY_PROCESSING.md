@@ -15,9 +15,10 @@ flowchart LR
   S --> D[Public dashboard]
 ```
 
-This mode is opt-in. Adding this plumbing does not migrate the running services,
-enable a scheduler, move a LePass session, or change billing. The previous
-combined collector/worker mode remains available.
+This mode was activated for the desktop on September 22–23, 2026; see
+`OPERATIONS.md` for the actual deployment and timers. A second workstation has
+not been provisioned. MotherDuck archiving is a separate guarded workstation
+service and does not change the lease-based processing protocol or billing.
 
 ## Daily workflow
 

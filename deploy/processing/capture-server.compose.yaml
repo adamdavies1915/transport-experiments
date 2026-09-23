@@ -1,0 +1,28 @@
+# Uses the existing collector's dependency image; package-lock.json is unchanged.
+# Stage the matching source revision under /data/transit-capture/code first.
+services:
+  capture:
+    image: qogwcwsc8cgooo4osk0ccw08:8ffa1641fad2a5a7b650339946592a5da626f81f
+    pull_policy: never
+    restart: unless-stopped
+    command: [node, --import, tsx, scripts/capture-server.ts]
+    env_file: /data/transit-capture/config/capture.env
+    ports:
+      - '127.0.0.1:3102:3100'
+    volumes:
+      - /data/transit-capture/code/src:/app/src:ro
+      - /data/transit-capture/code/dashboard/src:/app/dashboard/src:ro
+      - /data/transit-capture/code/scripts:/app/scripts:ro
+      - /data/transit-capture/code/package-lock.json:/app/package-lock.json:ro
+      - /data/transit-capture/data:/app/data
+      - /data/transit-capture/secrets:/run/transit-secrets:ro
+    healthcheck:
+      test: [CMD, curl, -fsS, http://127.0.0.1:3100/api/health]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '3'

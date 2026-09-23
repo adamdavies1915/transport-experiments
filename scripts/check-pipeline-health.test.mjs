@@ -25,7 +25,7 @@ test('live SSE cannot hide a Le Pass collector whose successful requests stopped
       ? { connected: true, last_received_at: current, last_persisted_at: current }
       : url === 'dashboard' ? { summary: { generated_at: current, received_at: current } }
         : { last_persisted_at: current, lepass: { status: 'collecting', queries: [{ lastSuccess: '2026-09-23T02:00:00Z' }] } }) });
-  assert.equal(result.checks.workstation_capture.status, 'ok');
+  assert.equal(result.checks.durable_capture.status, 'ok');
   assert.equal(result.checks.lepass.status, 'stale');
   assert.equal(result.status, 'degraded');
 });

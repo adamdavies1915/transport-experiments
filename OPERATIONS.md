@@ -1,37 +1,61 @@
-# Current operating mode — September 22, 2026
+# Current operating mode — server cutover September 22–23, 2026
 
-The production server captures SSE into MotherDuck. This workstation journals
-both SSE and Le Pass, imports the server's missing history daily, performs finite
-analysis, and publishes only a verified completed result. Workstation capture
-and database processing are separate systemd user services. No live database is
-shared, no cloud plan is upgraded, and local archive cloud writes remain off.
+The server now captures **both SSE and Le Pass** into durable, verified bundles.
+This PC does not record either feed. It downloads server bundles, performs finite
+daily analysis, and publishes completed results to the existing public gateway.
+The original SSE-to-MotherDuck collector remains running independently.
 
-The server had 7.2 GiB free at recovery, below the 10 GB reserve required for
-durable server capture. The fully coordinated two-workstation mode in
-`DAILY_PROCESSING.md` remains opt-in and is **not active**. More server storage
-is required before moving Le Pass and durable capture there. No unrelated images
-or rollback history were removed to create space.
+At the user's request, Hermes agent and web UI containers/images were removed;
+their volumes/configuration were retained. This freed about 4.1 GiB and left
+10.9 GiB available (70% disk utilization). The 10 GB reserve remains enforced.
+Headroom above that reserve is modest: server bundles are not automatically
+pruned, so monitor growth and arrange verified retention or more storage.
+
+The leased workflow in `DAILY_PROCESSING.md` is now active for this PC. A second
+workstation has not been provisioned. The verified baseline is retained at
+`runtime-data/server-capture-seed-2026-09-22`; final PC journal receipts were
+also copied to `runtime-data/cutover-journal-2026-09-22` before ingestion.
+
+MotherDuck is the requested destination for both feeds and closed daily results.
+`transit-motherduck-archive.timer` attempts one guarded upload cycle hourly.
+It is **not proof of a successful upload**: missing/stale billing evidence pauses
+the uploader before connecting. The current plan/free billing mode and measured
+monthly CU-hours must be supplied in `runtime-data/private/motherduck-usage.json`
+as documented in `LOCAL_DATA_PIPELINE.md`. Never invent a usage checkpoint or
+enable paid overage. Inspect `processing/motherduck-archive-health.json` and
+the service journal. Cloud retention is bounded; full verified disk archives
+remain necessary and are not deleted by this cutover.
 
 ## Active services
 
-- Workstation `transit-capture.service`: continuously journals both feeds;
-  restarts on failure. `scripts/capture-workstation.ts` forces analysis off and
-  reads API, encryption and summary credentials from private `*_FILE` settings.
-- Workstation `transit-cloud-history.timer`: checks hourly; one successful
-  catchup per Chicago calendar date. Failed jobs retry next hour. Catchup runs
-  at the next available attempt, not a guaranteed 06:00 deadline.
+- Coolify service `hogc8wwcsk48c88kkcsgkog4`, container
+  `capture-hogc8wwcsk48c88kkcsgkog4`: durable server capture, no database analysis.
+  Its private port is `127.0.0.1:3102`; data/code/secrets are under
+  `/data/transit-capture`. The compose template reuses the existing dependency
+  image (unchanged package lock) with explicitly staged read-only source mounts.
+  Source updates must preserve the server/worker analysis digest match.
+- Workstation `transit-capture.service` and `transit-cloud-history.timer`:
+  disabled. Do not restart PC capture with the transferred Le Pass session.
+- Workstation `transit-capture-tunnel.service`: private SSH tunnel on port 13102.
+- Workstation `transit-server-history.timer`: polls every fifteen minutes;
+  the server makes the previous day's job due at 06:00 Chicago. The first
+  scheduled service date is September 22, due September 23 at 06:00.
+  Failed public gateway uploads retry even after the leased job is completed.
+- Workstation `transit-motherduck-archive.timer`: hourly bounded upload attempt;
+  shares the native database-worker lock with daily processing.
 - Workstation `transit-health.timer`: checks public pipeline clocks and the
-  authenticated local Le Pass collector every ten minutes.
+  authenticated server Le Pass collector via SSH every ten minutes.
 - Server `transit-health-server.timer`: checks live collection, persistence,
   analysis age and summary delivery every ten minutes even while the workstation
-  is offline. It runs the small monitoring script inside the existing collector.
+  is offline, including Le Pass. It runs inside the durable capture container.
 
 The workstation user manager has lingering enabled. This survives logout and
 starts when WSL boots; it cannot keep a sleeping Windows host or stopped WSL
-instance collecting. Server SSE capture continues independently. Historical
-Le Pass gaps cannot be reconstructed from predictions.
+instance processing. Both server feeds continue while this PC sleeps, subject
+to disk headroom and provider availability. Historical Le Pass gaps cannot be
+reconstructed from predictions.
 
-## Catchup and recovery
+## Previous cloud-history catchup and recovery (manual fallback)
 
 Use `deploy/processing/transit-cloud-history.service` and its timer as templates,
 with absolute checkout, Node and private environment-file paths. Configure:

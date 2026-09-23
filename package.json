@@ -16,7 +16,10 @@
     "history:import": "node --import tsx scripts/import-server-history.ts",
     "process:daily": "node --import tsx scripts/process-daily.ts",
     "process:cloud-history": "node --import tsx scripts/process-cloud-history.ts",
-    "capture:workstation": "node --import tsx scripts/capture-workstation.ts"
+    "capture:workstation": "node --import tsx scripts/capture-workstation.ts",
+    "capture:server": "node --import tsx scripts/capture-server.ts",
+    "process:server-history": "node --import tsx scripts/process-server-history.ts",
+    "archive:motherduck": "node --import tsx scripts/archive-motherduck.ts"
   },
   "dependencies": {
     "@duckdb/node-api": "^1.5.4-r.1",

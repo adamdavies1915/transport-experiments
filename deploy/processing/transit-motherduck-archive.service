@@ -1,0 +1,10 @@
+[Unit]
+Description=Guarded MotherDuck archive of both feeds and closed daily results
+After=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/home/adam/projects/transport-experiments
+EnvironmentFile=/home/adam/projects/transport-experiments/runtime-data/private/motherduck-archive.env
+ExecStart=/home/adam/.nvm/versions/node/v25.2.1/bin/node --import tsx scripts/archive-motherduck.ts
+TimeoutStartSec=15min

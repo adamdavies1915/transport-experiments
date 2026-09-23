@@ -1,0 +1,10 @@
+[Unit]
+Description=Attempt a bounded MotherDuck archive cycle hourly
+
+[Timer]
+OnStartupSec=5min
+OnCalendar=*-*-* *:10:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target

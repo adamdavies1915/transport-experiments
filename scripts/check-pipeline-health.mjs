@@ -36,12 +36,12 @@ export async function checkPipeline({ collectorUrl, dashboardUrl, localUrl, loca
     ...(localUrl ? [(async () => {
       try {
         const d = await get(localUrl, localToken);
-        checks.workstation_capture = clockCheck(d.last_persisted_at, 5 * 60_000, now);
+        checks.durable_capture = clockCheck(d.last_persisted_at, 5 * 60_000, now);
         const lastSuccess = (d.lepass?.queries ?? []).map(q => q.lastSuccess).filter(t => typeof t === 'string').sort().at(-1);
         checks.lepass = { ...clockCheck(lastSuccess, 5 * 60_000, now), reason: d.lepass?.reason ?? null };
         if (d.lepass?.status !== 'collecting') checks.lepass.status = 'degraded';
-        if (d.paused) checks.workstation_capture.status = 'paused';
-      } catch { checks.workstation_capture = { status: 'unavailable' }; checks.lepass = { status: 'unavailable' }; }
+        if (d.paused) checks.durable_capture.status = 'paused';
+      } catch { checks.durable_capture = { status: 'unavailable' }; checks.lepass = { status: 'unavailable' }; }
     })()] : []),
   ]);
   return { checked_at: new Date(now).toISOString(), status: Object.values(checks).every(c => c.status === 'ok') ? 'ok' : 'degraded', checks };

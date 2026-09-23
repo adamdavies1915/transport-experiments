@@ -1,0 +1,11 @@
+[Unit]
+Description=Private SSH transport to server transit capture
+After=network-online.target
+
+[Service]
+ExecStart=/usr/bin/ssh -N -o BatchMode=yes -o ExitOnForwardFailure=yes -o ServerAliveInterval=30 -o ServerAliveCountMax=3 -L 127.0.0.1:13102:127.0.0.1:3102 root@46.224.124.204
+Restart=always
+RestartSec=15
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,12 @@
+[Unit]
+Description=Process verified server capture and publish completed results
+Requires=transit-capture-tunnel.service
+After=transit-capture-tunnel.service
+
+[Service]
+Type=oneshot
+WorkingDirectory=/home/adam/projects/transport-experiments
+EnvironmentFile=/home/adam/projects/transport-experiments/runtime-data/private/server-history.env
+ExecStart=/home/adam/.nvm/versions/node/v25.2.1/bin/node --import tsx scripts/process-server-history.ts
+TimeoutStartSec=infinity
+TimeoutStopSec=120
