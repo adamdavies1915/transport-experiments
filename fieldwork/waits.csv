@@ -1,0 +1,1 @@
+wait_id,observation_id,wait_started_at,wait_ended_at,observed_signal_phase,boarding_alighting,queue_present,cause,view_complete,notes

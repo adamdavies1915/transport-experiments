@@ -82,7 +82,11 @@ approach; do not enter the track or roadway to measure an endpoint.
    observations, not just successful timings. This is a measurement pilot,
    not a powered causal evaluation.
 4. Record vehicle ID, route, actual travel direction, entry/exit time and every
-   stationary episode. Separate boarding/alighting, visible red indication,
+   stationary episode. Give each pass one `observation_id` and one row in
+   `observations.csv`; put each separate wait in `waits.csv` under that ID.
+   A fully observed pass with no wait has `wait_event_count=0` and no wait rows;
+   incomplete visibility remains unknown. Multiple waits must not duplicate the
+   pass denominator. Separate boarding/alighting, visible red indication,
    traffic queue, mixed and unknown causes. Never infer a red indication from
    the presence of signal hardware alone. Record stops with no red indication.
 5. At Rampart/St. Bernard and Rampart/Toulouse, record at least 30 consecutive
